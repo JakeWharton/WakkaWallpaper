@@ -45,7 +45,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
     	private int mDotsRemaining;
     	
         private boolean mIsVisible;
-        private int mFPS = 15;
+        private int mFPS = 8;
         private float mScreenCenterX;
         private float mScreenCenterY;
         private int mIconRows = 4;
@@ -61,19 +61,21 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         private float mDotPadding = 5;
         private float mDotDiameter;
         private final Paint mDotPaint = new Paint();
-        private int mDotColorForeground = 0xff6161a1;
-        private int mDotColorBackground = 0xff000040;
+        private int mDotForeground = 0xff6161a1;
+        private int mDotBackground = 0xff000040;
         private final Paint mTheManPaint = new Paint();
-        private int mTheManColor = 0xfffff000;
+        private int mTheManForeground = 0xfffff000;
         private Point mTheManPosition = new Point(5, 7);
         private final Random mTheManRandomizer = new Random();
         private Direction mTheManDirection = Direction.EAST;
-        private int mGhostBlinkyColor = 0xfff00000;
-        private int mGhostPinkyColor = 0xffff00f0;
-        private int mGhostInkyColor = 0xff01d8ff;
-        private int mGhostClydeColor = 0xffff8401;
-        private int mGhostEyeColorBackground = 0xffffffff;
-        private int mGhostEyeColorForeground = 0xff000000;
+        private int mGhostBlinkyBackground = 0xfff00000;
+        private int mGhostPinkyBackground = 0xffff00f0;
+        private int mGhostInkyBackground = 0xff01d8ff;
+        private int mGhostClydeBackground = 0xffff8401;
+        private int mGhostEyeBackground = 0xffffffff;
+        private int mGhostEyeForeground = 0xff000000;
+        private int mGhostScaredBackground = 0xff0033ff;
+        private int mGhostScaredForeground = 0xffffcc33;
 
         private final Runnable mDrawWakka = new Runnable() {
             public void run() {
@@ -84,13 +86,13 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         WakkaEngine() {
             // Create a Paint to draw the dots
             final Paint dotPaint = this.mDotPaint;
-            dotPaint.setColor(this.mDotColorForeground);
+            dotPaint.setColor(this.mDotForeground);
             dotPaint.setAntiAlias(true);
             dotPaint.setStyle(Paint.Style.FILL_AND_STROKE);
             
             // Create a Paint to draw "The Man"
             final Paint theManPaint = this.mTheManPaint;
-            theManPaint.setColor(this.mTheManColor);
+            theManPaint.setColor(this.mTheManForeground);
             theManPaint.setAntiAlias(true);
             
             //TODO: calculate these somehow
@@ -104,10 +106,12 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             
             this.mBoard = new Cell[this.mDotGridHigh][this.mDotGridWide];
             
+            this.mDotsRemaining = 0;
             for (int y = 0; y < this.mDotGridHigh; y++) {
             	for (int x = 0; x < this.mDotGridWide; x++) {
             		if ((x % (spacingX + 1) == 0) || (y % (spacingY + 1) == 0)) {
             			this.mBoard[y][x] = Cell.DOT;
+            			this.mDotsRemaining += 1;
             		} else {
             			this.mBoard[y][x] = Cell.WALL;
             		}
@@ -179,6 +183,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         }
         
         private void moveTheMan() {
+        	//TODO: Use AI logic to determine best direction to proceed
         	boolean success = false;
         	while (!success) {
 	        	switch (this.mTheManRandomizer.nextInt(4)) {
@@ -195,7 +200,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
 	        			success = this.tryMove(Direction.WEST);
 	        			break;
 	        	}
-        	}
+	        }
         }
         
         private Point move(Point point, Direction direction) {
@@ -272,7 +277,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
 
         void drawBoard(Canvas c) {
             c.save();
-            c.drawColor(this.mDotColorBackground);
+            c.drawColor(this.mDotBackground);
             
             c.translate(this.mDotGridPaddingLeft, this.mDotGridPaddingTop);
             
