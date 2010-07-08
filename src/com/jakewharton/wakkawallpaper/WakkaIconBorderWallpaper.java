@@ -40,8 +40,10 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
     	private static final String TAG = "WakkaEngine";
     	private static final int MILLISECONDS_IN_SECOND = 1000;
     	private static final int THE_MANS_GRILL_SIZE = 270;
+    	private static final int NUMBER_OF_GHOSTS = 4;
     	
     	private Cell[][] mBoard;
+    	private Point[] mGhosts;
     	private int mDotsRemaining;
     	
         private boolean mIsVisible;
@@ -65,7 +67,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         private int mDotBackground = 0xff000040;
         private final Paint mTheManPaint = new Paint();
         private int mTheManForeground = 0xfffff000;
-        private Point mTheManPosition = new Point(5, 7);
+        private Point mTheManPosition;;
         private final Random mTheManRandomizer = new Random();
         private Direction mTheManDirection = Direction.EAST;
         private int mGhostBlinkyBackground = 0xfff00000;
@@ -104,8 +106,8 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             this.mDotGridHigh = (this.mIconRows * (spacingY + 1)) + 1;
             Log.d(WakkaEngine.TAG, "Grid High: " + this.mDotGridHigh);
             
+            //Initialize board
             this.mBoard = new Cell[this.mDotGridHigh][this.mDotGridWide];
-            
             this.mDotsRemaining = 0;
             for (int y = 0; y < this.mDotGridHigh; y++) {
             	for (int x = 0; x < this.mDotGridWide; x++) {
@@ -117,6 +119,23 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             		}
             	}
             }
+            
+            //Initialize juggernaut dots
+            this.mBoard[spacingY + 1][0] = Cell.JUGGERDOT;
+            this.mBoard[0][this.mDotGridWide - spacingX - 2] = Cell.JUGGERDOT;
+            this.mBoard[this.mDotGridHigh - spacingY - 2][this.mDotGridWide - 1] = Cell.JUGGERDOT;
+            this.mBoard[this.mDotGridHigh - 1][spacingX + 1] = Cell.JUGGERDOT;
+            this.mDotsRemaining -= 4;
+            
+            //Initialize "The Man"
+            this.mTheManPosition = new Point(5, 7);
+            
+            //Initialize ghosts
+            this.mGhosts = new Point[WakkaEngine.NUMBER_OF_GHOSTS];
+            this.mGhosts[0] = new Point(spacingX + 1, 0);
+            this.mGhosts[1] = new Point(this.mDotGridWide - 1, spacingY + 1);
+            this.mGhosts[2] = new Point(this.mDotGridWide - spacingX - 2, this.mDotGridHigh - 1);
+            this.mGhosts[3] = new Point(0, this.mDotGridHigh - spacingY - 2);
         }
         
         private boolean isValidPosition(Point position) {
@@ -288,6 +307,11 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
 	            		float top = (y * this.mGridCellHeight) + this.mDotPadding;
 	            		
 	            		c.drawOval(new RectF(left, top, left + this.mDotDiameter, top + this.mDotDiameter), this.mDotPaint);
+            		} else if (this.mBoard[y][x] == Cell.JUGGERDOT) {
+	            		float left = (x * this.mGridCellWidth) + (this.mDotPadding / 2.0f);
+	            		float top = (y * this.mGridCellHeight) + (this.mDotPadding / 2.0f);
+	            		
+	            		c.drawOval(new RectF(left, top, left + this.mDotDiameter + this.mDotPadding, top + this.mDotDiameter + this.mDotPadding), this.mDotPaint);
             		}
             	}
             }
