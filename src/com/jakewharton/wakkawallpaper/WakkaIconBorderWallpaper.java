@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
@@ -34,6 +35,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
     }
 
     class WakkaEngine extends Engine {
+    	private static final String TAG = "WakkaEngine";
     	private static final int MILLISECONDS_IN_SECOND = 1000;
     	private static final int THE_MANS_GRILL_SIZE = 270;
     	
@@ -43,13 +45,15 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         private float mScreenCenterY;
         private int mIconRows = 4;
         private int mIconCols = 4;
-        private float mDotGridPaddingTop = 45;
-        private float mDotGridPaddingLeft = 0;
-        private float mDotGridPaddingBottom = 70;
-        private float mDotGridPaddingRight = 0;
-        private float mDotGridWide = 21;
+        private float mDotGridPaddingTop = 40;
+        private float mDotGridPaddingLeft = -5;
+        private float mDotGridPaddingBottom = 65;
+        private float mDotGridPaddingRight = -5;
+        private float mDotGridWide;
         private float mDotGridHigh;
-        private float mDotPadding = 10;
+        private float mGridCellWidth;
+        private float mGridCellHeight;
+        private float mDotPadding = 5;
         private float mDotDiameter;
         private final Paint mDotPaint = new Paint();
         private int mDotColorForeground = 0xff6161a1;
@@ -80,6 +84,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             dotPaint.setAntiAlias(true);
             dotPaint.setStyle(Paint.Style.FILL_AND_STROKE);
             
+            // Create a Paint to draw "The Man"
             final Paint theManPaint = this.mTheManPaint;
             theManPaint.setColor(this.mTheManColor);
             theManPaint.setAntiAlias(true);
@@ -182,10 +187,21 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             super.onSurfaceChanged(holder, format, width, height);
             
             this.mScreenCenterX = width / 2.0f;
+            Log.d(WakkaEngine.TAG, "Center X: " + this.mScreenCenterX);
             this.mScreenCenterY = height / 2.0f;
+            Log.d(WakkaEngine.TAG, "Center Y: " + this.mScreenCenterY);
             
-            this.mDotDiameter = (width - (this.mDotGridPaddingLeft + this.mDotGridPaddingRight) - ((this.mDotGridWide - 1) * this.mDotPadding)) / this.mDotGridWide;
-            this.mDotGridHigh = (float)Math.floor((height - (this.mDotGridPaddingTop + this.mDotGridPaddingBottom)) / (this.mDotDiameter + this.mDotPadding));
+            this.mDotGridWide = (this.mIconCols * 5) + 1;
+            Log.d(WakkaEngine.TAG, "Grid Wide: " + this.mDotGridWide);
+            this.mDotGridHigh = (this.mIconRows * 7) + 1;
+            Log.d(WakkaEngine.TAG, "Grid High: " + this.mDotGridHigh);
+            
+            this.mGridCellWidth = (width - (this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / (this.mDotGridWide * 1.0f);
+            Log.d(WakkaEngine.TAG, "Cell Width: " + this.mGridCellWidth);
+            this.mGridCellHeight = this.mGridCellWidth; //for now
+            Log.d(WakkaEngine.TAG, "Cell Height: " + this.mGridCellHeight);
+            this.mDotDiameter = this.mGridCellWidth - (this.mDotPadding * 2);
+            Log.d(WakkaEngine.TAG, "Dot Diameter: " + this.mDotDiameter);
             
             drawFrame();
         }
@@ -230,17 +246,17 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             for (int y = 0; y < this.mDotGridHigh; y++) {
             	for (int x = 0; x < this.mDotGridWide; x++) {
             		if ((x % 5 == 0) || (y % 7 == 0)) {
-	            		float left = x * (this.mDotDiameter + this.mDotPadding);
-	            		float top = y * (this.mDotDiameter + this.mDotPadding);
+	            		float left = (x * this.mGridCellWidth) + this.mDotPadding;
+	            		float top = (y * this.mGridCellHeight) + this.mDotPadding;
 	            		
 	            		c.drawOval(new RectF(left, top, left + this.mDotDiameter, top + this.mDotDiameter), this.mDotPaint);
             		}
             	}
             }
             
-            float theManLeft = (this.mTheManPositionX * (this.mDotDiameter + this.mDotPadding)) - (this.mDotPadding / 2.0f);
-            float theManTop = (this.mTheManPositionY * (this.mDotDiameter + this.mDotPadding)) - (this.mDotPadding / 2.0f);
-            c.drawArc(new RectF(theManLeft, theManTop, theManLeft + this.mDotDiameter + this.mDotPadding, theManTop + this.mDotDiameter + this.mDotPadding), this.mTheManDirection.getAngle(), WakkaEngine.THE_MANS_GRILL_SIZE, true, this.mTheManPaint);
+            float theManLeft = this.mTheManPositionX * this.mGridCellWidth;
+            float theManTop = this.mTheManPositionY * this.mGridCellHeight;
+            c.drawArc(new RectF(theManLeft, theManTop, theManLeft + this.mGridCellWidth, theManTop + this.mGridCellHeight), this.mTheManDirection.getAngle(), WakkaEngine.THE_MANS_GRILL_SIZE, true, this.mTheManPaint);
             
             c.restore();
         }
