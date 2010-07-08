@@ -1,5 +1,7 @@
 package com.jakewharton.wakkawallpaper;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Random;
 
 import android.graphics.Canvas;
@@ -41,26 +43,31 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
     	private static final int MILLISECONDS_IN_SECOND = 1000;
     	private static final int THE_MANS_GRILL_SIZE = 270;
     	private static final int NUMBER_OF_GHOSTS = 4;
+    	private final NumberFormat SCORE_FORMAT = new DecimalFormat("000000"); //TODO: Make static
     	
     	private Cell[][] mBoard;
     	private Point[] mGhosts;
     	private int mDotsRemaining;
+    	private int mLives;
+    	private int mScore;
     	
         private boolean mIsVisible;
         private int mFPS = 8;
         private float mScreenCenterX;
         private float mScreenCenterY;
+        private int mScreenHeight;
+        private int mScreenWidth;
         private int mIconRows = 4;
         private int mIconCols = 4;
         private float mDotGridPaddingTop = 40;
         private float mDotGridPaddingLeft = -5;
-        private float mDotGridPaddingBottom = 65;
+        private float mDotGridPaddingBottom = 60;
         private float mDotGridPaddingRight = -5;
         private int mDotGridWide;
         private int mDotGridHigh;
         private float mGridCellWidth;
         private float mGridCellHeight;
-        private float mDotPadding = 5;
+        private float mDotPadding = 9;
         private float mDotDiameter;
         private final Paint mDotPaint = new Paint();
         private int mDotForeground = 0xff6161a1;
@@ -78,6 +85,9 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         private int mGhostEyeForeground = 0xff000000;
         private int mGhostScaredBackground = 0xff0033ff;
         private int mGhostScaredForeground = 0xffffcc33;
+        private int mHUDForeground = 0xff8181c1;
+        private int mHUDBackground = 0xff000000;
+        private final Paint mHUDPaint = new Paint();
 
         private final Runnable mDrawWakka = new Runnable() {
             public void run() {
@@ -96,6 +106,12 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             final Paint theManPaint = this.mTheManPaint;
             theManPaint.setColor(this.mTheManForeground);
             theManPaint.setAntiAlias(true);
+            
+            final Paint theHUDPaint = this.mHUDPaint;
+            theHUDPaint.setColor(this.mHUDForeground);
+            theHUDPaint.setAntiAlias(true);
+            theHUDPaint.setTextSize(20f);
+            theHUDPaint.setShadowLayer(1, -1, 1, this.mHUDBackground);
             
             //TODO: calculate these somehow
             final int spacingX = 4;
@@ -119,6 +135,9 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             		}
             	}
             }
+            
+            this.mLives = 3;
+            this.mScore = 0;
             
             //Initialize juggernaut dots
             this.mBoard[spacingY + 1][0] = Cell.JUGGERDOT;
@@ -248,6 +267,11 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             super.onSurfaceChanged(holder, format, width, height);
             
+            this.mScreenHeight = height;
+            Log.d(WakkaEngine.TAG, "Screen Height: " + this.mScreenHeight);
+            this.mScreenWidth = width;
+            Log.d(WakkaEngine.TAG, "Screen Width: " + this.mScreenWidth);
+            
             this.mScreenCenterX = width / 2.0f;
             Log.d(WakkaEngine.TAG, "Center X: " + this.mScreenCenterX);
             this.mScreenCenterY = height / 2.0f;
@@ -298,8 +322,16 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             c.save();
             c.drawColor(this.mDotBackground);
             
+            //Lives and score
+            final float textY = this.mScreenHeight - this.mDotGridPaddingBottom + 5;
+            final String score = String.valueOf(this.SCORE_FORMAT.format(this.mScore));
+            c.drawText(this.mLives + "UP", 10, textY, this.mHUDPaint);
+            c.drawText(score, this.mScreenWidth - this.mHUDPaint.measureText(score) - 10, textY, this.mHUDPaint);
+            
+            //Adjust for notification bar
             c.translate(this.mDotGridPaddingLeft, this.mDotGridPaddingTop);
             
+            //Draw dot grid
             for (int y = 0; y < this.mDotGridHigh; y++) {
             	for (int x = 0; x < this.mDotGridWide; x++) {
             		if (this.mBoard[y][x] == Cell.DOT) {
@@ -308,14 +340,15 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
 	            		
 	            		c.drawOval(new RectF(left, top, left + this.mDotDiameter, top + this.mDotDiameter), this.mDotPaint);
             		} else if (this.mBoard[y][x] == Cell.JUGGERDOT) {
-	            		float left = (x * this.mGridCellWidth) + (this.mDotPadding / 2.0f);
-	            		float top = (y * this.mGridCellHeight) + (this.mDotPadding / 2.0f);
+	            		float left = (x * this.mGridCellWidth) + (this.mDotPadding / 3.0f);
+	            		float top = (y * this.mGridCellHeight) + (this.mDotPadding / 3.0f);
 	            		
-	            		c.drawOval(new RectF(left, top, left + this.mDotDiameter + this.mDotPadding, top + this.mDotDiameter + this.mDotPadding), this.mDotPaint);
+	            		c.drawOval(new RectF(left, top, left + this.mDotDiameter + (this.mDotPadding * 4 / 3.0f), top + this.mDotDiameter + (this.mDotPadding * 4 / 3.0f)), this.mDotPaint);
             		}
             	}
             }
             
+            //Draw "The Man"
             float theManLeft = this.mTheManPosition.x * this.mGridCellWidth;
             float theManTop = this.mTheManPosition.y * this.mGridCellHeight;
             c.drawArc(new RectF(theManLeft, theManTop, theManLeft + this.mGridCellWidth, theManTop + this.mGridCellHeight), this.mTheManDirection.getAngle(), WakkaEngine.THE_MANS_GRILL_SIZE, true, this.mTheManPaint);
