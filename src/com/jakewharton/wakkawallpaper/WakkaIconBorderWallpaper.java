@@ -4,6 +4,7 @@ import java.util.Random;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
@@ -26,6 +27,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
 			return this.angle;
 		}
 	}
+	enum Cell { BLANK, WALL, DOT, JUGGERDOT }
 
     private final Handler mHandler = new Handler();
 
@@ -39,6 +41,9 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
     	private static final int MILLISECONDS_IN_SECOND = 1000;
     	private static final int THE_MANS_GRILL_SIZE = 270;
     	
+    	private Cell[][] mBoard;
+    	private int mDotsRemaining;
+    	
         private boolean mIsVisible;
         private int mFPS = 15;
         private float mScreenCenterX;
@@ -49,8 +54,8 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         private float mDotGridPaddingLeft = -5;
         private float mDotGridPaddingBottom = 65;
         private float mDotGridPaddingRight = -5;
-        private float mDotGridWide;
-        private float mDotGridHigh;
+        private int mDotGridWide;
+        private int mDotGridHigh;
         private float mGridCellWidth;
         private float mGridCellHeight;
         private float mDotPadding = 5;
@@ -60,8 +65,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         private int mDotColorBackground = 0xff000040;
         private final Paint mTheManPaint = new Paint();
         private int mTheManColor = 0xfffff000;
-        private int mTheManPositionX = 5;
-        private int mTheManPositionY = 7;
+        private Point mTheManPosition = new Point(5, 7);
         private final Random mTheManRandomizer = new Random();
         private Direction mTheManDirection = Direction.EAST;
         private int mGhostBlinkyColor = 0xfff00000;
@@ -88,6 +92,33 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             final Paint theManPaint = this.mTheManPaint;
             theManPaint.setColor(this.mTheManColor);
             theManPaint.setAntiAlias(true);
+            
+            //TODO: calculate these somehow
+            final int spacingX = 4;
+            final int spacingY = 6;
+            
+            this.mDotGridWide = (this.mIconCols * (spacingX + 1)) + 1;
+            Log.d(WakkaEngine.TAG, "Grid Wide: " + this.mDotGridWide);
+            this.mDotGridHigh = (this.mIconRows * (spacingY + 1)) + 1;
+            Log.d(WakkaEngine.TAG, "Grid High: " + this.mDotGridHigh);
+            
+            this.mBoard = new Cell[this.mDotGridHigh][this.mDotGridWide];
+            
+            for (int y = 0; y < this.mDotGridHigh; y++) {
+            	for (int x = 0; x < this.mDotGridWide; x++) {
+            		if ((x % (spacingX + 1) == 0) || (y % (spacingY + 1) == 0)) {
+            			this.mBoard[y][x] = Cell.DOT;
+            		} else {
+            			this.mBoard[y][x] = Cell.WALL;
+            		}
+            	}
+            }
+        }
+        
+        private boolean isValidPosition(Point position) {
+        	return ((position.x >= 0) && (position.x < this.mDotGridWide)
+        		    && (position.y >= 0) && (position.y < this.mDotGridHigh)
+        		    && (this.mBoard[position.y][position.x] != Cell.WALL));
         }
 
         @Override
@@ -122,64 +153,71 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         		
         		if (Math.abs(deltaX) > Math.abs(deltaY)) {
         			if (deltaX > 0) {
-        				this.moveTheMan(Direction.WEST);
+        				this.tryMove(Direction.WEST);
         			} else {
-        				this.moveTheMan(Direction.EAST);
+        				this.tryMove(Direction.EAST);
         			}
         		} else {
         			if (deltaY > 0) {
-        				this.moveTheMan(Direction.NORTH);
+        				this.tryMove(Direction.NORTH);
         			} else {
-        				this.moveTheMan(Direction.SOUTH);
+        				this.tryMove(Direction.SOUTH);
         			}
         		}
         	}
         }
         
-        private void moveTheMan() {
-        	switch (this.mTheManRandomizer.nextInt(4)) {
-        		case 0:
-        			this.moveTheMan(Direction.NORTH);
-        			break;
-        		case 1:
-        			this.moveTheMan(Direction.SOUTH);
-        			break;
-        		case 2:
-        			this.moveTheMan(Direction.EAST);
-        			break;
-        		case 3:
-        			this.moveTheMan(Direction.WEST);
-        			break;
+        private boolean tryMove(Direction direction) {
+        	Point newPoint = this.move(this.mTheManPosition, direction);
+        	if (this.isValidPosition(newPoint)) {
+        		this.mTheManPosition = newPoint;
+        		this.mTheManDirection = direction;
+        		return true;
+        	} else {
+        		return false;
         	}
         }
-        private void moveTheMan(Direction direction) {
-        	this.mTheManDirection = direction;
-        	
+        
+        private void moveTheMan() {
+        	boolean success = false;
+        	while (!success) {
+	        	switch (this.mTheManRandomizer.nextInt(4)) {
+	        		case 0:
+	        			success = this.tryMove(Direction.NORTH);
+	        			break;
+	        		case 1:
+	        			success = this.tryMove(Direction.SOUTH);
+	        			break;
+	        		case 2:
+	        			success = this.tryMove(Direction.EAST);
+	        			break;
+	        		case 3:
+	        			success = this.tryMove(Direction.WEST);
+	        			break;
+	        	}
+        	}
+        }
+        
+        private Point move(Point point, Direction direction) {
+        	Point newPoint = new Point(point);
         	switch (direction) {
         		case NORTH:
-        			if (this.mTheManPositionY > 0) {
-        				this.mTheManPositionY -= 1;
-        			}
+        			newPoint.y -= 1;
     				break;
     				
         		case SOUTH:
-        			if (this.mTheManPositionY < this.mDotGridHigh) {
-        				this.mTheManPositionY += 1;
-        			}
+        			newPoint.y += 1;
     				break;
     				
         		case WEST:
-        			if (this.mTheManPositionX > 0) {
-        				this.mTheManPositionX -= 1;
-        			}
+        			newPoint.x -= 1;
     				break;
     				
         		case EAST:
-        			if (this.mTheManPositionY < this.mDotGridWide) {
-        				this.mTheManPositionX += 1;
-        			}
+        			newPoint.x += 1;
     				break;
         	}
+        	return newPoint;
         }
 
         @Override
@@ -190,11 +228,6 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             Log.d(WakkaEngine.TAG, "Center X: " + this.mScreenCenterX);
             this.mScreenCenterY = height / 2.0f;
             Log.d(WakkaEngine.TAG, "Center Y: " + this.mScreenCenterY);
-            
-            this.mDotGridWide = (this.mIconCols * 5) + 1;
-            Log.d(WakkaEngine.TAG, "Grid Wide: " + this.mDotGridWide);
-            this.mDotGridHigh = (this.mIconRows * 7) + 1;
-            Log.d(WakkaEngine.TAG, "Grid High: " + this.mDotGridHigh);
             
             this.mGridCellWidth = (width - (this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / (this.mDotGridWide * 1.0f);
             Log.d(WakkaEngine.TAG, "Cell Width: " + this.mGridCellWidth);
@@ -245,7 +278,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             
             for (int y = 0; y < this.mDotGridHigh; y++) {
             	for (int x = 0; x < this.mDotGridWide; x++) {
-            		if ((x % 5 == 0) || (y % 7 == 0)) {
+            		if (this.mBoard[y][x] == Cell.DOT) {
 	            		float left = (x * this.mGridCellWidth) + this.mDotPadding;
 	            		float top = (y * this.mGridCellHeight) + this.mDotPadding;
 	            		
@@ -254,8 +287,8 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             	}
             }
             
-            float theManLeft = this.mTheManPositionX * this.mGridCellWidth;
-            float theManTop = this.mTheManPositionY * this.mGridCellHeight;
+            float theManLeft = this.mTheManPosition.x * this.mGridCellWidth;
+            float theManTop = this.mTheManPosition.y * this.mGridCellHeight;
             c.drawArc(new RectF(theManLeft, theManTop, theManLeft + this.mGridCellWidth, theManTop + this.mGridCellHeight), this.mTheManDirection.getAngle(), WakkaEngine.THE_MANS_GRILL_SIZE, true, this.mTheManPaint);
             
             c.restore();
