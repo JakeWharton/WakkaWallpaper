@@ -45,6 +45,7 @@ public class WakkaWallpaper extends WallpaperService {
     	private static final int NUMBER_OF_GHOSTS = 4;
     	private static final int POINTS_DOT = 10;
     	private static final int POINTS_JUGGERDOT = 50;
+    	private static final int DEFAULT_BONUS_THRESHOLD = 10000;
     	//TODO: Make static
     	private final NumberFormat SCORE_FORMAT = new DecimalFormat("000000");
     	
@@ -92,6 +93,9 @@ public class WakkaWallpaper extends WallpaperService {
         private int mHUDForeground;
         private int mHUDBackground;
         private final Paint mHUDPaint = new Paint();
+        private boolean mBonusLifeAllowed;
+        private boolean mBonusLifeGiven;
+        private int mBonusLifeThreshold;
 
         private final Runnable mDrawWakka = new Runnable() {
             public void run() {
@@ -121,6 +125,8 @@ public class WakkaWallpaper extends WallpaperService {
             this.mGhostScaredForeground = 0xffffcc33;
             this.mHUDForeground = 0xff8181c1;
             this.mHUDBackground = 0xff000000;
+            this.mBonusLifeAllowed = true;
+            this.mBonusLifeThreshold = WakkaEngine.DEFAULT_BONUS_THRESHOLD;
             
         	//Create Paints with their values
             final Paint dotPaint = this.mDotPaint;
@@ -158,8 +164,9 @@ public class WakkaWallpaper extends WallpaperService {
         
         private void gameReset() {
         	//Game level values
-        	this.mLives = 3;
-        	this.mScore = 0;
+			this.mLives = 3;
+			this.mScore = 0;
+			this.mBonusLifeGiven = false;
         	
         	//Reset board
         	this.boardReset();
@@ -253,6 +260,7 @@ public class WakkaWallpaper extends WallpaperService {
         	if (this.isValidPosition(newPoint)) {
         		this.mTheManPosition = newPoint;
         		this.mTheManDirection = direction;
+        		
         		if (this.mBoard[newPoint.y][newPoint.x] == Cell.DOT) {
         			this.mScore += WakkaEngine.POINTS_DOT;
         			this.mBoard[newPoint.y][newPoint.x] = Cell.BLANK;
@@ -265,6 +273,13 @@ public class WakkaWallpaper extends WallpaperService {
         			this.mScore += WakkaEngine.POINTS_JUGGERDOT;
         			this.mBoard[newPoint.y][newPoint.x] = Cell.BLANK;
         		}
+        		
+        		//Bonus life calculation
+        		if (this.mBonusLifeAllowed && !this.mBonusLifeGiven && (this.mScore >= this.mBonusLifeThreshold)) {
+        			this.mLives += 1;
+        			this.mBonusLifeGiven = true;
+        		}
+        		
         		return true;
         	} else {
         		return false;
@@ -288,7 +303,7 @@ public class WakkaWallpaper extends WallpaperService {
 	        		case 3:
 	        			success = this.tryMove(Direction.WEST);
 	        			break;
-	        		default: //4-10, most of the time stay straight (if possible)
+	        		default: //4-9, most of the time stay straight (if possible)
 	        			success = this.tryMove(this.mTheManDirection);
 	        			break;
 	        	}
