@@ -33,6 +33,8 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         private int mDotColorBackground = 0xff000040;
         private final Paint mTheManPaint = new Paint();
         private int mTheManColor = 0xfffff000;
+        private int mTheManPositionX = 5;
+        private int mTheManPositionY = 7;
         private int mGhostBlinkyColor = 0xfff00000;
         private int mGhostPinkyColor = 0xffff00f0;
         private int mGhostInkyColor = 0xff01d8ff;
@@ -123,7 +125,9 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             	}
             }
             
-            c.drawArc(new RectF(0, 0, this.mDotDiameter, this.mDotDiameter), 45, 270, true, this.mTheManPaint);
+            float theManLeft = (this.mTheManPositionX * (this.mDotDiameter + this.mDotPadding)) - (this.mDotPadding / 2.0f);
+            float theManTop = (this.mTheManPositionY * (this.mDotDiameter + this.mDotPadding)) - (this.mDotPadding / 2.0f);
+            c.drawArc(new RectF(theManLeft, theManTop, theManLeft + this.mDotDiameter + this.mDotPadding, theManTop + this.mDotDiameter + this.mDotPadding), 45, 270, true, this.mTheManPaint);
             
             c.restore();
         }
