@@ -5,6 +5,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
 public class WakkaIconBorderWallpaper extends WallpaperService {
@@ -31,6 +32,8 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
 
     class WakkaEngine extends Engine {
         private boolean mIsVisible;
+        private float mScreenCenterX;
+        private float mScreenCenterY;
         private int mIconRows = 4;
         private int mIconCols = 4;
         private float mDotGridPaddingTop = 45;
@@ -56,7 +59,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         private int mGhostEyeColorBackground = 0xffffffff;
         private int mGhostEyeColorForeground = 0xff000000;
 
-        private final Runnable mDrawCube = new Runnable() {
+        private final Runnable mDrawWakka = new Runnable() {
             public void run() {
                 drawFrame();
             }
@@ -76,15 +79,60 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
 
         @Override
         public void onVisibilityChanged(boolean visible) {
-            mIsVisible = visible;
+            this.mIsVisible = visible;
             if (visible) {
                 drawFrame();
+            } else {
+                mHandler.removeCallbacks(this.mDrawWakka);
             }
+        }
+        
+        @Override
+        public void onCreate(SurfaceHolder surfaceHolder) {
+        	super.onCreate(surfaceHolder);
+
+            // By default we don't get touch events, so enable them.
+            this.setTouchEventsEnabled(true);
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            mHandler.removeCallbacks(mDrawWakka);
+        }
+        
+        @Override
+        public void onTouchEvent(MotionEvent event) {
+        	if (event.getAction() == MotionEvent.ACTION_DOWN) {
+        		float deltaX = this.mScreenCenterX - event.getX();
+        		float deltaY = this.mScreenCenterY - event.getY();
+        		
+        		if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        			if (deltaX > 0) {
+        				this.mTheManDirection = Direction.WEST;
+        				this.mTheManPositionX -= 1;
+        			} else {
+        				this.mTheManDirection = Direction.EAST;
+        				this.mTheManPositionX += 1;
+        			}
+        		} else {
+        			if (deltaY > 0) {
+        				this.mTheManDirection = Direction.NORTH;
+        				this.mTheManPositionY -= 1;
+        			} else {
+        				this.mTheManDirection = Direction.SOUTH;
+        				this.mTheManPositionY += 1;
+        			}
+        		}
+        	}
         }
 
         @Override
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             super.onSurfaceChanged(holder, format, width, height);
+            
+            this.mScreenCenterX = width / 2.0f;
+            this.mScreenCenterY = height / 2.0f;
             
             this.mDotDiameter = (width - (this.mDotGridPaddingLeft + this.mDotGridPaddingRight) - ((this.mDotGridWide - 1) * this.mDotPadding)) / this.mDotGridWide;
             this.mDotGridHigh = (float)Math.floor((height - (this.mDotGridPaddingTop + this.mDotGridPaddingBottom)) / (this.mDotDiameter + this.mDotPadding));
@@ -96,12 +144,11 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         public void onSurfaceDestroyed(SurfaceHolder holder) {
             super.onSurfaceDestroyed(holder);
             mIsVisible = false;
+            mHandler.removeCallbacks(this.mDrawWakka);
         }
 
         /*
-         * Draw one frame of the animation. This method gets called repeatedly
-         * by posting a delayed Runnable. You can do any drawing you want in
-         * here. This example draws a wireframe cube.
+         * Draw one frame of the animation.
          */
         void drawFrame() {
             final SurfaceHolder holder = getSurfaceHolder();
@@ -117,8 +164,8 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
                 if (c != null) holder.unlockCanvasAndPost(c);
             }
 
-            if (mIsVisible) {
-                mHandler.postDelayed(mDrawCube, 1000 / 25);
+            if (this.mIsVisible) {
+                mHandler.postDelayed(this.mDrawWakka, 1000 / 25);
             }
         }
 
