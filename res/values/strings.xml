@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">Wakka Wallpaper</string>
+	<string name="app_name">Wakka Wallpaper</string>
+    <string name="name_iconborder">Wakka Icon Border</string>
+    <string name="name_classic">Wakka Classic</string>
     <string name="author">Jake Wharton</string>
-    <string name="description">Wakka wakka bloop wakka wakka wakka...</string>
+    <string name="description_iconborder">Creates a dot configuration which borders your icons.</string>
+    <string name="description_classic">Displays the classic board pattern.</string>
 </resources>

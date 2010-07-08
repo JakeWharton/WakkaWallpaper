@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
 
-public class WakkaWallpaper extends WallpaperService {
+public class WakkaIconBorderWallpaper extends WallpaperService {
 
     private final Handler mHandler = new Handler();
 
@@ -19,10 +19,14 @@ public class WakkaWallpaper extends WallpaperService {
     class WakkaEngine extends Engine {
         private final Paint mPaint = new Paint();
         private boolean mIsVisible;
+        private int mRows = 4;
+        private int mCols = 4;
         private float mDotsWide = 21;
         private float mDotsHigh;
         private float mDotPadding = 10;
-        private float mDotWidth;
+        private float mDotDiameter;
+        private int mDotColorForeground = 0xff6161a1;
+        private int mDotColorBackground = 0xff000040;
 
         private final Runnable mDrawCube = new Runnable() {
             public void run() {
@@ -31,9 +35,9 @@ public class WakkaWallpaper extends WallpaperService {
         };
 
         WakkaEngine() {
-            // Create a Paint to draw the lines for our cube
+            // Create a Paint to draw the dots
             final Paint paint = mPaint;
-            paint.setColor(0xff6161a1);
+            paint.setColor(this.mDotColorForeground);
             paint.setAntiAlias(true);
             paint.setStyle(Paint.Style.FILL_AND_STROKE);
         }
@@ -50,8 +54,8 @@ public class WakkaWallpaper extends WallpaperService {
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             super.onSurfaceChanged(holder, format, width, height);
             
-            this.mDotWidth = (width - ((this.mDotsWide - 1) * this.mDotPadding)) / this.mDotsWide;
-            this.mDotsHigh = (float)Math.floor(height / (this.mDotWidth + this.mDotPadding));
+            this.mDotDiameter = (width - ((this.mDotsWide - 1) * this.mDotPadding)) / this.mDotsWide;
+            this.mDotsHigh = (float)Math.floor(height / (this.mDotDiameter + this.mDotPadding));
             
             drawFrame();
         }
@@ -88,16 +92,18 @@ public class WakkaWallpaper extends WallpaperService {
 
         void drawBoard(Canvas c) {
             c.save();
-            c.drawColor(0xff000040);
+            c.drawColor(this.mDotColorBackground);
+            
+            //Temporary(?) notification bar fix
             c.translate(0, 45);
             
             for (int y = 0; y < this.mDotsHigh; y++) {
             	for (int x = 0; x < this.mDotsWide; x++) {
             		if ((x % 5 == 0) || (y % 5 == 0)) {
-	            		float left = x * (this.mDotWidth + this.mDotPadding);
-	            		float top = y * (this.mDotWidth + this.mDotPadding);
+	            		float left = x * (this.mDotDiameter + this.mDotPadding);
+	            		float top = y * (this.mDotDiameter + this.mDotPadding);
 	            		
-	            		c.drawOval(new RectF(left, top, left + this.mDotWidth, top + this.mDotWidth), this.mPaint);
+	            		c.drawOval(new RectF(left, top, left + this.mDotDiameter, top + this.mDotDiameter), this.mPaint);
             		}
             	}
             }
