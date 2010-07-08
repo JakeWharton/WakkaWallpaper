@@ -90,6 +90,8 @@ public class WakkaWallpaper extends WallpaperService {
         private int mGhostEyeForeground;
         private int mGhostScaredBackground;
         private int mGhostScaredForeground;
+        private int mGhostScaredBlinkBackground;
+        private int mGhostScaredBlinkForeground;
         private int mHUDForeground;
         private int mHUDBackground;
         private final Paint mHUDPaint = new Paint();
@@ -123,6 +125,8 @@ public class WakkaWallpaper extends WallpaperService {
             this.mGhostEyeForeground = 0xff000000;
             this.mGhostScaredBackground = 0xff0033ff;
             this.mGhostScaredForeground = 0xffffcc33;
+            this.mGhostScaredBlinkBackground = 0xffff0000;
+            this.mGhostScaredBlinkForeground = 0xfffafafa;
             this.mHUDForeground = 0xff8181c1;
             this.mHUDBackground = 0xff000000;
             this.mBonusLifeAllowed = true;
