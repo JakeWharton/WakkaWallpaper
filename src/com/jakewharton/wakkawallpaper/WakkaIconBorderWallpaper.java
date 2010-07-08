@@ -275,7 +275,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         	//TODO: Use AI logic to determine best direction to proceed
         	boolean success = false;
         	while (!success) {
-	        	switch (this.mTheManRandomizer.nextInt(4)) {
+	        	switch (this.mTheManRandomizer.nextInt(16)) {
 	        		case 0:
 	        			success = this.tryMove(Direction.NORTH);
 	        			break;
@@ -287,6 +287,9 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
 	        			break;
 	        		case 3:
 	        			success = this.tryMove(Direction.WEST);
+	        			break;
+	        		default: //4-15, 75% of the time stay straight (if possible)
+	        			success = this.tryMove(this.mTheManDirection);
 	        			break;
 	        	}
 	        }
