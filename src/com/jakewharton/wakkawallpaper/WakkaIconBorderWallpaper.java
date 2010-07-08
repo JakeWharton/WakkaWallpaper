@@ -17,16 +17,24 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
     }
 
     class WakkaEngine extends Engine {
-        private final Paint mPaint = new Paint();
         private boolean mIsVisible;
-        private int mRows = 4;
-        private int mCols = 4;
-        private float mDotsWide = 21;
-        private float mDotsHigh;
+        private int mIconRows = 4;
+        private int mIconCols = 4;
+        private float mDotGridWide = 21;
+        private float mDotGridHigh;
         private float mDotPadding = 10;
         private float mDotDiameter;
+        private final Paint mDotPaint = new Paint();
         private int mDotColorForeground = 0xff6161a1;
         private int mDotColorBackground = 0xff000040;
+        private final Paint mTheManPaint = new Paint();
+        private int mTheManColor = 0xfffff000;
+        private int mGhostBlinkyColor = 0xfff00000;
+        private int mGhostPinkyColor = 0xffff00f0;
+        private int mGhostInkyColor = 0xff01d8ff;
+        private int mGhostClydeColor = 0xffff8401;
+        private int mGhostEyeColorBackground = 0xffffffff;
+        private int mGhostEyeColorForeground = 0xff000000;
 
         private final Runnable mDrawCube = new Runnable() {
             public void run() {
@@ -36,10 +44,14 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
 
         WakkaEngine() {
             // Create a Paint to draw the dots
-            final Paint paint = mPaint;
-            paint.setColor(this.mDotColorForeground);
-            paint.setAntiAlias(true);
-            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+            final Paint dotPaint = this.mDotPaint;
+            dotPaint.setColor(this.mDotColorForeground);
+            dotPaint.setAntiAlias(true);
+            dotPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+            
+            final Paint theManPaint = this.mTheManPaint;
+            theManPaint.setColor(this.mTheManColor);
+            theManPaint.setAntiAlias(true);
         }
 
         @Override
@@ -54,8 +66,8 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             super.onSurfaceChanged(holder, format, width, height);
             
-            this.mDotDiameter = (width - ((this.mDotsWide - 1) * this.mDotPadding)) / this.mDotsWide;
-            this.mDotsHigh = (float)Math.floor(height / (this.mDotDiameter + this.mDotPadding));
+            this.mDotDiameter = (width - ((this.mDotGridWide - 1) * this.mDotPadding)) / this.mDotGridWide;
+            this.mDotGridHigh = (float)Math.floor(height / (this.mDotDiameter + this.mDotPadding));
             
             drawFrame();
         }
@@ -97,16 +109,18 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             //Temporary(?) notification bar fix
             c.translate(0, 45);
             
-            for (int y = 0; y < this.mDotsHigh; y++) {
-            	for (int x = 0; x < this.mDotsWide; x++) {
+            for (int y = 0; y < this.mDotGridHigh; y++) {
+            	for (int x = 0; x < this.mDotGridWide; x++) {
             		if ((x % 5 == 0) || (y % 5 == 0)) {
 	            		float left = x * (this.mDotDiameter + this.mDotPadding);
 	            		float top = y * (this.mDotDiameter + this.mDotPadding);
 	            		
-	            		c.drawOval(new RectF(left, top, left + this.mDotDiameter, top + this.mDotDiameter), this.mPaint);
+	            		c.drawOval(new RectF(left, top, left + this.mDotDiameter, top + this.mDotDiameter), this.mDotPaint);
             		}
             	}
             }
+            
+            c.drawArc(new RectF(0, 0, this.mDotDiameter, this.mDotDiameter), 45, 270, true, this.mTheManPaint);
             
             c.restore();
         }
