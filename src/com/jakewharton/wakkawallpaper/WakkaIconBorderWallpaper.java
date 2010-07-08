@@ -20,6 +20,10 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         private boolean mIsVisible;
         private int mIconRows = 4;
         private int mIconCols = 4;
+        private float mDotGridPaddingTop = 45;
+        private float mDotGridPaddingLeft = 0;
+        private float mDotGridPaddingBottom = 70;
+        private float mDotGridPaddingRight = 0;
         private float mDotGridWide = 21;
         private float mDotGridHigh;
         private float mDotPadding = 10;
@@ -66,8 +70,8 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             super.onSurfaceChanged(holder, format, width, height);
             
-            this.mDotDiameter = (width - ((this.mDotGridWide - 1) * this.mDotPadding)) / this.mDotGridWide;
-            this.mDotGridHigh = (float)Math.floor(height / (this.mDotDiameter + this.mDotPadding));
+            this.mDotDiameter = (width - (this.mDotGridPaddingLeft + this.mDotGridPaddingRight) - ((this.mDotGridWide - 1) * this.mDotPadding)) / this.mDotGridWide;
+            this.mDotGridHigh = (float)Math.floor((height - (this.mDotGridPaddingTop + this.mDotGridPaddingBottom)) / (this.mDotDiameter + this.mDotPadding));
             
             drawFrame();
         }
@@ -106,12 +110,11 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             c.save();
             c.drawColor(this.mDotColorBackground);
             
-            //Temporary(?) notification bar fix
-            c.translate(0, 45);
+            c.translate(this.mDotGridPaddingLeft, this.mDotGridPaddingTop);
             
             for (int y = 0; y < this.mDotGridHigh; y++) {
             	for (int x = 0; x < this.mDotGridWide; x++) {
-            		if ((x % 5 == 0) || (y % 5 == 0)) {
+            		if ((x % 5 == 0) || (y % 7 == 0)) {
 	            		float left = x * (this.mDotDiameter + this.mDotPadding);
 	            		float top = y * (this.mDotDiameter + this.mDotPadding);
 	            		
