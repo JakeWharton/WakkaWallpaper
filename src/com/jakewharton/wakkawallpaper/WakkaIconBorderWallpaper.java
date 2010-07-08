@@ -1,5 +1,7 @@
 package com.jakewharton.wakkawallpaper;
 
+import java.util.Random;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -13,6 +15,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
 		NORTH(315), SOUTH(135), EAST(45), WEST(225);
 		
 		private int angle;
+		public final int DIRECTIONS = 4;
 		
 		private Direction(int angle) {
 			this.angle = angle;
@@ -31,7 +34,11 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
     }
 
     class WakkaEngine extends Engine {
+    	private static final int MILLISECONDS_IN_SECOND = 1000;
+    	private static final int THE_MANS_GRILL_SIZE = 270;
+    	
         private boolean mIsVisible;
+        private int mFPS = 15;
         private float mScreenCenterX;
         private float mScreenCenterY;
         private int mIconRows = 4;
@@ -51,6 +58,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         private int mTheManColor = 0xfffff000;
         private int mTheManPositionX = 5;
         private int mTheManPositionY = 7;
+        private final Random mTheManRandomizer = new Random();
         private Direction mTheManDirection = Direction.EAST;
         private int mGhostBlinkyColor = 0xfff00000;
         private int mGhostPinkyColor = 0xffff00f0;
@@ -109,21 +117,63 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         		
         		if (Math.abs(deltaX) > Math.abs(deltaY)) {
         			if (deltaX > 0) {
-        				this.mTheManDirection = Direction.WEST;
-        				this.mTheManPositionX -= 1;
+        				this.moveTheMan(Direction.WEST);
         			} else {
-        				this.mTheManDirection = Direction.EAST;
-        				this.mTheManPositionX += 1;
+        				this.moveTheMan(Direction.EAST);
         			}
         		} else {
         			if (deltaY > 0) {
-        				this.mTheManDirection = Direction.NORTH;
-        				this.mTheManPositionY -= 1;
+        				this.moveTheMan(Direction.NORTH);
         			} else {
-        				this.mTheManDirection = Direction.SOUTH;
-        				this.mTheManPositionY += 1;
+        				this.moveTheMan(Direction.SOUTH);
         			}
         		}
+        	}
+        }
+        
+        private void moveTheMan() {
+        	switch (this.mTheManRandomizer.nextInt(4)) {
+        		case 0:
+        			this.moveTheMan(Direction.NORTH);
+        			break;
+        		case 1:
+        			this.moveTheMan(Direction.SOUTH);
+        			break;
+        		case 2:
+        			this.moveTheMan(Direction.EAST);
+        			break;
+        		case 3:
+        			this.moveTheMan(Direction.WEST);
+        			break;
+        	}
+        }
+        private void moveTheMan(Direction direction) {
+        	this.mTheManDirection = direction;
+        	
+        	switch (direction) {
+        		case NORTH:
+        			if (this.mTheManPositionY > 0) {
+        				this.mTheManPositionY -= 1;
+        			}
+    				break;
+    				
+        		case SOUTH:
+        			if (this.mTheManPositionY < this.mDotGridHigh) {
+        				this.mTheManPositionY += 1;
+        			}
+    				break;
+    				
+        		case WEST:
+        			if (this.mTheManPositionX > 0) {
+        				this.mTheManPositionX -= 1;
+        			}
+    				break;
+    				
+        		case EAST:
+        			if (this.mTheManPositionY < this.mDotGridWide) {
+        				this.mTheManPositionX += 1;
+        			}
+    				break;
         	}
         }
 
@@ -151,21 +201,23 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
          * Draw one frame of the animation.
          */
         void drawFrame() {
-            final SurfaceHolder holder = getSurfaceHolder();
+            final SurfaceHolder holder = this.getSurfaceHolder();
 
             Canvas c = null;
             try {
                 c = holder.lockCanvas();
                 if (c != null) {
-                    // draw something
-                    drawBoard(c);
+                	this.moveTheMan();
+                    this.drawBoard(c);
                 }
             } finally {
-                if (c != null) holder.unlockCanvasAndPost(c);
+                if (c != null) {
+                	holder.unlockCanvasAndPost(c);
+                }
             }
 
             if (this.mIsVisible) {
-                mHandler.postDelayed(this.mDrawWakka, 1000 / 25);
+                mHandler.postDelayed(this.mDrawWakka, WakkaEngine.MILLISECONDS_IN_SECOND / this.mFPS);
             }
         }
 
@@ -188,7 +240,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             
             float theManLeft = (this.mTheManPositionX * (this.mDotDiameter + this.mDotPadding)) - (this.mDotPadding / 2.0f);
             float theManTop = (this.mTheManPositionY * (this.mDotDiameter + this.mDotPadding)) - (this.mDotPadding / 2.0f);
-            c.drawArc(new RectF(theManLeft, theManTop, theManLeft + this.mDotDiameter + this.mDotPadding, theManTop + this.mDotDiameter + this.mDotPadding), this.mTheManDirection.getAngle(), 270, true, this.mTheManPaint);
+            c.drawArc(new RectF(theManLeft, theManTop, theManLeft + this.mDotDiameter + this.mDotPadding, theManTop + this.mDotDiameter + this.mDotPadding), this.mTheManDirection.getAngle(), WakkaEngine.THE_MANS_GRILL_SIZE, true, this.mTheManPaint);
             
             c.restore();
         }
