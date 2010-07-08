@@ -8,6 +8,19 @@ import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
 
 public class WakkaIconBorderWallpaper extends WallpaperService {
+	enum Direction {
+		NORTH(315), SOUTH(135), EAST(45), WEST(225);
+		
+		private int angle;
+		
+		private Direction(int angle) {
+			this.angle = angle;
+		}
+		
+		public int getAngle() {
+			return this.angle;
+		}
+	}
 
     private final Handler mHandler = new Handler();
 
@@ -35,6 +48,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         private int mTheManColor = 0xfffff000;
         private int mTheManPositionX = 5;
         private int mTheManPositionY = 7;
+        private Direction mTheManDirection = Direction.EAST;
         private int mGhostBlinkyColor = 0xfff00000;
         private int mGhostPinkyColor = 0xffff00f0;
         private int mGhostInkyColor = 0xff01d8ff;
@@ -127,7 +141,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             
             float theManLeft = (this.mTheManPositionX * (this.mDotDiameter + this.mDotPadding)) - (this.mDotPadding / 2.0f);
             float theManTop = (this.mTheManPositionY * (this.mDotDiameter + this.mDotPadding)) - (this.mDotPadding / 2.0f);
-            c.drawArc(new RectF(theManLeft, theManTop, theManLeft + this.mDotDiameter + this.mDotPadding, theManTop + this.mDotDiameter + this.mDotPadding), 45, 270, true, this.mTheManPaint);
+            c.drawArc(new RectF(theManLeft, theManTop, theManLeft + this.mDotDiameter + this.mDotPadding, theManTop + this.mDotDiameter + this.mDotPadding), this.mTheManDirection.getAngle(), 270, true, this.mTheManPaint);
             
             c.restore();
         }
