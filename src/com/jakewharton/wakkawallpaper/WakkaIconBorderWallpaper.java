@@ -43,52 +43,54 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
     	private static final int MILLISECONDS_IN_SECOND = 1000;
     	private static final int THE_MANS_GRILL_SIZE = 270;
     	private static final int NUMBER_OF_GHOSTS = 4;
-    	private final NumberFormat SCORE_FORMAT = new DecimalFormat("000000"); //TODO: Make static
+    	private static final int POINTS_DOT = 10;
+    	private static final int POINTS_JUGGERDOT = 50;
+    	//TODO: Make static
+    	private final NumberFormat SCORE_FORMAT = new DecimalFormat("000000");
     	
     	private Cell[][] mBoard;
     	private Point[] mGhosts;
     	private int mDotsRemaining;
     	private int mLives;
     	private int mScore;
-    	
         private boolean mIsVisible;
-        private int mFPS = 8;
+        private int mFPS;
         private float mScreenCenterX;
         private float mScreenCenterY;
         private int mScreenHeight;
         private int mScreenWidth;
-        private int mIconRows = 4;
-        private int mIconCols = 4;
-        private float mDotGridPaddingTop = 40;
-        private float mDotGridPaddingLeft = -5;
-        private float mDotGridPaddingBottom = 60;
-        private float mDotGridPaddingRight = -5;
+        private int mIconRows;
+        private int mIconCols;
+        private float mDotGridPaddingTop;
+        private float mDotGridPaddingLeft;
+        private float mDotGridPaddingBottom;
+        private float mDotGridPaddingRight;
         private int mDotGridWide;
         private int mDotGridHigh;
         private float mGridCellWidth;
         private float mGridCellHeight;
-        private float mDotPadding = 9;
+        private float mDotPadding;
         private float mDotDiameter;
         private int mDotSpacingX;
         private int mDotSpacingY;
         private final Paint mDotPaint = new Paint();
-        private int mDotForeground = 0xff6161a1;
-        private int mDotBackground = 0xff000040;
+        private int mDotForeground;
+        private int mDotBackground;
         private final Paint mTheManPaint = new Paint();
-        private int mTheManForeground = 0xfffff000;
-        private Point mTheManPosition;;
+        private int mTheManForeground;
+        private Point mTheManPosition;
+        private Direction mTheManDirection;
         private final Random mTheManRandomizer = new Random();
-        private Direction mTheManDirection = Direction.EAST;
-        private int mGhostBlinkyBackground = 0xfff00000;
-        private int mGhostPinkyBackground = 0xffff00f0;
-        private int mGhostInkyBackground = 0xff01d8ff;
-        private int mGhostClydeBackground = 0xffff8401;
-        private int mGhostEyeBackground = 0xffffffff;
-        private int mGhostEyeForeground = 0xff000000;
-        private int mGhostScaredBackground = 0xff0033ff;
-        private int mGhostScaredForeground = 0xffffcc33;
-        private int mHUDForeground = 0xff8181c1;
-        private int mHUDBackground = 0xff000000;
+        private int mGhostBlinkyBackground;
+        private int mGhostPinkyBackground;
+        private int mGhostInkyBackground;
+        private int mGhostClydeBackground;
+        private int mGhostEyeBackground;
+        private int mGhostEyeForeground;
+        private int mGhostScaredBackground;
+        private int mGhostScaredForeground;
+        private int mHUDForeground;
+        private int mHUDBackground;
         private final Paint mHUDPaint = new Paint();
 
         private final Runnable mDrawWakka = new Runnable() {
@@ -98,13 +100,34 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         };
 
         WakkaEngine() {
-            // Create a Paint to draw the dots
+            //TODO: set via settings
+            this.mIconRows = 4;
+            this.mIconCols = 4;
+            this.mFPS = 10;
+            this.mDotGridPaddingLeft = -5;
+            this.mDotGridPaddingRight = -5;
+            this.mDotGridPaddingTop = 40;
+            this.mDotGridPaddingBottom = 65;
+            this.mDotForeground = 0xff6161a1;
+            this.mDotBackground = 0xff000040;
+            this.mTheManForeground = 0xfffff000;
+            this.mGhostBlinkyBackground = 0xfff00000;
+            this.mGhostPinkyBackground = 0xffff00f0;
+            this.mGhostInkyBackground = 0xff01d8ff;
+            this.mGhostClydeBackground = 0xffff8401;
+            this.mGhostEyeBackground = 0xffffffff;
+            this.mGhostEyeForeground = 0xff000000;
+            this.mGhostScaredBackground = 0xff0033ff;
+            this.mGhostScaredForeground = 0xffffcc33;
+            this.mHUDForeground = 0xff8181c1;
+            this.mHUDBackground = 0xff000000;
+            
+        	//Create Paints with their values
             final Paint dotPaint = this.mDotPaint;
             dotPaint.setColor(this.mDotForeground);
             dotPaint.setAntiAlias(true);
             dotPaint.setStyle(Paint.Style.FILL_AND_STROKE);
             
-            // Create a Paint to draw "The Man"
             final Paint theManPaint = this.mTheManPaint;
             theManPaint.setColor(this.mTheManForeground);
             theManPaint.setAntiAlias(true);
@@ -118,6 +141,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             //TODO: calculate these somehow
             this.mDotSpacingX = 4;
             this.mDotSpacingY = 6;
+            this.mDotPadding = 9;
             
             this.mDotGridWide = (this.mIconCols * (this.mDotSpacingX + 1)) + 1;
             Log.d(WakkaEngine.TAG, "Grid Wide: " + this.mDotGridWide);
@@ -128,11 +152,20 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
             this.mBoard = new Cell[this.mDotGridHigh][this.mDotGridWide];
         	this.mGhosts = new Point[WakkaEngine.NUMBER_OF_GHOSTS];
         	
-        	this.reset();
+        	//Start with a fresh game
+        	this.gameReset();
         }
         
-        private void reset() {
-            
+        private void gameReset() {
+        	//Game level values
+        	this.mLives = 3;
+        	this.mScore = 0;
+        	
+        	//Reset board
+        	this.boardReset();
+        }
+        private void boardReset() {
+        	//Setup dot grid
         	this.mDotsRemaining = 0;
         	for (int y = 0; y < this.mDotGridHigh; y++) {
         		for (int x = 0; x < this.mDotGridWide; x++) {
@@ -145,9 +178,6 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         		}
         	}
         	
-        	this.mLives = 3;
-        	this.mScore = 0;
-        	
         	//Initialize juggernaut dots
         	this.mBoard[this.mDotSpacingY + 1][0] = Cell.JUGGERDOT;
         	this.mBoard[0][this.mDotGridWide - this.mDotSpacingX - 2] = Cell.JUGGERDOT;
@@ -157,6 +187,7 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         	
         	//Initialize "The Man"
         	this.mTheManPosition = new Point(5, 7);
+        	this.mTheManDirection = Direction.EAST;
         	
         	//Initialize ghosts
         	this.mGhosts[0] = new Point(this.mDotSpacingX + 1, 0);
@@ -223,15 +254,15 @@ public class WakkaIconBorderWallpaper extends WallpaperService {
         		this.mTheManPosition = newPoint;
         		this.mTheManDirection = direction;
         		if (this.mBoard[newPoint.y][newPoint.x] == Cell.DOT) {
-        			this.mScore += 10;
+        			this.mScore += WakkaEngine.POINTS_DOT;
         			this.mBoard[newPoint.y][newPoint.x] = Cell.BLANK;
         			this.mDotsRemaining -= 1;
         			
         			if (this.mDotsRemaining == 0) {
-        				this.reset();
+        				this.boardReset();
         			}
         		} else if (this.mBoard[newPoint.y][newPoint.x] == Cell.JUGGERDOT) {
-        			this.mScore += 50;
+        			this.mScore += WakkaEngine.POINTS_JUGGERDOT;
         			this.mBoard[newPoint.y][newPoint.x] = Cell.BLANK;
         		}
         		return true;
