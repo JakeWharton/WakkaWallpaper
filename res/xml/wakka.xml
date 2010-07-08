@@ -4,4 +4,4 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:author="@string/author"
 	android:description="@string/description_iconborder"
-	android:thumbnail="@drawable/icon" />
+	android:thumbnail="@drawable/thumb" />
