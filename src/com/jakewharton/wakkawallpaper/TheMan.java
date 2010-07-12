@@ -9,9 +9,12 @@ import android.util.Log;
 public class TheMan extends Entity {
 	private static final String TAG = "TheMan";
 	private static final int DEFAULT_FOREGROUND_COLOR = 0xfffff000;
+	private static final int CHOMP_ANGLE_COUNT = 4;
+	private static final int[] CHOMP_ANGLES = new int[] { 90, 45, 0, 45 };
 	
     private final Paint mForeground;
 	private Direction mWantsToGo;
+	private int mTickCount;
     
 	public TheMan() {
 		super(0, 0, Direction.STOPPED);
@@ -21,6 +24,7 @@ public class TheMan extends Entity {
         this.mForeground.setStyle(Style.FILL_AND_STROKE);
     	
     	this.mWantsToGo = null;
+    	this.mTickCount = 0;
 	}
 	
 	public void setForeground(int color) {
@@ -32,6 +36,8 @@ public class TheMan extends Entity {
     }
 	
 	public void tick(Game game) {
+		this.mTickCount += 1;
+		
     	//TODO: Use AI logic to determine best direction to proceed
     	boolean success = false;
     	while (!success) {
@@ -64,19 +70,9 @@ public class TheMan extends Entity {
 		c.save();
 		c.translate(this.getLocationX(), this.getLocationY());
 		
-		int startingAngle = 0;
-		int degrees = 360;
-		
-		switch (this.mDirection) {
-			case EAST:
-			case WEST:
-			case NORTH:
-			case SOUTH:
-				startingAngle = this.mDirection.getAngle();
-				startingAngle -= 45;
-				degrees -= 90;
-				break;
-		}
+		int angle = TheMan.CHOMP_ANGLES[this.mTickCount % TheMan.CHOMP_ANGLE_COUNT];
+		float startingAngle = this.mDirection.getAngle() + (angle / 2.0f);
+		int degrees = 360 - angle;
 		
 		c.drawArc(new RectF(0, 0, this.mCellWidth, this.mCellHeight), startingAngle, degrees, true, this.mForeground);
 		

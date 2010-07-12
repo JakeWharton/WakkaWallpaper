@@ -5,7 +5,7 @@ import android.graphics.Point;
 
 public abstract class Entity {
 	enum Direction {
-		NORTH(0), SOUTH(180), EAST(90), WEST(270), STOPPED(-1);
+		NORTH(270), SOUTH(90), EAST(0), WEST(180), STOPPED(-1);
 		
 		private int angle;
 		public final int COUNT = 4;
