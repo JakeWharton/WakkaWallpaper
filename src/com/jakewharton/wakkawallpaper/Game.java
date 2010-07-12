@@ -37,6 +37,7 @@ public class Game {
 	private float mCellHeight;
     private int mScreenHeight;
     private int mScreenWidth;
+    private boolean mIsLandscape;
     private int mIconRows;
     private int mIconCols;
 	private Cell[][] mBoard;
@@ -180,6 +181,15 @@ public class Game {
     }
 
     public void performResize(int screenWidth, int screenHeight) {
+    	if (screenWidth > screenHeight) {
+    		this.mIsLandscape = true;
+    		int temp = screenHeight;
+    		screenHeight = screenWidth;
+    		screenWidth = temp;
+    	} else {
+    		this.mIsLandscape = false;
+    	}
+    	
     	this.mScreenWidth = screenWidth;
     	Log.d(Game.TAG, "Screen Width: " + screenWidth);
     	this.mScreenHeight = screenHeight;
@@ -192,9 +202,15 @@ public class Game {
     	Log.d(Game.TAG, "Cells Wide: " + this.mCellsWide);
     	this.mCellsTall = (this.mIconRows * (mCellRowSpacing + 1)) + 1;
     	Log.d(Game.TAG, "Cells Tall: " + this.mCellsTall);
-    	this.mCellWidth = (screenWidth - (this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / (this.mCellsWide * 1.0f);
+    	
+    	if (this.mIsLandscape) {
+    		this.mCellWidth = (screenWidth - this.mDotGridPaddingTop) / (this.mCellsWide * 1.0f);
+    		this.mCellHeight = (screenHeight - (this.mDotGridPaddingBottom + this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / (this.mCellsTall * 1.0f);
+    	} else {
+    		this.mCellWidth = (screenWidth - (this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / (this.mCellsWide * 1.0f);
+    		this.mCellHeight = (screenHeight - (this.mDotGridPaddingTop + this.mDotGridPaddingBottom)) / (this.mCellsTall * 1.0f);
+    	}
     	Log.d(Game.TAG, "Cell Width: " + this.mCellWidth);
-    	this.mCellHeight = (screenHeight - (this.mDotGridPaddingTop + this.mDotGridPaddingBottom)) / (this.mCellsTall * 1.0f);
     	Log.d(Game.TAG, "Cell Height: " + this.mCellHeight);
     	
     	if (this.mFruit != null) {
@@ -217,17 +233,15 @@ public class Game {
         c.drawText(this.mLives + "UP", 10, textY, this.mHUDForeground);
         c.drawText(score, this.mScreenWidth - this.mHUDForeground.measureText(score) - 10, textY, this.mHUDForeground);
         
-        c.translate(this.mDotGridPaddingLeft, this.mDotGridPaddingTop);
-        
-        final Paint white = new Paint();
-        white.setColor(Color.WHITE);
-        final Paint black = new Paint();
-        black.setColor(Color.BLACK);
+        if (this.mIsLandscape) {
+        	c.rotate(-90, this.mScreenWidth / 2.0f, this.mScreenWidth / 2.0f);
+        	c.translate(0, this.mDotGridPaddingLeft);
+        } else {
+        	c.translate(this.mDotGridPaddingLeft, this.mDotGridPaddingTop);
+        }
         
         for (int y = 0; y < this.mCellsTall; y++) {
         	for (int x = 0; x < this.mCellsWide; x++) {
-        		//c.drawRect(x * this.mCellWidth, y * this.mCellHeight, (x + 1) * this.mCellWidth, (y + 1) * this.mCellHeight, (x + y) % 2 == 0 ? white : black);
-        		
         		if (this.mBoard[y][x] == Cell.DOT) {
             		float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.75f) / 2);
             		float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.75f) / 2);

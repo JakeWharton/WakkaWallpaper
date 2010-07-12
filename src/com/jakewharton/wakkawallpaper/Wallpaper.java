@@ -42,7 +42,6 @@ public class Wallpaper extends WallpaperService {
             this.mIconRows = 4;
             this.mIconCols = 4;
             
-            //TODO: calculate these values somehow
             this.mGame = null;
         }
 
