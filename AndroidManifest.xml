@@ -12,7 +12,7 @@
 
         <service
             android:label="@string/name"
-            android:name=".WakkaWallpaper"
+            android:name=".Wallpaper"
             android:permission="android.permission.BIND_WALLPAPER">
             
             <intent-filter>
