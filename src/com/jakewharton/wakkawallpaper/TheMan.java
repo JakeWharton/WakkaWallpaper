@@ -1,7 +1,10 @@
 package com.jakewharton.wakkawallpaper;
 
+import com.jakewharton.wakkawallpaper.Game.Cell;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.Paint.Style;
 import android.util.Log;
@@ -45,22 +48,29 @@ public class TheMan extends Entity {
     			success = this.tryMove(game, this.mWantsToGo);
     			this.mWantsToGo = null;
     		} else {
-    			switch (Game.RANDOM.nextInt(10)) {
-    				case 0:
-        				success = this.tryMove(game, Direction.NORTH);
-        				break;
-        			case 1:
-        				success = this.tryMove(game, Direction.SOUTH);
-        				break;
-        			case 2:
-        				success = this.tryMove(game, Direction.EAST);
-        				break;
-        			case 3:
-        				success = this.tryMove(game, Direction.WEST);
-        				break;
-        			default: //4-9, most of the time stay straight (if possible)
-        				success = this.tryMove(game, this.mDirection);
-        				break;
+    			Point next = Entity.move(this.mPosition, this.mDirection);
+    			if (game.isValidPosition(next) && ((game.getCell(next.x, next.y) == Cell.DOT) || (game.getCell(next.x, next.y) == Cell.JUGGERDOT))) {
+    				this.mPosition = next;
+    				success = true;
+    			} else {
+    				//TODO: AI for nearest dot
+    				switch (Game.RANDOM.nextInt(10)) {
+    					case 0:
+    						success = this.tryMove(game, Direction.NORTH);
+    						break;
+    					case 1:
+    						success = this.tryMove(game, Direction.SOUTH);
+    						break;
+    					case 2:
+    						success = this.tryMove(game, Direction.EAST);
+    						break;
+    					case 3:
+    						success = this.tryMove(game, Direction.WEST);
+    						break;
+						default:
+							success = this.tryMove(game, this.mDirection);
+							break;
+    				}
     			}
     		}
         }
