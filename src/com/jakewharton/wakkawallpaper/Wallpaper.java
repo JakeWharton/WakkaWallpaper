@@ -18,7 +18,7 @@ public class Wallpaper extends WallpaperService {
     }
 
     private class WakkaEngine extends Engine {
-    	private static final String TAG = "WakkaEngine";
+    	private static final String TAG = "WakkaWallpaper.WakkaEngine";
     	private static final int MILLISECONDS_IN_SECOND = 1000;
     	
     	private Game mGame;

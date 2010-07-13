@@ -7,7 +7,7 @@ import android.graphics.Paint.Style;
 import android.util.Log;
 
 public class TheMan extends Entity {
-	private static final String TAG = "TheMan";
+	private static final String TAG = "WakkaWallpaper.TheMan";
 	private static final int DEFAULT_FOREGROUND_COLOR = 0xfffff000;
 	private static final int CHOMP_ANGLE_COUNT = 4;
 	private static final int[] CHOMP_ANGLES = new int[] { 90, 45, 0, 45 };

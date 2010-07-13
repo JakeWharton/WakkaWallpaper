@@ -16,7 +16,7 @@ public class Game {
 	enum Cell { BLANK, WALL, DOT, JUGGERDOT }
 
 	public static final Random RANDOM = new Random();
-	private static final String TAG = "Game";
+	private static final String TAG = "WakkaWallpaper.Game";
 	private static final int NUMBER_OF_GHOSTS = 4;
 	private static final int POINTS_DOT = 10;
 	private static final int POINTS_JUGGERDOT = 50;
