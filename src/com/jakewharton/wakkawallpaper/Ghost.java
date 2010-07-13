@@ -34,18 +34,25 @@ public abstract class Ghost extends Entity {
 		
 		this.mBodyBackground = new Paint();
 		this.mBodyBackground.setColor(backgroundColor);
+		this.mBodyBackground.setAntiAlias(true);
 		this.mEyeBackground = new Paint();
 		this.mEyeBackground.setColor(Ghost.DEFAULT_EYE_BACKGROUND);
+		this.mEyeBackground.setAntiAlias(true);
 		this.mEyeForeground = new Paint();
 		this.mEyeForeground.setColor(Ghost.DEFAULT_EYE_FOREGROUND);
+		this.mEyeForeground.setAntiAlias(true);
 		this.mScaredBackground = new Paint();
 		this.mScaredBackground.setColor(Ghost.DEFAULT_SCARED_BACKGROUND);
+		this.mScaredBackground.setAntiAlias(true);
 		this.mScaredForeground = new Paint();
 		this.mScaredForeground.setColor(Ghost.DEFAULT_SCARED_FOREGROUND);
+		this.mScaredForeground.setAntiAlias(true);
 		this.mScaredBlinkBackground = new Paint();
 		this.mScaredBlinkBackground.setColor(Ghost.DEFAULT_SCARED_BLINK_BACKGROUND);
+		this.mScaredBlinkBackground.setAntiAlias(true);
 		this.mScaredBlinkForeground = new Paint();
 		this.mScaredBlinkForeground.setColor(Ghost.DEFAULT_SCARED_BLINK_FOREGROUND);
+		this.mScaredBlinkForeground.setAntiAlias(true);
 	}
 	
 	@Override

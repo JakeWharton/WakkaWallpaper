@@ -100,6 +100,7 @@ public class Game {
         
         this.mDotForeground = new Paint();
         this.mDotForeground.setColor(Game.DEFAULT_DOT_FOREGROUND);
+        this.mDotForeground.setAntiAlias(true);
         this.mGameBackground = Game.DEFAULT_GAME_BACKGROUND;
     	
         this.mHUDForeground = new Paint();

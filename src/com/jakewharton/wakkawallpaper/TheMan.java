@@ -20,6 +20,7 @@ public class TheMan extends Entity {
         
         this.mForeground = new Paint();
         this.mForeground.setColor(TheMan.DEFAULT_FOREGROUND_COLOR);
+        this.mForeground.setAntiAlias(true);
         this.mForeground.setStyle(Style.FILL_AND_STROKE);
     	
     	this.mWantsToGo = null;
