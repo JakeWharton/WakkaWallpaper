@@ -12,22 +12,45 @@ public abstract class Entity {
 	enum Direction {
 		NORTH(270), SOUTH(90), EAST(0), WEST(180), STOPPED(-1);
 		
-		public final int angle;
+		private static final int DEGREES_IN_CIRCLE = 360;
+		
+		private final int angle;
 		
 		private Direction(int angle) {
 			this.angle = angle;
 		}
 		
+		public int getAngle() {
+			return this.angle;
+		}
+		public int getAngle(Direction nextDirection) {
+			if ((nextDirection == null) || (nextDirection == Direction.STOPPED) || (this == nextDirection) || (this.getOpposite() == nextDirection)) {
+				return this.angle;
+			} else {
+				int angle1 = this.angle;
+				int angle2 = nextDirection.getAngle();
+				
+				//Special case NORTH and EAST since (270+0)/2 is not what we want
+				if ((this == Direction.NORTH) && (nextDirection == Direction.EAST)) {
+					angle2 += Direction.DEGREES_IN_CIRCLE;
+				} else if ((this == Direction.EAST) && (nextDirection == Direction.NORTH)) {
+					angle1 += Direction.DEGREES_IN_CIRCLE;
+				}
+				
+				return (angle1 + angle2) / 2;
+			}
+		}
+		
 		public Direction getOpposite() {
 			switch (this) {
 				case NORTH:
-					return SOUTH;
+					return Direction.SOUTH;
 				case SOUTH:
-					return NORTH;
+					return Direction.NORTH;
 				case EAST:
-					return WEST;
+					return Direction.WEST;
 				case WEST:
-					return EAST;
+					return Direction.EAST;
 				default:
 					return this;
 			}
