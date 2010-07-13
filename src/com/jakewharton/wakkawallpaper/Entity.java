@@ -40,6 +40,8 @@ public abstract class Entity {
 	protected int mGranularity;
 	protected float mCellWidth;
 	protected float mCellHeight;
+	protected int mTickCount;
+	protected boolean mMovedThisTick;
 	
 	protected Entity(int startingPositionX, int startingPositionY, Direction startingDirection) {
 		this.mPosition = new Point();
@@ -49,6 +51,8 @@ public abstract class Entity {
 		this.mCellWidth = 0;
 		this.mCellHeight = 0;
 		this.mGranularity = 2;
+    	this.mTickCount = 0;
+    	this.mMovedThisTick = false;
 	}
 	
 	public void setPosition(int x, int y) {
@@ -59,16 +63,6 @@ public abstract class Entity {
 	public void setDirection(Direction direction) {
 		this.mDirection = direction;
 	}
-	protected boolean tryMove(Game game, Direction direction) {
-    	Point newPoint = Entity.move(this.mPosition, direction);
-    	if (game.isValidPosition(newPoint)) {
-    		this.mPosition.set(newPoint.x, newPoint.y);
-    		this.mDirection = direction;
-    		return true;
-    	} else {
-    		return false;
-    	}
-    }
 	public void performResize(float width, float height) {
 		this.mCellWidth = width;
 		this.mCellHeight = height;
@@ -108,6 +102,95 @@ public abstract class Entity {
     	return newPoint;
     }
 	
-	public abstract void tick(Game game);
+	public void tick(Game game) {
+		this.mTickCount += 1;
+		this.mMovedThisTick = false;
+		
+		switch (this.mDirection) {
+			case NORTH:
+				if (this.mDeltaY > 0) {
+					this.mDeltaY -= 1;
+				}
+				if ((this.mDeltaX > 0) && (this.mNextDirection != Direction.EAST)) {
+					this.mDeltaX -= 1;
+				} else if ((this.mDeltaX < 0) && (this.mNextDirection != Direction.WEST)) {
+					this.mDeltaX += 1;
+				}
+				break;
+			case SOUTH:
+				if (this.mDeltaY < 0) {
+					this.mDeltaY += 1;
+				}
+				if ((this.mDeltaX > 0) && (this.mNextDirection != Direction.EAST)) {
+					this.mDeltaX -= 1;
+				} else if ((this.mDeltaX < 0) && (this.mNextDirection != Direction.WEST)) {
+					this.mDeltaX += 1;
+				}
+				break;
+			case EAST:
+				if (this.mDeltaX < 0) {
+					this.mDeltaX += 1;
+				}
+				if ((this.mDeltaY > 0) && (this.mNextDirection != Direction.SOUTH)) {
+					this.mDeltaY -= 1;
+				} else if ((this.mDeltaY < 0) && (this.mNextDirection != Direction.NORTH)) {
+					this.mDeltaY += 1;
+				}
+				break;
+			case WEST:
+				if (this.mDeltaX > 0) {
+					this.mDeltaX -= 1;
+				}
+				if ((this.mDeltaY > 0) && (this.mNextDirection != Direction.SOUTH)) {
+					this.mDeltaY -= 1;
+				} else if ((this.mDeltaY < 0) && (this.mNextDirection != Direction.NORTH)) {
+					this.mDeltaY += 1;
+				}
+				break;
+		}
+		
+		switch (this.mNextDirection) {
+			case NORTH:
+				if (this.mDeltaY <= 0) {
+					this.mDeltaY -= 1;
+				}
+				break;
+			case SOUTH:
+				if (this.mDeltaY >= 0) {
+					this.mDeltaY += 1;
+				}
+				break;
+			case EAST:
+				if (this.mDeltaX >= 0) {
+					this.mDeltaX += 1;
+				}
+				break;
+			case WEST:
+				if (this.mDeltaX <= 0) {
+					this.mDeltaX -= 1;
+				}
+				break;
+		}
+		
+		//Move to next space if we are far enough
+		if (this.mDeltaX > this.mGranularity) {
+			this.mPosition.x += 1;
+			this.mDeltaX = -this.mGranularity;
+			this.mMovedThisTick = true;
+		} else if (this.mDeltaX < -this.mGranularity) {
+			this.mPosition.x -= 1;
+			this.mDeltaX = this.mGranularity;
+			this.mMovedThisTick = true;
+		} else if (this.mDeltaY > this.mGranularity) {
+			this.mPosition.y += 1;
+			this.mDeltaY = -this.mGranularity;
+			this.mMovedThisTick = true;
+		} else if (this.mDeltaY < -this.mGranularity) {
+			this.mPosition.y -= 1;
+			this.mDeltaY = this.mGranularity;
+			this.mMovedThisTick = true;
+		}
+	}
+	
 	public abstract void draw(Canvas c);
 }

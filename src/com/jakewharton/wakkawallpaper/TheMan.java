@@ -14,7 +14,6 @@ public class TheMan extends Entity {
 	
     private final Paint mForeground;
 	private Direction mWantsToGo;
-	private int mTickCount;
     
 	public TheMan() {
 		super(0, 0, Direction.EAST);
@@ -24,7 +23,6 @@ public class TheMan extends Entity {
         this.mForeground.setStyle(Style.FILL_AND_STROKE);
     	
     	this.mWantsToGo = null;
-    	this.mTickCount = 0;
 	}
 	
 	public void setForeground(int color) {
@@ -35,96 +33,11 @@ public class TheMan extends Entity {
     	this.mWantsToGo = direction;
     }
 	
+    @Override
 	public void tick(Game game) {
-		this.mTickCount += 1;
+		super.tick(game);
 		
-		switch (this.mDirection) {
-			case NORTH:
-				if (this.mDeltaY > 0) {
-					this.mDeltaY -= 1;
-				}
-				if ((this.mDeltaX > 0) && (this.mNextDirection != Direction.EAST)) {
-					this.mDeltaX -= 1;
-				} else if ((this.mDeltaX < 0) && (this.mNextDirection != Direction.WEST)) {
-					this.mDeltaX += 1;
-				}
-				break;
-			case SOUTH:
-				if (this.mDeltaY < 0) {
-					this.mDeltaY += 1;
-				}
-				if ((this.mDeltaX > 0) && (this.mNextDirection != Direction.EAST)) {
-					this.mDeltaX -= 1;
-				} else if ((this.mDeltaX < 0) && (this.mNextDirection != Direction.WEST)) {
-					this.mDeltaX += 1;
-				}
-				break;
-			case EAST:
-				if (this.mDeltaX < 0) {
-					this.mDeltaX += 1;
-				}
-				if ((this.mDeltaY > 0) && (this.mNextDirection != Direction.SOUTH)) {
-					this.mDeltaY -= 1;
-				} else if ((this.mDeltaY < 0) && (this.mNextDirection != Direction.NORTH)) {
-					this.mDeltaY += 1;
-				}
-				break;
-			case WEST:
-				if (this.mDeltaX > 0) {
-					this.mDeltaX -= 1;
-				}
-				if ((this.mDeltaY > 0) && (this.mNextDirection != Direction.SOUTH)) {
-					this.mDeltaY -= 1;
-				} else if ((this.mDeltaY < 0) && (this.mNextDirection != Direction.NORTH)) {
-					this.mDeltaY += 1;
-				}
-				break;
-		}
-		
-		switch (this.mNextDirection) {
-			case NORTH:
-				if (this.mDeltaY <= 0) {
-					this.mDeltaY -= 1;
-				}
-				break;
-			case SOUTH:
-				if (this.mDeltaY >= 0) {
-					this.mDeltaY += 1;
-				}
-				break;
-			case EAST:
-				if (this.mDeltaX >= 0) {
-					this.mDeltaX += 1;
-				}
-				break;
-			case WEST:
-				if (this.mDeltaX <= 0) {
-					this.mDeltaX -= 1;
-				}
-				break;
-		}
-		
-		//Move to next space if we are far enough
-		boolean moved = false;
-		if (this.mDeltaX > this.mGranularity) {
-			this.mPosition.x += 1;
-			this.mDeltaX = -this.mGranularity;
-			moved = true;
-		} else if (this.mDeltaX < -this.mGranularity) {
-			this.mPosition.x -= 1;
-			this.mDeltaX = this.mGranularity;
-			moved = true;
-		} else if (this.mDeltaY > this.mGranularity) {
-			this.mPosition.y += 1;
-			this.mDeltaY = -this.mGranularity;
-			moved = true;
-		} else if (this.mDeltaY < -this.mGranularity) {
-			this.mPosition.y -= 1;
-			this.mDeltaY = this.mGranularity;
-			moved = true;
-		}
-		
-		if (moved || (this.mWantsToGo != null)) {
+		if (this.mMovedThisTick || (this.mWantsToGo != null)) {
 			boolean success = false;
 			Direction nextDirection = null;
 			while (!success) {

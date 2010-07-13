@@ -27,7 +27,7 @@ public abstract class Ghost extends Entity {
     private int mFleeLength;
 	
 	protected Ghost(int backgroundColor) {
-		super(0, 0, null);
+		super(0, 0, Direction.STOPPED);
 
 		this.mState = State.HUNT;
 		this.mFleeLength = Ghost.FLEE_LENGTH;
@@ -48,31 +48,46 @@ public abstract class Ghost extends Entity {
 		this.mScaredBlinkForeground.setColor(Ghost.DEFAULT_SCARED_BLINK_FOREGROUND);
 	}
 	
+	@Override
 	public void tick(Game game) {
+		super.tick(game);
+		
 		switch (this.mState) {
 			case HUNT:
 		    	boolean success = false;
+		    	Direction nextDirection = null;
 		    	while (!success) {
 	    			switch (Game.RANDOM.nextInt(10)) {
 	    				case 0:
-	        				success = this.tryMove(game, Direction.NORTH);
+	        				nextDirection = Direction.NORTH;
 	        				break;
 	        			case 1:
-	        				success = this.tryMove(game, Direction.SOUTH);
+	        				nextDirection = Direction.SOUTH;
 	        				break;
 	        			case 2:
-	        				success = this.tryMove(game, Direction.EAST);
+	        				nextDirection = Direction.EAST;
 	        				break;
 	        			case 3:
-	        				success = this.tryMove(game, Direction.WEST);
+	        				nextDirection = Direction.WEST;
 	        				break;
 	        			default: //4-9, most of the time stay straight (if possible)
 	        				if (this.mDirection != null) {
-	        					success = this.tryMove(game, this.mDirection);
+	        					nextDirection = this.mDirection;
 	        				}
 	        				break;
 	    			}
+
+					if (nextDirection != null) {
+						if (nextDirection == this.mNextDirection.getOpposite()) {
+							success = false;
+						} else {
+							success = game.isValidPosition(Entity.move(this.mPosition, nextDirection));
+						}
+					}
 	    		}
+		    	
+		    	this.mDirection = this.mNextDirection;
+		    	this.mNextDirection = nextDirection;
 				break;
 				
 			case EYES_ONLY:
