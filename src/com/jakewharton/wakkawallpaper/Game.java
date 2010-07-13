@@ -12,6 +12,11 @@ import android.util.Log;
 
 import com.jakewharton.wakkawallpaper.Entity.Direction;
 
+/**
+ * The Game class manages the playing board and all of the entities contained within.
+ * 
+ * @author Jake Wharton
+ */
 public class Game {
 	enum Cell { BLANK, WALL, DOT, JUGGERDOT }
 
@@ -68,6 +73,14 @@ public class Game {
     private float mDotGridPaddingBottom;
     private float mDotGridPaddingRight;
     
+    /**
+     * Create a new game adhering to the specified parameters.
+     * 
+     * @param iconRows Number of rows of icons on the launcher.
+     * @param iconCols Number of columns of icons on the launcher.
+     * @param screenWidth Width in pixels of the screen.
+     * @param screenHeight Height in pixels of the screen.
+     */
     public Game(int iconRows, int iconCols, int screenWidth, int screenHeight) {
     	//Create entities
     	this.mGhosts = new Ghost[Game.NUMBER_OF_GHOSTS];
@@ -112,16 +125,41 @@ public class Game {
         this.reset();
     }
     
+    /**
+     * Specify a direction you would like "The Man" to travel in next (if possible).
+     * 
+     * @param direction Desired direction.
+     */
     public void setWantsToGo(Direction direction) {
     	this.mTheMan.setWantsToGo(direction);
     }
+    
+    /**
+     * Get the Cell value for a specific coordinate.
+     * 
+     * @param x Horizontal coordinate.
+     * @param y Vertical coordinate.
+     * @return Cell value.
+     */
     public Cell getCell(int x, int y) {
     	return this.mBoard[y][x];
     }
-    public void addScore(int value) {
-    	this.mScore += value;
+    
+    /**
+     * Test if a Point is a valid coordinate on the game board.
+     * 
+     * @param position Point representing coordinate.
+     * @return Boolean indicating whether or not the position is valid.
+     */
+    public boolean isValidPosition(Point position) {
+    	return ((position.x >= 0) && (position.x < this.mCellsWide)
+    		    && (position.y >= 0) && (position.y < this.mCellsTall)
+    		    && (this.mBoard[position.y][position.x] != Cell.WALL));
     }
     
+    /**
+     * Reset the game state to that of first initialization.
+     */
     public void reset() {
     	//Game level values
 		this.mLives = 3;
@@ -132,6 +170,10 @@ public class Game {
     	//Reset board
     	this.boardReset();
     }
+    
+    /**
+     * Reset the board state to that of a level's first initialization.
+     */
     private void boardReset() {
     	//Initialize dots
     	this.mDotsRemaining = 0;
@@ -171,6 +213,10 @@ public class Game {
     	
     	this.mFruit = null;
     }
+    
+    /**
+     * Iterate all entities one step.
+     */
     public void tick() {
     	if (this.mFruit != null) {
     		this.mFruit.tick(this);
@@ -220,6 +266,12 @@ public class Game {
     	}
     }
 
+    /**
+     * Resize the game board and all entities according to a new width and height.
+     * 
+     * @param screenWidth New width.
+     * @param screenHeight New height.
+     */
     public void performResize(int screenWidth, int screenHeight) {
     	if (screenWidth > screenHeight) {
     		this.mIsLandscape = true;
@@ -261,6 +313,12 @@ public class Game {
     		ghost.performResize(this.mCellWidth, this.mCellHeight);
     	}
     }
+    
+    /**
+     * Render the board and all entities on a Canvas.
+     * 
+     * @param c Canvas to draw on.
+     */
     public void draw(Canvas c) {
     	c.save();
     	
@@ -310,11 +368,5 @@ public class Game {
         }
         
         c.restore();
-    }
-
-    public boolean isValidPosition(Point position) {
-    	return ((position.x >= 0) && (position.x < this.mCellsWide)
-    		    && (position.y >= 0) && (position.y < this.mCellsTall)
-    		    && (this.mBoard[position.y][position.x] != Cell.WALL));
     }
 }

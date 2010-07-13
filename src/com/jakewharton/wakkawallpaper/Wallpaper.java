@@ -9,6 +9,11 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
+/**
+ * Wakka wakka wakka wakka...
+ * 
+ * @author Jake Wharton
+ */
 public class Wallpaper extends WallpaperService {
     private final Handler mHandler = new Handler();
 
@@ -17,6 +22,11 @@ public class Wallpaper extends WallpaperService {
         return new WakkaEngine();
     }
 
+    /**
+     * Wallpaper engine to manage the Game instance.
+     * 
+     * @author Jake Wharton
+     */
     private class WakkaEngine extends Engine {
     	private static final String TAG = "WakkaWallpaper.WakkaEngine";
     	private static final int MILLISECONDS_IN_SECOND = 1000;
@@ -36,7 +46,10 @@ public class Wallpaper extends WallpaperService {
             }
         };
 
-        WakkaEngine() {
+        /**
+         * Create instance of the engine.
+         */
+        public WakkaEngine() {
             //TODO: set via settings
             this.mFPS = 15;
             this.mIconRows = 4;
@@ -119,8 +132,8 @@ public class Wallpaper extends WallpaperService {
             mHandler.removeCallbacks(this.mDrawWakka);
         }
 
-        /*
-         * Draw one frame of the animation.
+        /**
+         * Draws the current state of the game to the wallpaper.
          */
         void drawFrame() {
             final SurfaceHolder holder = this.getSurfaceHolder();

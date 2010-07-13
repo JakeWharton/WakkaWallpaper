@@ -6,6 +6,11 @@ import android.graphics.RectF;
 import android.graphics.Paint.Style;
 import android.util.Log;
 
+/**
+ * TheMan class is the on screen representation of the player.
+ * 
+ * @author Jake Wharton
+ */
 public class TheMan extends Entity {
 	private static final String TAG = "WakkaWallpaper.TheMan";
 	private static final int DEFAULT_FOREGROUND_COLOR = 0xfffff000;
@@ -25,15 +30,22 @@ public class TheMan extends Entity {
     	
     	this.mWantsToGo = null;
 	}
-	
-	public void setForeground(int color) {
-		this.mForeground.setColor(color);
-	}
+
+    /**
+     * Specify a direction you would like "The Man" to travel in next (if possible).
+     * 
+     * @param direction Desired direction.
+     */
     public void setWantsToGo(Direction direction) {
     	Log.d(TheMan.TAG, "Wants to go " + direction.toString());
     	this.mWantsToGo = direction;
     }
-	
+
+    /**
+     * Iterate the entity one step.
+     * 
+     * @param game Game instance
+     */
     @Override
 	public void tick(Game game) {
 		super.tick(game);
@@ -80,7 +92,13 @@ public class TheMan extends Entity {
 			this.mNextDirection = nextDirection;
 		}
 	}
-	
+
+    /**
+     * Render the entity on the Canvas.
+     * 
+     * @param c Canvas to draw on.
+     */
+    @Override
 	public void draw(Canvas c) {
 		c.save();
 		c.translate(this.getLocationX(), this.getLocationY());

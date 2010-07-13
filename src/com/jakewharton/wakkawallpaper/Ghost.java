@@ -3,6 +3,11 @@ package com.jakewharton.wakkawallpaper;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+/**
+ * The Ghost class represents an enemy on the board.
+ * 
+ * @author Jake Wharton
+ */
 public abstract class Ghost extends Entity {
 	enum State { HUNT, FLEE, EYES_ONLY }
 	
@@ -26,6 +31,11 @@ public abstract class Ghost extends Entity {
 	private final Paint mScaredBlinkForeground;
     private int mFleeLength;
 	
+    /**
+     * Create a new ghost.
+     * 
+     * @param backgroundColor Primary color of the ghost.
+     */
 	protected Ghost(int backgroundColor) {
 		super(0, 0, Direction.STOPPED);
 
@@ -54,7 +64,12 @@ public abstract class Ghost extends Entity {
 		this.mScaredBlinkForeground.setColor(Ghost.DEFAULT_SCARED_BLINK_FOREGROUND);
 		this.mScaredBlinkForeground.setAntiAlias(true);
 	}
-	
+
+    /**
+     * Iterate the entity one step.
+     * 
+     * @param game Game instance
+     */
 	@Override
 	public void tick(Game game) {
 		super.tick(game);
@@ -109,7 +124,13 @@ public abstract class Ghost extends Entity {
 				break;
 		}
 	}
-	
+
+    /**
+     * Render the entity on the Canvas.
+     * 
+     * @param c Canvas to draw on.
+     */
+	@Override
 	public void draw(Canvas c) {
 		c.save();
 		c.translate(this.getLocationX(), this.getLocationY());
@@ -137,30 +158,66 @@ public abstract class Ghost extends Entity {
 	}
 	
 
+	
+	/**
+	 * The ghost Blinky (Shadow).
+	 * 
+	 * @author Jake Wharton
+	 */
 	public static class Blinky extends Ghost {
 		private static final int BACKGROUND_COLOR = 0xfff00000;
 		
+		/**
+		 * Create a new instance of the ghost Blinky (Shadow).
+		 */
 		public Blinky() {
 			super(Blinky.BACKGROUND_COLOR);
 		}
 	}
+	
+	/**
+	 * The ghost Pinky (Speedy).
+	 * 
+	 * @author Jake Wharton
+	 */
 	public static class Pinky extends Ghost {
 		private static final int BACKGROUND_COLOR = 0xffff00f0;
 		
+		/**
+		 * Create a new instance of the ghost Pinky (Speedy).
+		 */
 		public Pinky() {
 			super(Pinky.BACKGROUND_COLOR);
 		}
 	}
+	
+	/**
+	 * The ghost Inky (Bashful).
+	 * 
+	 * @author Jake Wharton
+	 */
 	public static class Inky extends Ghost {
 		private static final int BACKGROUND_COLOR = 0xff01d8ff;
 		
+		/**
+		 * Create a new instance of the ghost Inky (Bashful).
+		 */
 		public Inky() {
 			super(Inky.BACKGROUND_COLOR);
 		}
 	}
+	
+	/**
+	 * The ghost Clyde (Pokey).
+	 * 
+	 * @author Jake Wharton
+	 */
 	public static class Clyde extends Ghost {
 		private static final int BACKGROUND_COLOR = 0xffff8401;
 		
+		/**
+		 * Create a new instance of the ghost Clyde (Pokey).
+		 */
 		public Clyde() {
 			super(Clyde.BACKGROUND_COLOR);
 		}
