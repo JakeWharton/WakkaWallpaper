@@ -26,7 +26,11 @@ public class Game {
 	private static final int DEFAULT_DOT_FOREGROUND = 0xff6161a1;
 	private static final int DEFAULT_GAME_BACKGROUND = 0xff000040;
     private static final int DEFAULT_HUD_FOREGROUND = 0xff8181c1;
-    private static final int DEFUALT_HUD_BACKGROUND = 0xff000000;
+    private static final int DEFAULT_HUD_BACKGROUND = 0xff000000;
+    private static final int DEFAULT_FRUIT_ONE_THRESHOLD = 70;
+    private static final int DEFAULT_FRUIT_TWO_THRESHOLD = 170;
+    private static final int DEFAULT_FRUIT_VISIBLE_LOWER = 9000;
+    private static final int DEFAULT_FRUIT_VISIBLE_UPPER = 10000;
 	
 	private int mCellsWide;
 	private int mCellsTall;
@@ -43,9 +47,16 @@ public class Game {
 	private Ghost[] mGhosts;
 	private TheMan mTheMan;
 	private Fruit mFruit;
+	private int mFruitOneThreshold;
+	private int mFruitTwoThreshold;
+	private int mFruitVisibleLower;
+	private int mFruitVisibleUpper;
+	private int mFruitsShown;
 	private int mDotsRemaining;
+	private int mDotsEaten;
 	private int mLives;
 	private int mScore;
+	private int mLevel;
     private boolean mBonusLifeAllowed;
     private boolean mBonusLifeGiven;
     private final Paint mDotForeground;
@@ -82,6 +93,10 @@ public class Game {
     	
         this.mBonusLifeAllowed = Game.DEFAULT_BONUS_ALLOWED;
         this.mBonusLifeThreshold = Game.DEFAULT_BONUS_THRESHOLD;
+        this.mFruitOneThreshold = Game.DEFAULT_FRUIT_ONE_THRESHOLD;
+        this.mFruitTwoThreshold = Game.DEFAULT_FRUIT_TWO_THRESHOLD;
+        this.mFruitVisibleLower = Game.DEFAULT_FRUIT_VISIBLE_LOWER;
+        this.mFruitVisibleUpper = Game.DEFAULT_FRUIT_VISIBLE_UPPER;
         
         this.mDotForeground = new Paint();
         this.mDotForeground.setColor(Game.DEFAULT_DOT_FOREGROUND);
@@ -91,7 +106,7 @@ public class Game {
         this.mHUDForeground.setColor(Game.DEFAULT_HUD_FOREGROUND);
         this.mHUDForeground.setAntiAlias(true);
         this.mHUDForeground.setTextSize(20f);
-        this.mHUDForeground.setShadowLayer(1, -1, 1, Game.DEFUALT_HUD_BACKGROUND);
+        this.mHUDForeground.setShadowLayer(1, -1, 1, Game.DEFAULT_HUD_BACKGROUND);
         
         this.reset();
     }
@@ -110,6 +125,7 @@ public class Game {
     	//Game level values
 		this.mLives = 3;
 		this.mScore = 0;
+		this.mLevel = 0; //This will be incremented to 1 on boardReset()
 		this.mBonusLifeGiven = false;
     	
     	//Reset board
@@ -118,6 +134,7 @@ public class Game {
     private void boardReset() {
     	//Initialize dots
     	this.mDotsRemaining = 0;
+    	this.mDotsEaten = 0;
     	for (int y = 0; y < this.mCellsTall; y++) {
     		for (int x = 0; x < this.mCellsWide; x++) {
     			if ((x % (this.mCellColumnSpacing + 1) == 0) || (y % (this.mCellRowSpacing + 1) == 0)) {
@@ -128,6 +145,11 @@ public class Game {
     			}
     		}
     	}
+    	
+    	//Mark that we are on a new level
+    	this.mLevel += 1;
+    	
+    	this.mFruitsShown = 0;
     	
     	//Initialize juggerdots
     	this.mBoard[this.mCellRowSpacing + 1][0] = Cell.JUGGERDOT;
@@ -151,16 +173,20 @@ public class Game {
     public void tick() {
     	if (this.mFruit != null) {
     		this.mFruit.tick(this);
+    		
+    		if (!this.mFruit.isStillVisible()) {
+    			this.mFruit = null;
+    		}
     	}
     	
     	this.mTheMan.tick(this);
     	
-    	//XXX: temporary dot checking
-    	//TODO: move this somewhere else logical
+    	//Check dots
     	if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.DOT) {
     		this.mScore += Game.POINTS_DOT;
     		this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] = Cell.BLANK;
     		this.mDotsRemaining -= 1;
+    		this.mDotsEaten += 1;
     		
     		if (this.mDotsRemaining == 0) {
     			this.boardReset();
@@ -172,6 +198,20 @@ public class Game {
     	} else if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.JUGGERDOT) {
     		this.mScore += Game.POINTS_JUGGERDOT;
     		this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] = Cell.BLANK;
+    	}
+    	
+    	//Check fruits
+    	if ((this.mFruit != null) && (this.mTheMan.getPositionX() == this.mFruit.getPositionX()) && (this.mTheMan.getPositionY() == this.mFruit.getPositionY())) {
+    		this.mScore += this.mFruit.getPoints();
+    		this.mFruit = null;
+    	}
+    	
+    	//Handle fruit appearance
+    	if (((this.mDotsEaten == this.mFruitOneThreshold) && (this.mFruitsShown < 1)) || ((this.mDotsEaten == this.mFruitTwoThreshold) && (this.mFruitsShown < 2))) {
+    		this.mFruitsShown += 1;
+        	int visible = this.mFruitVisibleLower + Game.RANDOM.nextInt(this.mFruitVisibleUpper - this.mFruitVisibleLower + 1);
+        	//TODO: randomize location
+        	this.mFruit = new Fruit(0, 0, Fruit.Type.getForLevel(this.mLevel), visible);
     	}
     	
     	for (Ghost ghost : this.mGhosts) {

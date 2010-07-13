@@ -7,15 +7,12 @@ public abstract class Entity {
 	enum Direction {
 		NORTH(270), SOUTH(90), EAST(0), WEST(180), STOPPED(-1);
 		
-		private int angle;
+		public final int angle;
 		
 		private Direction(int angle) {
 			this.angle = angle;
 		}
 		
-		public int getAngle() {
-			return this.angle;
-		}
 		public Direction getOpposite() {
 			switch (this) {
 				case NORTH:

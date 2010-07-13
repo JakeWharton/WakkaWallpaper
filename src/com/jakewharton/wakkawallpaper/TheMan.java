@@ -88,7 +88,7 @@ public class TheMan extends Entity {
 		this.mTickCount %= TheMan.CHOMP_ANGLE_COUNT;
 		
 		int angle = TheMan.CHOMP_ANGLES[this.mTickCount];
-		float startingAngle = this.mDirection.getAngle() + (angle / 2.0f);
+		float startingAngle = this.mDirection.angle + (angle / 2.0f);
 		int degrees = 360;
 		if (this.mDirection != Direction.STOPPED) {
 			degrees -= angle;

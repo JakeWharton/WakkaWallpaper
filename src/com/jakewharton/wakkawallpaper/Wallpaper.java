@@ -17,7 +17,7 @@ public class Wallpaper extends WallpaperService {
         return new WakkaEngine();
     }
 
-    class WakkaEngine extends Engine {
+    private class WakkaEngine extends Engine {
     	private static final String TAG = "WakkaEngine";
     	private static final int MILLISECONDS_IN_SECOND = 1000;
     	
