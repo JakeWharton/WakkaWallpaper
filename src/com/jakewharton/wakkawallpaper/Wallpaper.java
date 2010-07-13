@@ -38,7 +38,7 @@ public class Wallpaper extends WallpaperService {
 
         WakkaEngine() {
             //TODO: set via settings
-            this.mFPS = 8;
+            this.mFPS = 15;
             this.mIconRows = 4;
             this.mIconCols = 4;
             

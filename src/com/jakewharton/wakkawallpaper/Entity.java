@@ -8,7 +8,6 @@ public abstract class Entity {
 		NORTH(270), SOUTH(90), EAST(0), WEST(180), STOPPED(-1);
 		
 		private int angle;
-		public final int COUNT = 4;
 		
 		private Direction(int angle) {
 			this.angle = angle;
@@ -17,20 +16,18 @@ public abstract class Entity {
 		public int getAngle() {
 			return this.angle;
 		}
-		
-		public static Direction getOpposite(Direction direction) {
-			switch (direction) {
+		public Direction getOpposite() {
+			switch (this) {
 				case NORTH:
-					return Direction.SOUTH;
+					return SOUTH;
 				case SOUTH:
-					return Direction.NORTH;
+					return NORTH;
 				case EAST:
-					return Direction.WEST;
+					return WEST;
 				case WEST:
-					return Direction.EAST;
+					return EAST;
 				default:
-					throw new IllegalArgumentException("Must be called with explicit direction.");
-					
+					return this;
 			}
 		}
 	}

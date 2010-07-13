@@ -43,9 +43,9 @@ public class TheMan extends Entity {
 				if (this.mDeltaY > 0) {
 					this.mDeltaY -= 1;
 				}
-				if (this.mDeltaX > 0) {
+				if ((this.mDeltaX > 0) && (this.mNextDirection != Direction.EAST)) {
 					this.mDeltaX -= 1;
-				} else if (this.mDeltaX < 0) {
+				} else if ((this.mDeltaX < 0) && (this.mNextDirection != Direction.WEST)) {
 					this.mDeltaX += 1;
 				}
 				break;
@@ -53,9 +53,9 @@ public class TheMan extends Entity {
 				if (this.mDeltaY < 0) {
 					this.mDeltaY += 1;
 				}
-				if (this.mDeltaX > 0) {
+				if ((this.mDeltaX > 0) && (this.mNextDirection != Direction.EAST)) {
 					this.mDeltaX -= 1;
-				} else if (this.mDeltaX < 0) {
+				} else if ((this.mDeltaX < 0) && (this.mNextDirection != Direction.WEST)) {
 					this.mDeltaX += 1;
 				}
 				break;
@@ -63,9 +63,9 @@ public class TheMan extends Entity {
 				if (this.mDeltaX < 0) {
 					this.mDeltaX += 1;
 				}
-				if (this.mDeltaY > 0) {
+				if ((this.mDeltaY > 0) && (this.mNextDirection != Direction.SOUTH)) {
 					this.mDeltaY -= 1;
-				} else if (this.mDeltaY < 0) {
+				} else if ((this.mDeltaY < 0) && (this.mNextDirection != Direction.NORTH)) {
 					this.mDeltaY += 1;
 				}
 				break;
@@ -73,9 +73,9 @@ public class TheMan extends Entity {
 				if (this.mDeltaX > 0) {
 					this.mDeltaX -= 1;
 				}
-				if (this.mDeltaY > 0) {
+				if ((this.mDeltaY > 0) && (this.mNextDirection != Direction.SOUTH)) {
 					this.mDeltaY -= 1;
-				} else if (this.mDeltaY < 0) {
+				} else if ((this.mDeltaY < 0) && (this.mNextDirection != Direction.NORTH)) {
 					this.mDeltaY += 1;
 				}
 				break;
@@ -114,8 +114,7 @@ public class TheMan extends Entity {
 			this.mPosition.x -= 1;
 			this.mDeltaX = this.mGranularity;
 			moved = true;
-		}
-		if (this.mDeltaY > this.mGranularity) {
+		} else if (this.mDeltaY > this.mGranularity) {
 			this.mPosition.y += 1;
 			this.mDeltaY = -this.mGranularity;
 			moved = true;
@@ -125,32 +124,44 @@ public class TheMan extends Entity {
 			moved = true;
 		}
 		
-		if (moved || (this.mDirection == Direction.STOPPED)) {
+		if (moved || (this.mWantsToGo != null)) {
 			boolean success = false;
 			Direction nextDirection = null;
 			while (!success) {
-				switch (Game.RANDOM.nextInt(10)) {
-					case 0:
-						nextDirection = Direction.NORTH;
-						break;
-					case 1:
-						nextDirection = Direction.SOUTH;
-						break;
-					case 2:
-						nextDirection = Direction.EAST;
-						break;
-					case 3:
-						nextDirection = Direction.WEST;
-						break;
-					default:
-						nextDirection = this.mDirection;
-						break;
+				if (this.mWantsToGo != null) {
+					nextDirection = this.mWantsToGo;
+					this.mWantsToGo = null;
+				} else {
+					switch (Game.RANDOM.nextInt(10)) {
+						case 0:
+							nextDirection = Direction.NORTH;
+							break;
+						case 1:
+							nextDirection = Direction.SOUTH;
+							break;
+						case 2:
+							nextDirection = Direction.EAST;
+							break;
+						case 3:
+							nextDirection = Direction.WEST;
+							break;
+						default:
+							if (this.mDirection != Direction.STOPPED) {
+								nextDirection = this.mDirection;
+							}
+							break;
+					}
 				}
 				
-				success = game.isValidPosition(Entity.move(this.mPosition, nextDirection));
+				if (nextDirection != null) {
+					if (nextDirection == this.mNextDirection.getOpposite()) {
+						success = false;
+					} else {
+						success = game.isValidPosition(Entity.move(this.mPosition, nextDirection));
+					}
+				}
 			}
 			
-			Log.d(TheMan.TAG, "Changing direction to " + nextDirection.toString());
 			this.mDirection = this.mNextDirection;
 			this.mNextDirection = nextDirection;
 		}
