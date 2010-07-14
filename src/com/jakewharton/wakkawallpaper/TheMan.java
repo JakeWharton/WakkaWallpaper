@@ -1,5 +1,11 @@
 package com.jakewharton.wakkawallpaper;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import com.jakewharton.wakkawallpaper.Game.Cell;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -51,45 +57,38 @@ public class TheMan extends Entity {
 		super.tick(game);
 		
 		if (this.mMovedThisTick || (this.mWantsToGo != null)) {
-			boolean success = false;
-			Direction nextDirection = null;
-			while (!success) {
-				if (this.mWantsToGo != null) {
-					nextDirection = this.mWantsToGo;
-					this.mWantsToGo = null;
-				} else {
-					switch (Game.RANDOM.nextInt(10)) {
-						case 0:
-							nextDirection = Direction.NORTH;
-							break;
-						case 1:
-							nextDirection = Direction.SOUTH;
-							break;
-						case 2:
-							nextDirection = Direction.EAST;
-							break;
-						case 3:
-							nextDirection = Direction.WEST;
-							break;
-						default:
-							if (this.mDirection != Direction.STOPPED) {
-								nextDirection = this.mDirection;
-							}
-							break;
-					}
-				}
+			//Promote next direction to current
+			this.mDirection = this.mNextDirection;
+			this.mNextDirection = Direction.STOPPED; //fallback
+			
+			//Breadth-first search for new next direction
+			Queue<Entity.Position> queue = new LinkedList<Entity.Position>();
+			HashSet<Integer> seen = new HashSet<Integer>();
+			queue.add(new Entity.Position(this.mPosition, this.mDirection));
+			Entity.Position current;
+			
+			//Log.d(TheMan.TAG, "--------------");
+			//Log.d(TheMan.TAG, "Current position: (" + this.mPosition.x + "," + this.mPosition.y + ")");
+			
+			while (!queue.isEmpty()) {
+				current = queue.remove();
+				seen.add(game.hashPosition(current.getPosition()));
 				
-				if (nextDirection != null) {
-					if (nextDirection == this.mNextDirection.getOpposite()) {
-						success = false;
-					} else {
-						success = game.isValidPosition(Entity.move(this.mPosition, nextDirection));
+				for (Entity.Position next : current.getPossibleMoves()) {
+					//Log.d(TheMan.TAG, "Checking " + next.getDirection() + " of (" + current.getPositionX() + "," + current.getPositionY() + ") to (" + next.getPositionX() + "," + next.getPositionY() +")");
+					if (game.isValidPosition(next.getPosition()) && !seen.contains(game.hashPosition(next.getPosition()))) {
+						if (game.getCell(next.getPositionX(), next.getPositionY()) == Cell.DOT) {
+							//Log.d(TheMan.TAG, "Going " + next.getInitialDirection() + " toward (" + next.getPositionX() + "," + next.getPositionY() + ")");
+							this.mNextDirection = next.getInitialDirection();
+							queue.clear(); //exit while
+							break; //exit for
+						} else {
+							//Log.d(TheMan.TAG, "Pushing " + next.getDirection() + " from (" + next.getPositionX() + "," + next.getPositionY() + ")");
+							queue.add(next);
+						}
 					}
 				}
 			}
-			
-			this.mDirection = this.mNextDirection;
-			this.mNextDirection = nextDirection;
 		}
 	}
 

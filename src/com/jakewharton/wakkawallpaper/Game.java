@@ -157,6 +157,10 @@ public class Game {
     		    && (this.mBoard[position.y][position.x] != Cell.WALL));
     }
     
+    public int hashPosition(Point position) {
+    	return (position.y * this.mCellsWide) + position.x;
+    }
+    
     /**
      * Reset the game state to that of first initialization.
      */

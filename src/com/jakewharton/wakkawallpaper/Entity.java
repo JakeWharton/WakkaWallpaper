@@ -55,6 +55,56 @@ public abstract class Entity {
 					return this;
 			}
 		}
+		
+		public static Direction[] movingValues() {
+			return new Direction[] { NORTH, EAST, SOUTH, WEST };
+		}
+	}
+	public static class Position {
+		private final Point mPosition;
+		private final Direction mDirection;
+		private final Direction mInitialDirection;
+		
+		public Position(Point position, Direction direction) {
+			this(position, direction, null);
+		}
+		private Position(Point position, Direction direction, Direction initialDirection) {
+			this.mPosition = position;
+			this.mDirection = direction;
+			this.mInitialDirection = direction;
+		}
+		
+		public Point getPosition() {
+			return this.mPosition;
+		}
+		public int getPositionX() {
+			return this.mPosition.x;
+		}
+		public int getPositionY() {
+			return this.mPosition.y;
+		}
+		public Direction getDirection() {
+			return this.mDirection;
+		}
+		public Direction getInitialDirection() {
+			return this.mInitialDirection;
+		}
+		public Position[] getPossibleMoves() {
+			Position[] moves = new Position[4];
+			int i = 0;
+			
+			//favor the same direction
+			moves[i++] = new Position(Entity.move(this.mPosition, this.mDirection), this.mDirection, (this.mInitialDirection == null) ? this.mDirection : this.mInitialDirection);
+			
+			//add other three directions
+			for (Direction direction : Direction.movingValues()) {
+				if (direction != this.mDirection) {
+					moves[i++] = new Position(Entity.move(this.mPosition, direction), direction, (this.mInitialDirection == null) ? direction : this.mInitialDirection);
+				}
+			}
+			
+			return moves;
+		}
 	}
 	
 	protected final Point mPosition;
