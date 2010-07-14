@@ -2,6 +2,9 @@ package com.jakewharton.wakkawallpaper;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
+import android.graphics.drawable.shapes.PathShape;
 
 /**
  * The Ghost class represents an enemy on the board.
@@ -137,8 +140,50 @@ public abstract class Ghost extends Entity {
 		
 		switch (this.mState) {
 			case HUNT:
-				//draw body only
-				c.drawRect(0, 0, this.mCellWidth, this.mCellHeight, this.mBodyBackground);
+				Path ghost = new Path();
+				ghost.moveTo(0, 0.75f * this.mCellHeight);
+				
+				switch (this.mTickCount % 4) {
+					case 0:
+						ghost.lineTo(0, 0.9f * this.mCellHeight);
+						ghost.lineTo(0.1f * this.mCellWidth, this.mCellHeight);
+						ghost.lineTo(0.3f * this.mCellWidth, 0.8f * this.mCellHeight);
+						ghost.lineTo(0.5f * this.mCellWidth, this.mCellHeight);
+						ghost.lineTo(0.7f * this.mCellWidth, 0.8f * this.mCellHeight);
+						ghost.lineTo(0.9f * this.mCellWidth, this.mCellHeight);
+						ghost.lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
+						break;
+					case 1:
+						ghost.lineTo(0, this.mCellHeight);
+						ghost.lineTo(0.2f * this.mCellWidth, 0.8f * this.mCellHeight);
+						ghost.lineTo(0.4f * this.mCellWidth, this.mCellHeight);
+						ghost.lineTo(0.6f * this.mCellWidth, 0.8f * this.mCellHeight);
+						ghost.lineTo(0.8f * this.mCellWidth, this.mCellHeight);
+						ghost.lineTo(this.mCellWidth, 0.8f * this.mCellHeight);
+						break;
+					case 2:
+						ghost.lineTo(0, 0.9f * this.mCellHeight);
+						ghost.lineTo(0.1f * this.mCellWidth, 0.8f * this.mCellHeight);
+						ghost.lineTo(0.3f * this.mCellWidth, this.mCellHeight);
+						ghost.lineTo(0.5f * this.mCellWidth, 0.8f * this.mCellHeight);
+						ghost.lineTo(0.7f * this.mCellWidth, this.mCellHeight);
+						ghost.lineTo(0.9f * this.mCellWidth, 0.8f * this.mCellHeight);
+						ghost.lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
+						break;
+					case 3:
+						ghost.lineTo(0, 0.8f * this.mCellHeight);
+						ghost.lineTo(0.2f * this.mCellWidth, this.mCellHeight);
+						ghost.lineTo(0.4f * this.mCellWidth, 0.8f * this.mCellHeight);
+						ghost.lineTo(0.6f * this.mCellWidth, this.mCellHeight);
+						ghost.lineTo(0.8f * this.mCellWidth, 0.8f * this.mCellHeight);
+						ghost.lineTo(this.mCellWidth, this.mCellHeight);
+						break;
+				}
+				
+				ghost.lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
+				ghost.arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+				
+				c.drawPath(ghost, this.mBodyBackground);
 				
 				//fall through to eyes only case
 			case EYES_ONLY:
