@@ -32,7 +32,55 @@ public abstract class Ghost extends Entity {
 	private final Paint mScaredForeground;
 	private final Paint mScaredBlinkBackground;
 	private final Paint mScaredBlinkForeground;
-    private int mFleeLength;
+	private Path[] mBodyPath;
+    @Override
+	public void performResize(float width, float height) {
+		super.performResize(width, height);
+		
+		this.mBodyPath[0] = new Path();
+		this.mBodyPath[0].moveTo(0, 0.75f * this.mCellHeight);
+		this.mBodyPath[0].lineTo(0, 0.9f * this.mCellHeight);
+		this.mBodyPath[0].lineTo(0.1f * this.mCellWidth, this.mCellHeight);
+		this.mBodyPath[0].lineTo(0.3f * this.mCellWidth, 0.8f * this.mCellHeight);
+		this.mBodyPath[0].lineTo(0.5f * this.mCellWidth, this.mCellHeight);
+		this.mBodyPath[0].lineTo(0.7f * this.mCellWidth, 0.8f * this.mCellHeight);
+		this.mBodyPath[0].lineTo(0.9f * this.mCellWidth, this.mCellHeight);
+		this.mBodyPath[0].lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
+		this.mBodyPath[0].arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+
+		this.mBodyPath[1] = new Path();
+		this.mBodyPath[1].moveTo(0, 0.75f * this.mCellHeight);
+		this.mBodyPath[1].lineTo(0, this.mCellHeight);
+		this.mBodyPath[1].lineTo(0.2f * this.mCellWidth, 0.8f * this.mCellHeight);
+		this.mBodyPath[1].lineTo(0.4f * this.mCellWidth, this.mCellHeight);
+		this.mBodyPath[1].lineTo(0.6f * this.mCellWidth, 0.8f * this.mCellHeight);
+		this.mBodyPath[1].lineTo(0.8f * this.mCellWidth, this.mCellHeight);
+		this.mBodyPath[1].lineTo(this.mCellWidth, 0.8f * this.mCellHeight);
+		this.mBodyPath[1].arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+
+		this.mBodyPath[2] = new Path();
+		this.mBodyPath[2].moveTo(0, 0.75f * this.mCellHeight);
+		this.mBodyPath[2].lineTo(0, 0.9f * this.mCellHeight);
+		this.mBodyPath[2].lineTo(0.1f * this.mCellWidth, 0.8f * this.mCellHeight);
+		this.mBodyPath[2].lineTo(0.3f * this.mCellWidth, this.mCellHeight);
+		this.mBodyPath[2].lineTo(0.5f * this.mCellWidth, 0.8f * this.mCellHeight);
+		this.mBodyPath[2].lineTo(0.7f * this.mCellWidth, this.mCellHeight);
+		this.mBodyPath[2].lineTo(0.9f * this.mCellWidth, 0.8f * this.mCellHeight);
+		this.mBodyPath[2].lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
+		this.mBodyPath[2].arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+
+		this.mBodyPath[3] = new Path();
+		this.mBodyPath[3].moveTo(0, 0.75f * this.mCellHeight);
+		this.mBodyPath[3].lineTo(0, 0.8f * this.mCellHeight);
+		this.mBodyPath[3].lineTo(0.2f * this.mCellWidth, this.mCellHeight);
+		this.mBodyPath[3].lineTo(0.4f * this.mCellWidth, 0.8f * this.mCellHeight);
+		this.mBodyPath[3].lineTo(0.6f * this.mCellWidth, this.mCellHeight);
+		this.mBodyPath[3].lineTo(0.8f * this.mCellWidth, 0.8f * this.mCellHeight);
+		this.mBodyPath[3].lineTo(this.mCellWidth, this.mCellHeight);
+		this.mBodyPath[3].arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+	}
+
+	private int mFleeLength;
 	
     /**
      * Create a new ghost.
@@ -66,6 +114,8 @@ public abstract class Ghost extends Entity {
 		this.mScaredBlinkForeground = new Paint();
 		this.mScaredBlinkForeground.setColor(Ghost.DEFAULT_SCARED_BLINK_FOREGROUND);
 		this.mScaredBlinkForeground.setAntiAlias(true);
+		
+		this.mBodyPath = new Path[4];
 	}
 
     /**
@@ -140,50 +190,7 @@ public abstract class Ghost extends Entity {
 		
 		switch (this.mState) {
 			case HUNT:
-				Path ghost = new Path();
-				ghost.moveTo(0, 0.75f * this.mCellHeight);
-				
-				switch (this.mTickCount % 4) {
-					case 0:
-						ghost.lineTo(0, 0.9f * this.mCellHeight);
-						ghost.lineTo(0.1f * this.mCellWidth, this.mCellHeight);
-						ghost.lineTo(0.3f * this.mCellWidth, 0.8f * this.mCellHeight);
-						ghost.lineTo(0.5f * this.mCellWidth, this.mCellHeight);
-						ghost.lineTo(0.7f * this.mCellWidth, 0.8f * this.mCellHeight);
-						ghost.lineTo(0.9f * this.mCellWidth, this.mCellHeight);
-						ghost.lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
-						break;
-					case 1:
-						ghost.lineTo(0, this.mCellHeight);
-						ghost.lineTo(0.2f * this.mCellWidth, 0.8f * this.mCellHeight);
-						ghost.lineTo(0.4f * this.mCellWidth, this.mCellHeight);
-						ghost.lineTo(0.6f * this.mCellWidth, 0.8f * this.mCellHeight);
-						ghost.lineTo(0.8f * this.mCellWidth, this.mCellHeight);
-						ghost.lineTo(this.mCellWidth, 0.8f * this.mCellHeight);
-						break;
-					case 2:
-						ghost.lineTo(0, 0.9f * this.mCellHeight);
-						ghost.lineTo(0.1f * this.mCellWidth, 0.8f * this.mCellHeight);
-						ghost.lineTo(0.3f * this.mCellWidth, this.mCellHeight);
-						ghost.lineTo(0.5f * this.mCellWidth, 0.8f * this.mCellHeight);
-						ghost.lineTo(0.7f * this.mCellWidth, this.mCellHeight);
-						ghost.lineTo(0.9f * this.mCellWidth, 0.8f * this.mCellHeight);
-						ghost.lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
-						break;
-					case 3:
-						ghost.lineTo(0, 0.8f * this.mCellHeight);
-						ghost.lineTo(0.2f * this.mCellWidth, this.mCellHeight);
-						ghost.lineTo(0.4f * this.mCellWidth, 0.8f * this.mCellHeight);
-						ghost.lineTo(0.6f * this.mCellWidth, this.mCellHeight);
-						ghost.lineTo(0.8f * this.mCellWidth, 0.8f * this.mCellHeight);
-						ghost.lineTo(this.mCellWidth, this.mCellHeight);
-						break;
-				}
-				
-				ghost.lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
-				ghost.arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
-				
-				c.drawPath(ghost, this.mBodyBackground);
+				c.drawPath(this.mBodyPath[this.mTickCount % 4], this.mBodyBackground);
 				
 				//fall through to eyes only case
 			case EYES_ONLY:
@@ -193,8 +200,10 @@ public abstract class Ghost extends Entity {
 			case FLEE:
 				if ((this.mFleeLength <= Ghost.FLEE_BLINK_THRESHOLD) && ((this.mFleeLength / Ghost.FLEE_BLINK_INTERVAL) % 2 == 0)) {
 					//draw scared blink
+					c.drawPath(this.mBodyPath[this.mTickCount % 4], this.mScaredBlinkBackground);
 				} else {
-					//draw normal blink
+					//draw normal scared
+					c.drawPath(this.mBodyPath[this.mTickCount % 4], this.mScaredBackground);
 				}
 				break;
 		}
