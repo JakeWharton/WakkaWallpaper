@@ -33,6 +33,51 @@ public abstract class Ghost extends Entity {
 	private final Paint mScaredBlinkBackground;
 	private final Paint mScaredBlinkForeground;
 	private Path[] mBodyPath;
+
+	private int mFleeLength;
+	
+    /**
+     * Create a new ghost.
+     * 
+     * @param backgroundColor Primary color of the ghost.
+     */
+	protected Ghost(int backgroundColor) {
+		super(0, 0, Direction.STOPPED);
+
+		this.mState = State.HUNT;
+		this.mFleeLength = Ghost.FLEE_LENGTH;
+		
+		this.mBodyBackground = new Paint();
+		this.mBodyBackground.setColor(backgroundColor);
+		this.mBodyBackground.setAntiAlias(true);
+		this.mEyeBackground = new Paint();
+		this.mEyeBackground.setColor(Ghost.DEFAULT_EYE_BACKGROUND);
+		this.mEyeBackground.setAntiAlias(true);
+		this.mEyeForeground = new Paint();
+		this.mEyeForeground.setColor(Ghost.DEFAULT_EYE_FOREGROUND);
+		this.mEyeForeground.setAntiAlias(true);
+		this.mScaredBackground = new Paint();
+		this.mScaredBackground.setColor(Ghost.DEFAULT_SCARED_BACKGROUND);
+		this.mScaredBackground.setAntiAlias(true);
+		this.mScaredForeground = new Paint();
+		this.mScaredForeground.setColor(Ghost.DEFAULT_SCARED_FOREGROUND);
+		this.mScaredForeground.setAntiAlias(true);
+		this.mScaredBlinkBackground = new Paint();
+		this.mScaredBlinkBackground.setColor(Ghost.DEFAULT_SCARED_BLINK_BACKGROUND);
+		this.mScaredBlinkBackground.setAntiAlias(true);
+		this.mScaredBlinkForeground = new Paint();
+		this.mScaredBlinkForeground.setColor(Ghost.DEFAULT_SCARED_BLINK_FOREGROUND);
+		this.mScaredBlinkForeground.setAntiAlias(true);
+		
+		this.mBodyPath = new Path[4];
+	}
+
+	/**
+	 * Resize the entity to fit within the specified dimensions.
+	 * 
+	 * @param width New width.
+	 * @param height New height.
+	 */
     @Override
 	public void performResize(float width, float height) {
 		super.performResize(width, height);
@@ -78,44 +123,6 @@ public abstract class Ghost extends Entity {
 		this.mBodyPath[3].lineTo(0.8f * this.mCellWidth, 0.8f * this.mCellHeight);
 		this.mBodyPath[3].lineTo(this.mCellWidth, this.mCellHeight);
 		this.mBodyPath[3].arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
-	}
-
-	private int mFleeLength;
-	
-    /**
-     * Create a new ghost.
-     * 
-     * @param backgroundColor Primary color of the ghost.
-     */
-	protected Ghost(int backgroundColor) {
-		super(0, 0, Direction.STOPPED);
-
-		this.mState = State.HUNT;
-		this.mFleeLength = Ghost.FLEE_LENGTH;
-		
-		this.mBodyBackground = new Paint();
-		this.mBodyBackground.setColor(backgroundColor);
-		this.mBodyBackground.setAntiAlias(true);
-		this.mEyeBackground = new Paint();
-		this.mEyeBackground.setColor(Ghost.DEFAULT_EYE_BACKGROUND);
-		this.mEyeBackground.setAntiAlias(true);
-		this.mEyeForeground = new Paint();
-		this.mEyeForeground.setColor(Ghost.DEFAULT_EYE_FOREGROUND);
-		this.mEyeForeground.setAntiAlias(true);
-		this.mScaredBackground = new Paint();
-		this.mScaredBackground.setColor(Ghost.DEFAULT_SCARED_BACKGROUND);
-		this.mScaredBackground.setAntiAlias(true);
-		this.mScaredForeground = new Paint();
-		this.mScaredForeground.setColor(Ghost.DEFAULT_SCARED_FOREGROUND);
-		this.mScaredForeground.setAntiAlias(true);
-		this.mScaredBlinkBackground = new Paint();
-		this.mScaredBlinkBackground.setColor(Ghost.DEFAULT_SCARED_BLINK_BACKGROUND);
-		this.mScaredBlinkBackground.setAntiAlias(true);
-		this.mScaredBlinkForeground = new Paint();
-		this.mScaredBlinkForeground.setColor(Ghost.DEFAULT_SCARED_BLINK_FOREGROUND);
-		this.mScaredBlinkForeground.setAntiAlias(true);
-		
-		this.mBodyPath = new Path[4];
 	}
 
     /**
