@@ -7,11 +7,11 @@
 	android:versionName="1.0.0">
     
     <application
-        android:label="@string/name"
+        android:label="@string/title"
         android:icon="@drawable/icon">
 
         <service
-            android:label="@string/name"
+            android:label="@string/title"
             android:name=".Wallpaper"
             android:permission="android.permission.BIND_WALLPAPER">
             
@@ -21,8 +21,15 @@
             
             <meta-data
             	android:name="android.service.wallpaper"
-            	android:resource="@xml/wakka" />
+            	android:resource="@xml/wallpaper" />
         </service>
+        
+        <activity
+            android:label="@string/title"
+            android:name=".Settings"
+            android:theme="@android:style/Theme.WallpaperSettings"
+            android:exported="true">
+        </activity>
     </application>
     
     <uses-sdk android:minSdkVersion="7" />

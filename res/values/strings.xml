@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="name">Wakka Wallpaper</string>
+    <string name="title">Wakka Wallpaper</string>
     <string name="author">Jake Wharton</string>
     <string name="description">Creates a grid of dots that border your icons for some om nom nom.</string>
 </resources>

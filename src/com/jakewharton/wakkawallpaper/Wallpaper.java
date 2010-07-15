@@ -2,6 +2,7 @@ package com.jakewharton.wakkawallpaper;
 
 import com.jakewharton.wakkawallpaper.Entity.Direction;
 
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
@@ -15,6 +16,8 @@ import android.view.SurfaceHolder;
  * @author Jake Wharton
  */
 public class Wallpaper extends WallpaperService {
+	public static final String SHARED_PREFERENCES_NAME = "WakkaWallpaper";
+	
     private final Handler mHandler = new Handler();
 
     @Override
@@ -27,7 +30,7 @@ public class Wallpaper extends WallpaperService {
      * 
      * @author Jake Wharton
      */
-    private class WakkaEngine extends Engine {
+    private class WakkaEngine extends Engine implements SharedPreferences.OnSharedPreferenceChangeListener {
     	private static final String TAG = "WakkaWallpaper.WakkaEngine";
     	private static final int MILLISECONDS_IN_SECOND = 1000;
     	
@@ -38,11 +41,12 @@ public class Wallpaper extends WallpaperService {
         private int mFPS;
         private float mScreenCenterX;
         private float mScreenCenterY;
+        private final SharedPreferences mPreferences;
 
         private final Runnable mDrawWakka = new Runnable() {
             public void run() {
-            	mGame.tick();
-                drawFrame();
+            	WakkaEngine.this.mGame.tick();
+                WakkaEngine.this.drawFrame();
             }
         };
 
@@ -56,15 +60,23 @@ public class Wallpaper extends WallpaperService {
             this.mIconCols = 4;
             
             this.mGame = null;
+            
+            this.mPreferences = Wallpaper.this.getSharedPreferences(Wallpaper.SHARED_PREFERENCES_NAME, 0);
+            this.mPreferences.registerOnSharedPreferenceChangeListener(this);
+            this.onSharedPreferenceChanged(this.mPreferences, null);
         }
+
+		public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
+			//TODO: load preferences from here
+		}
 
         @Override
         public void onVisibilityChanged(final boolean visible) {
             this.mIsVisible = visible;
             if (visible) {
-                drawFrame();
+                this.drawFrame();
             } else {
-                mHandler.removeCallbacks(this.mDrawWakka);
+                Wallpaper.this.mHandler.removeCallbacks(this.mDrawWakka);
             }
         }
         
@@ -79,7 +91,7 @@ public class Wallpaper extends WallpaperService {
         @Override
         public void onDestroy() {
             super.onDestroy();
-            mHandler.removeCallbacks(mDrawWakka);
+            Wallpaper.this.mHandler.removeCallbacks(mDrawWakka);
         }
         
         @Override
@@ -122,14 +134,14 @@ public class Wallpaper extends WallpaperService {
             	this.mGame = new Game(this.mIconRows, this.mIconCols, width, height);
             }
             
-            drawFrame();
+            this.drawFrame();
         }
 
         @Override
         public void onSurfaceDestroyed(final SurfaceHolder holder) {
             super.onSurfaceDestroyed(holder);
-            mIsVisible = false;
-            mHandler.removeCallbacks(this.mDrawWakka);
+            this.mIsVisible = false;
+            Wallpaper.this.mHandler.removeCallbacks(this.mDrawWakka);
         }
 
         /**
@@ -151,7 +163,7 @@ public class Wallpaper extends WallpaperService {
             }
 
             if (this.mIsVisible) {
-                mHandler.postDelayed(this.mDrawWakka, WakkaEngine.MILLISECONDS_IN_SECOND / this.mFPS);
+                Wallpaper.this.mHandler.postDelayed(this.mDrawWakka, WakkaEngine.MILLISECONDS_IN_SECOND / this.mFPS);
             }
         }
     }
