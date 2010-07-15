@@ -3,8 +3,8 @@ package com.jakewharton.wakkawallpaper;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.RectF;
-import android.graphics.drawable.shapes.PathShape;
 
 /**
  * The Ghost class represents an enemy on the board.
@@ -194,7 +194,16 @@ public abstract class Ghost extends Entity {
 				
 				//fall through to eyes only case
 			case EYES_ONLY:
+				float widthOverThree = this.mCellWidth / 3.0f;
+				float heightOverThree = this.mCellHeight / 3.0f;
+				float widthOverSeven = this.mCellWidth / 7.0f;
+				float widthOverFourteen = widthOverSeven / 2.0f;
+				Point eyeOffset = Entity.move(new Point(0, 0), this.mDirection);
 				
+				c.drawCircle(widthOverThree, heightOverThree, widthOverSeven, this.mEyeBackground);
+				c.drawCircle(2.0f * widthOverThree, heightOverThree, widthOverSeven, this.mEyeBackground);
+				c.drawCircle(widthOverThree + (eyeOffset.x * widthOverFourteen), heightOverThree + (eyeOffset.y * widthOverFourteen), widthOverFourteen, this.mEyeForeground);
+				c.drawCircle((2.0f * widthOverThree) + (eyeOffset.x * widthOverFourteen), heightOverThree + (eyeOffset.y * widthOverFourteen), widthOverFourteen, this.mEyeForeground);
 				break;
 				
 			case FLEE:
