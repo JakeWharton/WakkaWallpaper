@@ -33,6 +33,10 @@ public abstract class Ghost extends Entity {
 	private final Paint mScaredBlinkBackground;
 	private final Paint mScaredBlinkForeground;
 	private final Path[] mBodyPaths;
+	private float mCellWidthOverThree;
+	private float mCellHeightOverThree;
+	private float mCellWidthOverSeven;
+	private float mCellWidthOverFourteen;
 
 	private int mFleeLength;
 	
@@ -104,6 +108,11 @@ public abstract class Ghost extends Entity {
 		this.mBodyPaths[1].lineTo(5 * widthOverSix, 0.8f * this.mCellHeight);
 		this.mBodyPaths[1].lineTo(this.mCellWidth, this.mCellHeight);
 		this.mBodyPaths[1].arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+		
+		this.mCellWidthOverThree = width / 3.0f;
+		this.mCellHeightOverThree = height / 3.0f;
+		this.mCellWidthOverSeven = width / 7.0f;
+		this.mCellWidthOverFourteen = this.mCellWidthOverSeven / 2.0f;
 	}
 
     /**
@@ -182,16 +191,12 @@ public abstract class Ghost extends Entity {
 				
 				//fall through to eyes only case
 			case EYES_ONLY:
-				float widthOverThree = this.mCellWidth / 3.0f;
-				float heightOverThree = this.mCellHeight / 3.0f;
-				float widthOverSeven = this.mCellWidth / 7.0f;
-				float widthOverFourteen = widthOverSeven / 2.0f;
 				Point eyeOffset = Entity.move(new Point(0, 0), this.mDirection);
 				
-				c.drawCircle(widthOverThree, heightOverThree, widthOverSeven, this.mEyeBackground);
-				c.drawCircle(2.0f * widthOverThree, heightOverThree, widthOverSeven, this.mEyeBackground);
-				c.drawCircle(widthOverThree + (eyeOffset.x * widthOverFourteen), heightOverThree + (eyeOffset.y * widthOverFourteen), widthOverFourteen, this.mEyeForeground);
-				c.drawCircle((2.0f * widthOverThree) + (eyeOffset.x * widthOverFourteen), heightOverThree + (eyeOffset.y * widthOverFourteen), widthOverFourteen, this.mEyeForeground);
+				c.drawCircle(this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverSeven, this.mEyeBackground);
+				c.drawCircle(2.0f * this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverSeven, this.mEyeBackground);
+				c.drawCircle(this.mCellWidthOverThree + (eyeOffset.x * this.mCellWidthOverFourteen), this.mCellHeightOverThree + (eyeOffset.y * this.mCellWidthOverFourteen), this.mCellWidthOverFourteen, this.mEyeForeground);
+				c.drawCircle((2.0f * this.mCellWidthOverThree) + (eyeOffset.x * this.mCellWidthOverFourteen), this.mCellHeightOverThree + (eyeOffset.y * this.mCellWidthOverFourteen), this.mCellWidthOverFourteen, this.mEyeForeground);
 				break;
 				
 			case FLEE:
