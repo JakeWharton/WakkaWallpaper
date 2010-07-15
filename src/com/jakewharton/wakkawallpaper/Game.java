@@ -96,9 +96,11 @@ public class Game {
         this.mDotGridPaddingTop = 35;
         this.mDotGridPaddingBottom = 75;
     	this.mIconRows = iconRows;
-    	Log.d(Game.TAG, "Icon Rows: " + iconRows);
+    	
+    	
+    	Log.v(Game.TAG, "Icon Rows: " + iconRows);
     	this.mIconCols = iconCols;
-    	Log.d(Game.TAG, "Icon Cols: " + iconCols);
+    	Log.v(Game.TAG, "Icon Cols: " + iconCols);
     	this.performResize(screenWidth, screenHeight);
     	
     	//Create playing board
@@ -287,17 +289,17 @@ public class Game {
     	}
     	
     	this.mScreenWidth = screenWidth;
-    	Log.d(Game.TAG, "Screen Width: " + screenWidth);
+    	Log.v(Game.TAG, "Screen Width: " + screenWidth);
     	this.mScreenHeight = screenHeight;
-    	Log.d(Game.TAG, "Screen Height: " + screenHeight);
+    	Log.v(Game.TAG, "Screen Height: " + screenHeight);
     	this.mCellColumnSpacing = 4; //TODO: calculate this from width and left/right padding
-    	Log.d(Game.TAG, "Cell Column Spacing: " + this.mCellColumnSpacing);
+    	Log.v(Game.TAG, "Cell Column Spacing: " + this.mCellColumnSpacing);
     	this.mCellRowSpacing = 6; //TODO: calculate this from height and top/bottom padding
-    	Log.d(Game.TAG, "Cell Row Spacing: " + this.mCellRowSpacing);
+    	Log.v(Game.TAG, "Cell Row Spacing: " + this.mCellRowSpacing);
     	this.mCellsWide = (this.mIconCols * (mCellColumnSpacing + 1)) + 1;
-    	Log.d(Game.TAG, "Cells Wide: " + this.mCellsWide);
+    	Log.v(Game.TAG, "Cells Wide: " + this.mCellsWide);
     	this.mCellsTall = (this.mIconRows * (mCellRowSpacing + 1)) + 1;
-    	Log.d(Game.TAG, "Cells Tall: " + this.mCellsTall);
+    	Log.v(Game.TAG, "Cells Tall: " + this.mCellsTall);
     	
     	if (this.mIsLandscape) {
     		this.mCellWidth = (screenWidth - this.mDotGridPaddingTop) / (this.mCellsWide * 1.0f);
@@ -306,8 +308,8 @@ public class Game {
     		this.mCellWidth = (screenWidth - (this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / (this.mCellsWide * 1.0f);
     		this.mCellHeight = (screenHeight - (this.mDotGridPaddingTop + this.mDotGridPaddingBottom)) / (this.mCellsTall * 1.0f);
     	}
-    	Log.d(Game.TAG, "Cell Width: " + this.mCellWidth);
-    	Log.d(Game.TAG, "Cell Height: " + this.mCellHeight);
+    	Log.v(Game.TAG, "Cell Width: " + this.mCellWidth);
+    	Log.v(Game.TAG, "Cell Height: " + this.mCellHeight);
     	
     	if (this.mFruit != null) {
     		this.mFruit.performResize(this.mCellWidth, this.mCellHeight);

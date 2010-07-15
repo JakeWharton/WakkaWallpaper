@@ -120,13 +120,13 @@ public class Wallpaper extends WallpaperService {
         public void onSurfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height) {
             super.onSurfaceChanged(holder, format, width, height);
             
-            Log.d(WakkaEngine.TAG, "Screen Height: " + height);
-            Log.d(WakkaEngine.TAG, "Screen Width: " + width);
+            Log.v(WakkaEngine.TAG, "Screen Height: " + height);
+            Log.v(WakkaEngine.TAG, "Screen Width: " + width);
             
             this.mScreenCenterX = width / 2.0f;
-            Log.d(WakkaEngine.TAG, "Center X: " + this.mScreenCenterX);
+            Log.v(WakkaEngine.TAG, "Center X: " + this.mScreenCenterX);
             this.mScreenCenterY = height / 2.0f;
-            Log.d(WakkaEngine.TAG, "Center Y: " + this.mScreenCenterY);
+            Log.v(WakkaEngine.TAG, "Center Y: " + this.mScreenCenterY);
             
             if (this.mGame != null) {
             	this.mGame.performResize(width, height);
