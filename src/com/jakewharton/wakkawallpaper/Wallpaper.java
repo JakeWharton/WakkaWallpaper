@@ -33,6 +33,9 @@ public class Wallpaper extends WallpaperService {
     private class WakkaEngine extends Engine implements SharedPreferences.OnSharedPreferenceChangeListener {
     	private static final String TAG = "WakkaWallpaper.WakkaEngine";
     	private static final int MILLISECONDS_IN_SECOND = 1000;
+    	private static final int DEFAULT_FPS = 10;
+    	private static final int DEFAULT_ICON_ROWS = 4;
+    	private static final int DEFAULT_ICON_COLS = 4;
     	
     	private Game mGame;
     	private int mIconRows;
@@ -54,20 +57,35 @@ public class Wallpaper extends WallpaperService {
          * Create instance of the engine.
          */
         public WakkaEngine() {
-            //TODO: set via settings
-            this.mFPS = 15;
-            this.mIconRows = 4;
-            this.mIconCols = 4;
-            
             this.mGame = null;
             
             this.mPreferences = Wallpaper.this.getSharedPreferences(Wallpaper.SHARED_PREFERENCES_NAME, 0);
             this.mPreferences.registerOnSharedPreferenceChangeListener(this);
+            
+            //Load all preferences or their defaults
             this.onSharedPreferenceChanged(this.mPreferences, null);
         }
 
-		public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
-			//TODO: load preferences from here
+        /**
+         * Handle the changing of a preference
+         */
+		public void onSharedPreferenceChanged(final SharedPreferences preferences, final String key) {
+			final boolean all = (key == null);
+			
+			final String fps = Wallpaper.this.getString(R.string.settings_display_fps_key);
+			if (all || key.equals(fps)) {
+				this.mFPS = preferences.getInt(fps, WakkaEngine.DEFAULT_FPS);
+			}
+			
+			final String iconRows = Wallpaper.this.getString(R.string.settings_display_iconrows_key); 
+			if (all || key.equals(iconRows)) {
+				this.mIconRows = preferences.getInt(iconRows, WakkaEngine.DEFAULT_ICON_ROWS);
+			}
+			
+			final String iconCols = Wallpaper.this.getString(R.string.settings_display_iconcols_key);
+			if (all || key.equals(iconCols)) {
+				this.mIconCols = preferences.getInt(iconCols, WakkaEngine.DEFAULT_ICON_COLS);
+			}
 		}
 
         @Override

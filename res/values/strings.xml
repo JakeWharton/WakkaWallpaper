@@ -4,4 +4,44 @@
     <string name="title">Wakka Wallpaper</string>
     <string name="author">Jake Wharton</string>
     <string name="description">Creates a grid of dots that border your icons for some om nom nom.</string>
+    <string name="version_name">1.0.0</string>
+    
+    <string name="settings_key">settings</string>
+    <string name="settings_header">Settings</string>
+    <string name="settings_display">Display</string>
+    <string name="settings_display_key">settings_display</string>
+    <string name="settings_display_summary">Layout, offsets, FPS...</string>
+    <string name="settings_game">Game</string>
+    <string name="settings_game_key">settings_game</string>
+    <string name="settings_game_summary">Points, bonuses, ghosts...</string>
+    <string name="settings_color">Colors</string>
+    <string name="settings_color_key">settings_colors</string>
+    <string name="settings_color_summary">Dots, ghosts, background...</string>
+    
+    <string name="information_header">Information</string>
+    <string name="information_version">Version</string>
+    <string name="information_version_key">information_version</string>
+    <string name="information_author">Author</string>
+    <string name="information_author_key">information_author</string>
+    
+    <string name="settings_display_fps">FPS</string>
+    <string name="settings_display_fps_key">settings_display_fps</string>
+    <string name="settings_display_fps_summary">Number of times per second to advance the game</string>
+    <string name="settings_display_iconrows">Icon Rows</string>
+    <string name="settings_display_iconrows_key">settings_display_iconrows</string>
+    <string name="settings_display_iconrows_summary">Number of icon rows on your home screen</string>
+    <string name="settings_display_iconcols">Icon Columns</string>
+    <string name="settings_display_iconcols_key">settings_display_iconcols</string>
+    <string name="settings_display_iconcols_summary">Number of icon columns on your home screen</string>
+    
+    <string name="information_contact">Contact</string>
+    <string name="information_contact_email">E-Mail</string>
+    <string name="information_contact_email_key">information_contact_email</string>
+    <string name="information_contact_email_summary">JakeWharton@GMail.com</string>
+    <string name="information_contact_twitter">Twitter</string>
+    <string name="information_contact_twitter_key">information_contact_twitter</string>
+    <string name="information_contact_twitter_summary">\@JakeWharton</string>
+    <string name="information_contact_website">Website</string>
+    <string name="information_contact_website_key">information_contact_website</string>
+    <string name="information_contact_website_summary">http://jakewharton.com</string>
 </resources>
