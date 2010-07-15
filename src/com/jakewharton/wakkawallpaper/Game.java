@@ -81,7 +81,7 @@ public class Game {
      * @param screenWidth Width in pixels of the screen.
      * @param screenHeight Height in pixels of the screen.
      */
-    public Game(int iconRows, int iconCols, int screenWidth, int screenHeight) {
+    public Game(final int iconRows, final int iconCols, final int screenWidth, final int screenHeight) {
     	//Create entities
     	this.mGhosts = new Ghost[Game.NUMBER_OF_GHOSTS];
     	this.mGhosts[0] = new Ghost.Blinky();
@@ -130,7 +130,7 @@ public class Game {
      * 
      * @param direction Desired direction.
      */
-    public void setWantsToGo(Direction direction) {
+    public void setWantsToGo(final Direction direction) {
     	this.mTheMan.setWantsToGo(direction);
     }
     
@@ -141,7 +141,7 @@ public class Game {
      * @param y Vertical coordinate.
      * @return Cell value.
      */
-    public Cell getCell(int x, int y) {
+    public Cell getCell(final int x, final int y) {
     	return this.mBoard[y][x];
     }
     
@@ -151,13 +151,13 @@ public class Game {
      * @param position Point representing coordinate.
      * @return Boolean indicating whether or not the position is valid.
      */
-    public boolean isValidPosition(Point position) {
+    public boolean isValidPosition(final Point position) {
     	return ((position.x >= 0) && (position.x < this.mCellsWide)
     		    && (position.y >= 0) && (position.y < this.mCellsTall)
     		    && (this.mBoard[position.y][position.x] != Cell.WALL));
     }
     
-    public int hashPosition(Point position) {
+    public int hashPosition(final Point position) {
     	return (position.y * this.mCellsWide) + position.x;
     }
     
@@ -260,7 +260,7 @@ public class Game {
     	//Handle fruit appearance
     	if (((this.mDotsEaten == this.mFruitOneThreshold) && (this.mFruitsShown < 1)) || ((this.mDotsEaten == this.mFruitTwoThreshold) && (this.mFruitsShown < 2))) {
     		this.mFruitsShown += 1;
-        	int visible = this.mFruitVisibleLower + Game.RANDOM.nextInt(this.mFruitVisibleUpper - this.mFruitVisibleLower + 1);
+        	final int visible = this.mFruitVisibleLower + Game.RANDOM.nextInt(this.mFruitVisibleUpper - this.mFruitVisibleLower + 1);
         	//TODO: randomize location
         	this.mFruit = new Fruit(0, 0, Fruit.Type.getForLevel(this.mLevel), visible);
     	}
@@ -279,7 +279,7 @@ public class Game {
     public void performResize(int screenWidth, int screenHeight) {
     	if (screenWidth > screenHeight) {
     		this.mIsLandscape = true;
-    		int temp = screenHeight;
+    		final int temp = screenHeight;
     		screenHeight = screenWidth;
     		screenWidth = temp;
     	} else {
@@ -323,7 +323,7 @@ public class Game {
      * 
      * @param c Canvas to draw on.
      */
-    public void draw(Canvas c) {
+    public void draw(final Canvas c) {
     	c.save();
     	
     	//Background
@@ -345,17 +345,17 @@ public class Game {
         for (int y = 0; y < this.mCellsTall; y++) {
         	for (int x = 0; x < this.mCellsWide; x++) {
         		if (this.mBoard[y][x] == Cell.DOT) {
-            		float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.75f) / 2);
-            		float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.75f) / 2);
-            		float right = left + (this.mCellWidth * 0.25f);
-            		float bottom = top + (this.mCellHeight * 0.25f);
+            		final float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.75f) / 2);
+            		final float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.75f) / 2);
+            		final float right = left + (this.mCellWidth * 0.25f);
+            		final float bottom = top + (this.mCellHeight * 0.25f);
             		
             		c.drawOval(new RectF(left, top, right, bottom), this.mDotForeground);
         		} else if (this.mBoard[y][x] == Cell.JUGGERDOT) {
-            		float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.25f) / 2);
-            		float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.25f) / 2);
-            		float right = left + (this.mCellWidth * 0.75f);
-            		float bottom = top + (this.mCellHeight * 0.75f);
+            		final float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.25f) / 2);
+            		final float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.25f) / 2);
+            		final float right = left + (this.mCellWidth * 0.75f);
+            		final float bottom = top + (this.mCellHeight * 0.75f);
 
             		c.drawOval(new RectF(left, top, right, bottom), this.mDotForeground);
         		}

@@ -42,7 +42,7 @@ public class TheMan extends Entity {
      * 
      * @param direction Desired direction.
      */
-    public void setWantsToGo(Direction direction) {
+    public void setWantsToGo(final Direction direction) {
     	Log.d(TheMan.TAG, "Wants to go " + direction.toString());
     	this.mWantsToGo = direction;
     }
@@ -53,7 +53,7 @@ public class TheMan extends Entity {
      * @param game Game instance
      */
     @Override
-	public void tick(Game game) {
+	public void tick(final Game game) {
 		super.tick(game);
 		
 		if (this.mMovedThisTick || (this.mWantsToGo != null)) {
@@ -62,8 +62,8 @@ public class TheMan extends Entity {
 			this.mNextDirection = Direction.STOPPED; //fallback
 			
 			//Breadth-first search for new next direction
-			Queue<Entity.Position> queue = new LinkedList<Entity.Position>();
-			HashSet<Integer> seen = new HashSet<Integer>();
+			final Queue<Entity.Position> queue = new LinkedList<Entity.Position>();
+			final HashSet<Integer> seen = new HashSet<Integer>();
 			queue.add(new Entity.Position(this.mPosition, this.mDirection));
 			Entity.Position current;
 			
@@ -98,15 +98,15 @@ public class TheMan extends Entity {
      * @param c Canvas to draw on.
      */
     @Override
-	public void draw(Canvas c) {
+	public void draw(final Canvas c) {
 		c.save();
 		c.translate(this.getLocationX(), this.getLocationY());
 		
 		//keep us low
 		this.mTickCount %= TheMan.CHOMP_ANGLE_COUNT;
 		
-		int angle = TheMan.CHOMP_ANGLES[this.mTickCount];
-		float startingAngle = this.mDirection.getAngle(this.mNextDirection) + (angle / 2.0f);
+		final int angle = TheMan.CHOMP_ANGLES[this.mTickCount];
+		final float startingAngle = this.mDirection.getAngle(this.mNextDirection) + (angle / 2.0f);
 		int degrees = 360;
 		if (this.mDirection != Direction.STOPPED) {
 			degrees -= angle;

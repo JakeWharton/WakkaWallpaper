@@ -59,7 +59,7 @@ public class Wallpaper extends WallpaperService {
         }
 
         @Override
-        public void onVisibilityChanged(boolean visible) {
+        public void onVisibilityChanged(final boolean visible) {
             this.mIsVisible = visible;
             if (visible) {
                 drawFrame();
@@ -69,7 +69,7 @@ public class Wallpaper extends WallpaperService {
         }
         
         @Override
-        public void onCreate(SurfaceHolder surfaceHolder) {
+        public void onCreate(final SurfaceHolder surfaceHolder) {
         	super.onCreate(surfaceHolder);
 
             // By default we don't get touch events, so enable them.
@@ -83,10 +83,10 @@ public class Wallpaper extends WallpaperService {
         }
         
         @Override
-        public void onTouchEvent(MotionEvent event) {
+        public void onTouchEvent(final MotionEvent event) {
         	if ((event.getAction() == MotionEvent.ACTION_DOWN) && (this.mGame != null)) {
-        		float deltaX = this.mScreenCenterX - event.getX();
-        		float deltaY = this.mScreenCenterY - event.getY();
+        		final float deltaX = this.mScreenCenterX - event.getX();
+        		final float deltaY = this.mScreenCenterY - event.getY();
         		
         		if (Math.abs(deltaX) > Math.abs(deltaY)) {
         			if (deltaX > 0) {
@@ -105,7 +105,7 @@ public class Wallpaper extends WallpaperService {
         }
 
         @Override
-        public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        public void onSurfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height) {
             super.onSurfaceChanged(holder, format, width, height);
             
             Log.d(WakkaEngine.TAG, "Screen Height: " + height);
@@ -126,7 +126,7 @@ public class Wallpaper extends WallpaperService {
         }
 
         @Override
-        public void onSurfaceDestroyed(SurfaceHolder holder) {
+        public void onSurfaceDestroyed(final SurfaceHolder holder) {
             super.onSurfaceDestroyed(holder);
             mIsVisible = false;
             mHandler.removeCallbacks(this.mDrawWakka);

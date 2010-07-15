@@ -45,7 +45,7 @@ public abstract class Ghost extends Entity {
      * 
      * @param backgroundColor Primary color of the ghost.
      */
-	protected Ghost(int backgroundColor) {
+	protected Ghost(final int backgroundColor) {
 		super(0, 0, Direction.STOPPED);
 
 		this.mState = State.HUNT;
@@ -83,7 +83,7 @@ public abstract class Ghost extends Entity {
 	 * @param height New height.
 	 */
     @Override
-	public void performResize(float width, float height) {
+	public void performResize(final float width, final float height) {
 		super.performResize(width, height);
 		
 		this.mBodyPaths[0] = new Path();
@@ -121,7 +121,7 @@ public abstract class Ghost extends Entity {
      * @param game Game instance
      */
 	@Override
-	public void tick(Game game) {
+	public void tick(final Game game) {
 		super.tick(game);
 		
 		switch (this.mState) {
@@ -181,7 +181,7 @@ public abstract class Ghost extends Entity {
      * @param c Canvas to draw on.
      */
 	@Override
-	public void draw(Canvas c) {
+	public void draw(final Canvas c) {
 		c.save();
 		c.translate(this.getLocationX(), this.getLocationY());
 		

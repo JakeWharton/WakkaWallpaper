@@ -16,14 +16,14 @@ public abstract class Entity {
 		
 		private final int angle;
 		
-		private Direction(int angle) {
+		private Direction(final int angle) {
 			this.angle = angle;
 		}
 		
 		public int getAngle() {
 			return this.angle;
 		}
-		public int getAngle(Direction nextDirection) {
+		public int getAngle(final Direction nextDirection) {
 			if ((nextDirection == null) || (nextDirection == Direction.STOPPED) || (this == nextDirection) || (this.getOpposite() == nextDirection)) {
 				return this.angle;
 			} else {
@@ -65,10 +65,10 @@ public abstract class Entity {
 		private final Direction mDirection;
 		private final Direction mInitialDirection;
 		
-		public Position(Point position, Direction direction) {
+		public Position(final Point position, final Direction direction) {
 			this(position, direction, null);
 		}
-		private Position(Point position, Direction direction, Direction initialDirection) {
+		private Position(final Point position, final Direction direction, final Direction initialDirection) {
 			this.mPosition = position;
 			this.mDirection = direction;
 			this.mInitialDirection = direction;
@@ -90,7 +90,7 @@ public abstract class Entity {
 			return this.mInitialDirection;
 		}
 		public Position[] getPossibleMoves() {
-			Position[] moves = new Position[4];
+			final Position[] moves = new Position[4];
 			int i = 0;
 			
 			//favor the same direction
@@ -125,7 +125,7 @@ public abstract class Entity {
 	 * @param startingPositionY Y coordinate of initial starting position.
 	 * @param startingDirection Initial direction to travel in.
 	 */
-	protected Entity(int startingPositionX, int startingPositionY, Direction startingDirection) {
+	protected Entity(final int startingPositionX, final int startingPositionY, final Direction startingDirection) {
 		this.mPosition = new Point();
 		this.setPosition(startingPositionX, startingPositionY);
 		this.mDirection = Direction.STOPPED;
@@ -143,7 +143,7 @@ public abstract class Entity {
 	 * @param x X coordinate.
 	 * @param y Y coordinate.
 	 */
-	public void setPosition(int x, int y) {
+	public void setPosition(final int x, final int y) {
 		this.mPosition.set(x, y);
 		this.mDeltaX = 0;
 		this.mDeltaY = 0;
@@ -154,7 +154,7 @@ public abstract class Entity {
 	 * 
 	 * @param direction New Direction.
 	 */
-	public void setDirection(Direction direction) {
+	public void setDirection(final Direction direction) {
 		this.mDirection = direction;
 	}
 	
@@ -164,7 +164,7 @@ public abstract class Entity {
 	 * @param width New width.
 	 * @param height New height.
 	 */
-	public void performResize(float width, float height) {
+	public void performResize(final float width, final float height) {
 		this.mCellWidth = width;
 		this.mCellHeight = height;
 	}
@@ -210,7 +210,7 @@ public abstract class Entity {
      * 
      * @param game Game instance
      */
-	public void tick(Game game) {
+	public void tick(final Game game) {
 		this.mTickCount += 1;
 		this.mMovedThisTick = false;
 		
@@ -305,7 +305,7 @@ public abstract class Entity {
      * 
      * @param c Canvas to draw on.
      */
-	public abstract void draw(Canvas c);
+	public abstract void draw(final Canvas c);
 	
 	/**
 	 * Update the point one step in the direction specified.
@@ -314,8 +314,8 @@ public abstract class Entity {
 	 * @param direction Direction in which to move the point.
 	 * @return New point coordinates.
 	 */
-	protected static Point move(Point point, Direction direction) {
-    	Point newPoint = new Point(point);
+	protected static Point move(final Point point, final Direction direction) {
+    	final Point newPoint = new Point(point);
     	switch (direction) {
     		case NORTH:
     			newPoint.y -= 1;
