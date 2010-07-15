@@ -32,7 +32,7 @@ public abstract class Ghost extends Entity {
 	private final Paint mScaredForeground;
 	private final Paint mScaredBlinkBackground;
 	private final Paint mScaredBlinkForeground;
-	private Path[] mBodyPath;
+	private final Path[] mBodyPath;
 
 	private int mFleeLength;
 	
