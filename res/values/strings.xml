@@ -33,6 +33,28 @@
     <string name="settings_display_iconcols">Icon Columns</string>
     <string name="settings_display_iconcols_key">settings_display_iconcols</string>
     <string name="settings_display_iconcols_summary">Number of icon columns on your home screen</string>
+    <string name="settings_display_rowspacing">Icon Row Cell Spacing</string>
+    <string name="settings_display_rowspacing_key">settings_display_rowspacing</string>
+    <string name="settings_display_rowspacing_summary">Number of cells in an icon row</string>
+    <string name="settings_display_colspacing">Icon Column Cell Spacing</string>
+    <string name="settings_display_colspacing_key">settings_display_colspacing</string>
+    <string name="settings_display_colspacing_summary">Number of cells in an icon column</string>
+    
+    <string name="settings_display_padding">Grid Padding</string>
+    <string name="settings_display_padding_key">settings_display_padding</string>
+    <string name="settings_display_padding_summary">Padding offsets on the four edges of the grid</string>
+    <string name="settings_display_padding_top">Top</string>
+    <string name="settings_display_padding_top_key">settings_display_padding_top</string>
+    <string name="settings_display_padding_top_summary"></string>
+    <string name="settings_display_padding_bottom">Bottom</string>
+    <string name="settings_display_padding_bottom_key">settings_display_padding_bottom</string>
+    <string name="settings_display_padding_bottom_summary"></string>
+    <string name="settings_display_padding_left">Left</string>
+    <string name="settings_display_padding_left_key">settings_display_padding_left</string>
+    <string name="settings_display_padding_left_summary"></string>
+    <string name="settings_display_padding_right">Right</string>
+    <string name="settings_display_padding_right_key">settings_display_padding_right</string>
+    <string name="settings_display_padding_right_summary"></string>
     
     <string name="information_contact">Contact</string>
     <string name="information_contact_email">E-Mail</string>

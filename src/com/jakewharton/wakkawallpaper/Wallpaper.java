@@ -69,7 +69,7 @@ public class Wallpaper extends WallpaperService {
         }
 
         /**
-         * Handle the changing of a preference
+         * Handle the changing of a preference.
          */
 		public void onSharedPreferenceChanged(final SharedPreferences preferences, final String key) {
 			final boolean all = (key == null);
@@ -179,7 +179,7 @@ public class Wallpaper extends WallpaperService {
         /**
          * Draws the current state of the game to the wallpaper.
          */
-        void drawFrame() {
+        private void drawFrame() {
             final SurfaceHolder holder = this.getSurfaceHolder();
 
             Canvas c = null;

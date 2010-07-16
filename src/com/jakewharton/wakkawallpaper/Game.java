@@ -30,6 +30,7 @@ public class Game {
 	private static final int DEFAULT_GAME_BACKGROUND = 0xff000040;
     private static final int DEFAULT_HUD_FOREGROUND = 0xff8181c1;
     private static final int DEFAULT_HUD_BACKGROUND = 0xff000000;
+    private static final boolean DEFAULT_DISPLAY_HUD = true;
     private static final boolean DEFAULT_KILL_SCREEN_ENABLED = true;
     private static final int DEFAULT_GHOST_COUNT = 4;
 	private static final int POINTS_DOT = 10;
@@ -70,7 +71,8 @@ public class Game {
     private final Paint mDotForeground;
     private int mGameBackground;
     private int mBonusLifeThreshold;
-    private final Paint mHUDForeground;
+    private boolean mIsDisplayingHud;
+    private final Paint mHudForeground;
     private float mDotGridPaddingTop;
     private float mDotGridPaddingLeft;
     private float mDotGridPaddingBottom;
@@ -128,11 +130,12 @@ public class Game {
         this.mDotForeground.setAntiAlias(true);
         this.mGameBackground = Game.DEFAULT_GAME_BACKGROUND;
     	
-        this.mHUDForeground = new Paint();
-        this.mHUDForeground.setColor(Game.DEFAULT_HUD_FOREGROUND);
-        this.mHUDForeground.setAntiAlias(true);
-        this.mHUDForeground.setTextSize(20f);
-        this.mHUDForeground.setShadowLayer(1, -1, 1, Game.DEFAULT_HUD_BACKGROUND);
+        this.mHudForeground = new Paint();
+        this.mHudForeground.setColor(Game.DEFAULT_HUD_FOREGROUND);
+        this.mHudForeground.setAntiAlias(true);
+        this.mHudForeground.setTextSize(20f);
+        this.mHudForeground.setShadowLayer(1, -1, 1, Game.DEFAULT_HUD_BACKGROUND);
+        this.mIsDisplayingHud = Game.DEFAULT_DISPLAY_HUD;
         
         this.newGame();
     }
@@ -509,11 +512,13 @@ public class Game {
     	//Background
     	c.drawColor(this.mGameBackground);
     	
-        //Lives and score
-        final float textY = this.mScreenHeight - this.mDotGridPaddingBottom + 15;
-        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore));
-        c.drawText(this.mLives + "UP", 10, textY, this.mHUDForeground);
-        c.drawText(score, this.mScreenWidth - this.mHUDForeground.measureText(score) - 10, textY, this.mHUDForeground);
+    	if (this.mIsDisplayingHud) {
+	        //Lives and score
+	        final float textY = this.mScreenHeight - this.mDotGridPaddingBottom + 15;
+	        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore));
+	        c.drawText(this.mLives + "UP", 10, textY, this.mHudForeground);
+	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - 10, textY, this.mHudForeground);
+    	}
         
         if (this.mIsLandscape) {
         	c.rotate(-90, this.mScreenWidth / 2.0f, this.mScreenWidth / 2.0f);

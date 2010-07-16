@@ -9,12 +9,12 @@ import android.preference.PreferenceActivity;
  * 
  * @author Jake Wharton
  */
-public class Settings extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class Preferences extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     @Override
     protected void onCreate(final Bundle icicle) {
         super.onCreate(icicle);
         this.getPreferenceManager().setSharedPreferencesName(Wallpaper.SHARED_PREFERENCES_NAME);
-        this.addPreferencesFromResource(R.xml.settings);
+        this.addPreferencesFromResource(R.xml.preferences);
         this.getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 

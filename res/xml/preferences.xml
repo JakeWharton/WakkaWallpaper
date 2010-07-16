@@ -23,6 +23,35 @@
 				android:key="@string/settings_display_iconcols_key"
 				android:title="@string/settings_display_iconcols"
 				android:summary="@string/settings_display_iconcols_summary"/>
+			<com.jakewharton.utilities.EditNumberPreference
+				android:key="@string/settings_display_rowspacing_key"
+				android:title="@string/settings_display_rowspacing"
+				android:summary="@string/settings_display_rowspacing_summary"/>
+			<com.jakewharton.utilities.EditNumberPreference
+				android:key="@string/settings_display_colspacing_key"
+				android:title="@string/settings_display_colspacing"
+				android:summary="@string/settings_display_colspacing_summary"/>
+			<PreferenceScreen
+				android:key="@string/settings_display_padding_key"
+				android:title="@string/settings_display_padding"
+				android:summary="@string/settings_display_padding_summary">
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_display_padding_top_key"
+					android:title="@string/settings_display_padding_top"
+					android:summary="@string/settings_display_padding_top_summary"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_display_padding_bottom_key"
+					android:title="@string/settings_display_padding_bottom"
+					android:summary="@string/settings_display_padding_bottom_summary"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_display_padding_left_key"
+					android:title="@string/settings_display_padding_left"
+					android:summary="@string/settings_display_padding_left_summary"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_display_padding_right_key"
+					android:title="@string/settings_display_padding_right"
+					android:summary="@string/settings_display_padding_right_summary"/>
+			</PreferenceScreen>
 		</PreferenceScreen>
 		<PreferenceScreen
 			android:key="@string/settings_game_key"

@@ -26,7 +26,7 @@
         
         <activity
             android:label="@string/title"
-            android:name=".Settings"
+            android:name=".Preferences"
             android:theme="@android:style/Theme.WallpaperSettings"
             android:exported="true">
         </activity>

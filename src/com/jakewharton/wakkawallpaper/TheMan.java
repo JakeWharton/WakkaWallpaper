@@ -27,6 +27,9 @@ public class TheMan extends Entity {
     private final Paint mForeground;
 	private Direction mWantsToGo;
     
+	/**
+	 * Create instance of "The Man"
+	 */
 	public TheMan() {
 		super();
         
