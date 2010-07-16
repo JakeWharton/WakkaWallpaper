@@ -429,7 +429,7 @@ public abstract class Ghost extends Entity {
 		@Override
 		protected Point getInitialPosition(final Game game) {
 			//first column, second to last row
-			return new Point(-1, game.getCellsTall() - game.getCellRowSpacing() - 2);
+			return new Point(0, game.getCellsTall() - game.getCellRowSpacing() - 2);
 		}
 
 		@Override
