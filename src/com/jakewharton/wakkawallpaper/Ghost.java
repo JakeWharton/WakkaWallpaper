@@ -178,20 +178,13 @@ public abstract class Ghost extends Entity {
 		}
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.jakewharton.wakkawallpaper.Entity#newLevel(com.jakewharton.wakkawallpaper.Game)
-	 */
 	@Override
 	protected void newLevel(final Game game) {
 		this.mDirection = null;
 		this.mNextDirection = null;
+		this.setPosition(this.getInitialPositionX(game), this.getInitialPositionY(game));
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.jakewharton.wakkawallpaper.Entity#moved(com.jakewharton.wakkawallpaper.Game)
-	 */
 	@Override
 	protected void moved(final Game game) {
 		game.checkGhosts();
@@ -201,9 +194,32 @@ public abstract class Ghost extends Entity {
 	/**
 	 * Determine the next direction to travel in.
 	 * @param game Game instance
+	 * @param isStateChange Whether or not this change is the result of a state change
 	 */
-	protected abstract void determineNextDirection(final Game game, final boolean isStateChange);
+	protected void determineNextDirection(final Game game, final boolean isStateChange) {
+		switch (this.mState) {
+			case CHASE:
+				this.determindNextDirectionWhenChasing(game, isStateChange);				
+				break;
+				
+			case SCATTER:
+				this.determineNextDirectionByLineOfSight(game, this.getInitialCorner(game), isStateChange);
+				break;
+				
+			case EATEN:
+				this.determineNextDirectionByLineOfSight(game, new Point(this.getInitialPositionX(game), this.getInitialPositionY(game)), isStateChange);
+				break;
+				
+			case FRIGHTENED:
+				this.determineNextFrightenedDirection(game);
+				break;
+		}
+	}
 	
+	/**
+	 * Determine next direction based on a simple random number generator.
+	 * @param game Game instance
+	 */
 	protected void determineNextFrightenedDirection(final Game game) {
 		if (game.isIntersection(this.mPosition)) {
 			//Try a random direction
@@ -229,7 +245,62 @@ public abstract class Ghost extends Entity {
 		}
 	}
 	
+	/**
+	 * Use line-of-sight distance to a target point to determine the next direction
+	 * @param game Game instance
+	 * @param target Target Point
+	 * @param isStateChange Whether or not this is occurring because of a state change
+	 */
+	protected void determineNextDirectionByLineOfSight(final Game game, final Point target, final boolean isStateChange) {
+		Point nextPoint;
+		double nextDistance;
+		Direction nextDirection = null;
+		double shortestDistance = Double.MAX_VALUE;
+		
+		for (Direction direction : Direction.values()) {
+			if (isStateChange || (direction != this.mDirection.getOpposite())) {
+				nextPoint = Entity.move(this.mPosition, direction);
+				nextDistance = Math.sqrt(Math.pow(nextPoint.x - target.x, 2) + Math.pow(nextPoint.y - target.y, 2));
+				if (nextDistance < shortestDistance) {
+					nextDirection = direction;
+					shortestDistance = nextDistance; 
+				}
+			}
+		}
+		
+		this.mNextDirection = nextDirection;
+	}
+	
+	/**
+	 * X coordinate of initial starting position
+	 * @param game Game instance
+	 * @return X coordinate
+	 */
+	protected abstract int getInitialPositionX(final Game game);
+	
+	/**
+	 * Y coordinate of initial starting position
+	 * @param game Game instance
+	 * @return Y coordinate
+	 */
+	protected abstract int getInitialPositionY(final Game game);
+	
+	/**
+	 * Point off of the board of the initial starting corner
+	 * @param game Game instance
+	 * @return Point
+	 */
+	protected abstract Point getInitialCorner(final Game game);
+	
+	/**
+	 * Determine the next location to travel in when chasing
+	 * @param game Game instance
+	 * @param isStateChange Whether or not this new direction is occuring from a state change
+	 */
+	protected abstract void determindNextDirectionWhenChasing(final Game game, final boolean isStateChange);
 
+	
+	
 	/**
 	 * The ghost Blinky (Shadow).
 	 * 
@@ -244,42 +315,28 @@ public abstract class Ghost extends Entity {
 		public Blinky() {
 			super(Blinky.BACKGROUND_COLOR);
 		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.jakewharton.wakkawallpaper.Ghost#determineNextDirection(com.jakewharton.wakkawallpaper.Game)
-		 */
+		
 		@Override
-		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
-			switch (this.mState) {
-				case CHASE:
-					//TODO: logic!
-					break;
-					
-				case SCATTER:
-					//TODO: head toward initial corner
-					break;
-					
-				case EATEN:
-					//TODO: head toward initial position
-					break;
-					
-				case FRIGHTENED:
-					this.determineNextFrightenedDirection(game);
-					break;
-			}
+		protected int getInitialPositionX(final Game game) {
+			//last column
+			return game.getCellsWide() - 1;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.jakewharton.wakkawallpaper.Ghost#newLevel(com.jakewharton.wakkawallpaper.Game)
-		 */
 		@Override
-		protected void newLevel(final Game game) {
-			super.newLevel(game);
-			
-			//Position in the second column, first row
-			this.setPosition(game.getCellColumnSpacing() + 1, 0);
+		protected int getInitialPositionY(final Game game) {
+			//second row
+			return game.getCellRowSpacing() + 1;
+		}
+
+		@Override
+		protected Point getInitialCorner(final Game game) {
+			//upper right
+			return new Point(game.getCellsWide(), 0);
+		}
+
+		@Override
+		protected void determindNextDirectionWhenChasing(final Game game, final boolean isStateChange) {
+			// TODO Auto-generated method stub
 		}
 	}
 	
@@ -298,41 +355,27 @@ public abstract class Ghost extends Entity {
 			super(Pinky.BACKGROUND_COLOR);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.jakewharton.wakkawallpaper.Ghost#determineNextDirection(com.jakewharton.wakkawallpaper.Game)
-		 */
 		@Override
-		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
-			switch (this.mState) {
-			case CHASE:
-				//TODO: logic!
-				break;
-				
-			case SCATTER:
-				//TODO: head toward initial corner
-				break;
-				
-			case EATEN:
-				//TODO: head toward initial position
-				break;
-				
-			case FRIGHTENED:
-				this.determineNextFrightenedDirection(game);
-				break;
-		}
+		protected int getInitialPositionX(final Game game) {
+			//second column
+			return game.getCellColumnSpacing() + 1;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.jakewharton.wakkawallpaper.Ghost#newLevel(com.jakewharton.wakkawallpaper.Game)
-		 */
 		@Override
-		protected void newLevel(Game game) {
-			super.newLevel(game);
-			
-			//Position in the last column, second to last row
-			this.setPosition(game.getCellsWide() - game.getCellColumnSpacing() - 2, game.getCellsTall() - 1);
+		protected int getInitialPositionY(final Game game) {
+			//first row
+			return 0;
+		}
+
+		@Override
+		protected Point getInitialCorner(final Game game) {
+			//upper left
+			return new Point(0, 0);
+		}
+
+		@Override
+		protected void determindNextDirectionWhenChasing(final Game game, final boolean isStateChange) {
+			// TODO Auto-generated method stub
 		}
 	}
 	
@@ -351,41 +394,27 @@ public abstract class Ghost extends Entity {
 			super(Inky.BACKGROUND_COLOR);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.jakewharton.wakkawallpaper.Ghost#determineNextDirection(com.jakewharton.wakkawallpaper.Game)
-		 */
 		@Override
-		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
-			switch (this.mState) {
-			case CHASE:
-				//TODO: logic!
-				break;
-				
-			case SCATTER:
-				//TODO: head toward initial corner
-				break;
-				
-			case EATEN:
-				//TODO: head toward initial position
-				break;
-				
-			case FRIGHTENED:
-				this.determineNextFrightenedDirection(game);
-				break;
-		}
+		protected int getInitialPositionX(final Game game) {
+			//second to last column
+			return game.getCellsWide() - game.getCellColumnSpacing() - 2;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.jakewharton.wakkawallpaper.Ghost#newLevel(com.jakewharton.wakkawallpaper.Game)
-		 */
 		@Override
-		protected void newLevel(Game game) {
-			super.newLevel(game);
-			
-			//Position in the first column, second to last row
-			this.setPosition(0, game.getCellsTall() - game.getCellRowSpacing() - 2);
+		protected int getInitialPositionY(final Game game) {
+			//last row
+			return game.getCellsTall() - 1;
+		}
+
+		@Override
+		protected Point getInitialCorner(final Game game) {
+			//lower right
+			return new Point(game.getCellsWide(), game.getCellsTall());
+		}
+
+		@Override
+		protected void determindNextDirectionWhenChasing(final Game game, final boolean isStateChange) {
+			// TODO Auto-generated method stub
 		}
 	}
 	
@@ -404,41 +433,27 @@ public abstract class Ghost extends Entity {
 			super(Clyde.BACKGROUND_COLOR);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.jakewharton.wakkawallpaper.Ghost#determineNextDirection(com.jakewharton.wakkawallpaper.Game)
-		 */
 		@Override
-		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
-			switch (this.mState) {
-			case CHASE:
-				//TODO: logic!
-				break;
-				
-			case SCATTER:
-				//TODO: head toward initial corner
-				break;
-				
-			case EATEN:
-				//TODO: head toward initial position
-				break;
-				
-			case FRIGHTENED:
-				this.determineNextFrightenedDirection(game);
-				break;
-		}
+		protected int getInitialPositionX(final Game game) {
+			//first column
+			return 0;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see com.jakewharton.wakkawallpaper.Ghost#newLevel(com.jakewharton.wakkawallpaper.Game)
-		 */
 		@Override
-		protected void newLevel(Game game) {
-			super.newLevel(game);
-			
-			//Position in the last column, second row
-			this.setPosition(game.getCellsWide() - 1, game.getCellRowSpacing() + 1);
+		protected int getInitialPositionY(final Game game) {
+			//second to last row
+			return game.getCellsTall() - game.getCellRowSpacing() - 2;
+		}
+
+		@Override
+		protected Point getInitialCorner(final Game game) {
+			//lower left
+			return new Point(0, game.getCellsTall());
+		}
+
+		@Override
+		protected void determindNextDirectionWhenChasing(final Game game, final boolean isStateChange) {
+			// TODO Auto-generated method stub
 		}
 	}
 }

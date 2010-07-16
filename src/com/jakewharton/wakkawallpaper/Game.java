@@ -99,10 +99,10 @@ public class Game {
     	int i = 0;
     	this.mEntities = new Entity[2 + this.mGhostCount]; //TheMan, Fruit, and Ghosts
     	this.mEntities[i++] = this.mTheMan;
+    	this.mEntities[i++] = this.mFruit;
     	for (Ghost ghost : this.mGhosts) {
     		this.mEntities[i++] = ghost;
     	}
-    	this.mEntities[i++] = this.mFruit;
     	
     	//Screen and grid data
         this.mDotGridPaddingLeft = -5;
@@ -148,46 +148,90 @@ public class Game {
     	return this.mBoard[y][x];
     }
     
+    /**
+     * Get the game's instance of The Man.
+     * @return The Man instance.
+     */
     public TheMan getTheMan() {
     	return this.mTheMan;
     }
     
+    /**
+     * Get the number of dots eaten this level.
+     * @return Number of dots eaten.
+     */
     public int getDotsEaten() {
     	return this.mDotsEaten;
     }
     
+    /**
+     * Get the current level number.
+     * @return Level number.
+     */
     public int getLevel() {
     	return this.mLevel;
     }
     
+    /**
+     * Get the width of a cell in pixels.
+     * @return Cell width.
+     */
     public float getCellWidth() {
     	return this.mCellWidth;
     }
     
+    /**
+     * Get the height of a cell in pixels.
+     * @return Cell height.
+     */
     public float getCellHeight() {
     	return this.mCellHeight;
     }
     
+    /**
+     * Get the board's number of cells horizontally.
+     * @return Number of cells.
+     */
     public int getCellsWide() {
     	return this.mCellsWide;
     }
     
+    /**
+     * Get the board's number of cells vertically.
+     * @return Number of cells.
+     */
     public int getCellsTall() {
     	return this.mCellsTall;
     }
     
+    /**
+     * Get the board's number of cells between two columns.
+     * @return Number of cells.
+     */
     public int getCellColumnSpacing() {
     	return this.mCellColumnSpacing;
     }
     
+    /**
+     * Get the board's number of cells between two rows.
+     * @return Number of cells.
+     */
     public int getCellRowSpacing() {
     	return this.mCellRowSpacing;
     }
     
+    /**
+     * Get the number of icon rows on the home screen.
+     * @return Number of icons.
+     */
     public int getIconRows() {
     	return this.mIconRows;
     }
     
+    /**
+     * Get the number of icon columns on the home screen.
+     * @return Number of icons.
+     */
     public int getIconCols() {
     	return this.mIconCols;
     }
@@ -204,6 +248,11 @@ public class Game {
     		    && (this.mBoard[position.y][position.x] != Cell.WALL));
     }
     
+    /**
+     * Test if a Point is an intersection on the game board.
+     * @param position Point representing coordinate.
+     * @return Boolean indicating whether or not the position is in an intersection.
+     */
     public boolean isIntersection(final Point position) {
     	int directions = 0;
     	for (Direction direction : Direction.movingValues()) {
@@ -215,10 +264,19 @@ public class Game {
     	return (directions > 1);
     }
     
+    /**
+     * Get a unique integer hash for the position on the board.
+     * @param position Position on the board.
+     * @return Integer hash.
+     */
     public int hashPosition(final Point position) {
     	return (position.y * this.mCellsWide) + position.x;
     }
     
+    /**
+     * Add an amount to the player's score.
+     * @param amount Amount to add.
+     */
     private void addToScore(final int amount) {
     	this.mScore += amount;
     	
@@ -229,6 +287,9 @@ public class Game {
     	}
     }
     
+    /**
+     * Check to see if The Man has eaten a dot or juggerdot.
+     */
     public void checkDots() {
     	if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.DOT) {
     		this.mDotsEaten += 1;
@@ -245,6 +306,9 @@ public class Game {
     	}
     }
     
+    /**
+     * Check to see if The Man has eaten the fruit.
+     */
     public void checkFruit() {
     	if (this.mTheMan.isCollidingWith(this.mFruit)) {
     		//eat the fruit
@@ -252,6 +316,9 @@ public class Game {
     	}
     }
     
+    /**
+     * Check to see if The Man has collided with a ghost.
+     */
     public void checkGhosts() {
     	for (Ghost ghost : this.mGhosts) {
     		if (this.mTheMan.isCollidingWith(ghost)) {
@@ -283,6 +350,10 @@ public class Game {
     	}
     }
     
+    /**
+     * Switch the current state of the ghosts.
+     * @param state New state.
+     */
     private void switchGhostsState(final State state) {
     	for (Ghost ghost : this.mGhosts) {
     		ghost.setState(this, state);

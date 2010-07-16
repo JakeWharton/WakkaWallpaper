@@ -47,10 +47,6 @@ public class TheMan extends Entity {
     	this.mWantsToGo = direction;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.jakewharton.wakkawallpaper.Entity#moved(com.jakewharton.wakkawallpaper.Game)
-     */
 	@Override
     protected void moved(final Game game) {
 		game.checkDots();
