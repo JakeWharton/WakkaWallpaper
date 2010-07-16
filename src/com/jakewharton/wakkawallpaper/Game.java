@@ -276,6 +276,21 @@ public class Game {
     }
     
     /**
+     * Test if a Point has a ghost on it.
+     * 
+     * @param position Position to check.
+     * @return Whether or not a ghost exists on the position.
+     */
+    public boolean isGhostAtPosition(final Point position) {
+    	for (Ghost ghost : this.mGhosts) {
+    		if ((ghost.getPosition().x == position.x) && (ghost.getPosition().y == position.y)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    /**
      * Get a unique integer hash for the position on the board.
      * 
      * @param x X coordinate of position.

@@ -56,6 +56,11 @@ public class TheMan extends Entity {
 		this.determineNextDirection(game);
     }
 	
+	/**
+	 * Determine our next direction based on a breadth-first search.
+	 * 
+	 * @param game Game instance.
+	 */
 	private void determineNextDirection(final Game game) {
 		//TODO: account for this.mWantsToGo
 		
@@ -74,7 +79,7 @@ public class TheMan extends Entity {
 			seen.add(game.hashPosition(current.getPosition()));
 			
 			for (Vector next : current.getPossibleMoves()) {
-				if (game.isValidPosition(next.getPosition()) && !seen.contains(game.hashPosition(next.getPosition()))) {
+				if (game.isValidPosition(next.getPosition()) && !seen.contains(game.hashPosition(next.getPosition())) && !game.isGhostAtPosition(next.getPosition())) {
 					if (game.getCell(next.getPosition()) == Cell.DOT) {
 						this.mNextDirection = next.getInitialDirection();
 						queue.clear(); //exit while
@@ -87,10 +92,6 @@ public class TheMan extends Entity {
 		}
 	}
 
-    /*
-     * (non-Javadoc)
-     * @see com.jakewharton.wakkawallpaper.Entity#draw(android.graphics.Canvas)
-     */
     @Override
 	public void draw(final Canvas c) {
 		c.save();
@@ -109,10 +110,6 @@ public class TheMan extends Entity {
 		c.restore();
 	}
 
-    /*
-     * (non-Javadoc)
-     * @see com.jakewharton.wakkawallpaper.Entity#reset(com.jakewharton.wakkawallpaper.Game)
-     */
 	@Override
 	protected void newLevel(Game game) {
 		//Position in the center-most region of the board.
