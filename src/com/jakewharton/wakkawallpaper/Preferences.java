@@ -10,17 +10,14 @@ import android.preference.PreferenceActivity;
  * @author Jake Wharton
  */
 public class Preferences extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+	public static final String SHARED_NAME = "WakkaWallpaper";
+	
     @Override
     protected void onCreate(final Bundle icicle) {
         super.onCreate(icicle);
-        this.getPreferenceManager().setSharedPreferencesName(Wallpaper.SHARED_PREFERENCES_NAME);
+        this.getPreferenceManager().setSharedPreferencesName(Preferences.SHARED_NAME);
         this.addPreferencesFromResource(R.xml.preferences);
         this.getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     @Override

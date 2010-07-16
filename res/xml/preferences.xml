@@ -15,6 +15,10 @@
 				android:key="@string/settings_display_fps_key"
 				android:title="@string/settings_display_fps"
 				android:summary="@string/settings_display_fps_summary"/>
+			<CheckBoxPreference
+				android:key="@string/settings_display_showhud_key"
+				android:title="@string/settings_display_showhud"
+				android:summary="@string/settings_display_showhud_summary"/>
 			<com.jakewharton.utilities.EditNumberPreference
 				android:key="@string/settings_display_iconrows_key"
 				android:title="@string/settings_display_iconrows"

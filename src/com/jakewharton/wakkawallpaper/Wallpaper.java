@@ -2,6 +2,7 @@ package com.jakewharton.wakkawallpaper;
 
 import com.jakewharton.wakkawallpaper.Entity.Direction;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Handler;
@@ -16,12 +17,15 @@ import android.view.SurfaceHolder;
  * @author Jake Wharton
  */
 public class Wallpaper extends WallpaperService {
-	public static final String SHARED_PREFERENCES_NAME = "WakkaWallpaper";
-	
+    public static SharedPreferences PREFERENCES;
+    public static Context CONTEXT;
+    
     private final Handler mHandler = new Handler();
 
     @Override
     public Engine onCreateEngine() {
+    	Wallpaper.PREFERENCES = this.getSharedPreferences(Preferences.SHARED_NAME, 0);
+    	Wallpaper.CONTEXT = this;
         return new WakkaEngine();
     }
 
@@ -46,7 +50,6 @@ public class Wallpaper extends WallpaperService {
         private int mScreenHeight;
         private float mScreenCenterX;
         private float mScreenCenterY;
-        private final SharedPreferences mPreferences;
 
         private final Runnable mDrawWakka = new Runnable() {
             public void run() {
@@ -60,12 +63,10 @@ public class Wallpaper extends WallpaperService {
          */
         public WakkaEngine() {
             this.mGame = null;
-            
-            this.mPreferences = Wallpaper.this.getSharedPreferences(Wallpaper.SHARED_PREFERENCES_NAME, 0);
-            this.mPreferences.registerOnSharedPreferenceChangeListener(this);
-            
+
             //Load all preferences or their defaults
-            this.onSharedPreferenceChanged(this.mPreferences, null);
+            Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
+            this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
         }
 
         /**

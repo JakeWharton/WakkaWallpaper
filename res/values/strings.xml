@@ -18,15 +18,12 @@
     <string name="settings_color_key">settings_colors</string>
     <string name="settings_color_summary">Dots, ghosts, background...</string>
     
-    <string name="information_header">Information</string>
-    <string name="information_version">Version</string>
-    <string name="information_version_key">information_version</string>
-    <string name="information_author">Author</string>
-    <string name="information_author_key">information_author</string>
-    
     <string name="settings_display_fps">FPS</string>
     <string name="settings_display_fps_key">settings_display_fps</string>
     <string name="settings_display_fps_summary">Number of times per second to advance the game</string>
+    <string name="settings_display_showhud">Show HUD</string>
+    <string name="settings_display_showhud_key">settings_display_showhud</string>
+    <string name="settings_display_showhud_summary">Toggle the heads-up display for lives and score</string>
     <string name="settings_display_iconrows">Icon Rows</string>
     <string name="settings_display_iconrows_key">settings_display_iconrows</string>
     <string name="settings_display_iconrows_summary">Number of icon rows on your home screen</string>
@@ -55,6 +52,12 @@
     <string name="settings_display_padding_right">Right</string>
     <string name="settings_display_padding_right_key">settings_display_padding_right</string>
     <string name="settings_display_padding_right_summary"></string>
+    
+    <string name="information_header">Information</string>
+    <string name="information_version">Version</string>
+    <string name="information_version_key">information_version</string>
+    <string name="information_author">Author</string>
+    <string name="information_author_key">information_author</string>
     
     <string name="information_contact">Contact</string>
     <string name="information_contact_email">E-Mail</string>

@@ -7,6 +7,7 @@ import java.util.Random;
 import com.jakewharton.wakkawallpaper.Entity.Direction;
 import com.jakewharton.wakkawallpaper.Ghost.State;
 
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -18,7 +19,7 @@ import android.util.Log;
  * 
  * @author Jake Wharton
  */
-public class Game {
+public class Game implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum Cell { BLANK, WALL, DOT, JUGGERDOT }
 
 	public static final Random RANDOM = new Random();
@@ -30,8 +31,16 @@ public class Game {
 	private static final int DEFAULT_GAME_BACKGROUND = 0xff000040;
     private static final int DEFAULT_HUD_FOREGROUND = 0xff8181c1;
     private static final int DEFAULT_HUD_BACKGROUND = 0xff000000;
+    private static final int DEFAULT_GRID_PADDING_LEFT = -5;
+    private static final int DEFAULT_GRID_PADDING_RIGHT = -5;
+    private static final int DEFAULT_GRID_PADDING_TOP = 35;
+    private static final int DEFAULT_GRID_PADDING_BOTTOM = 75;
     private static final boolean DEFAULT_DISPLAY_HUD = true;
     private static final boolean DEFAULT_KILL_SCREEN_ENABLED = true;
+    private static final int DEFAULT_ICON_ROWS = 4;
+    private static final int DEFAULT_ICON_COLS = 4;
+    private static final int DEFAULT_CELL_SPACING_ROWS = 6;
+    private static final int DEFAULT_CELL_SPACING_COLUMNS = 4;
     private static final int DEFAULT_GHOST_COUNT = 4;
 	private static final int POINTS_DOT = 10;
 	private static final int POINTS_JUGGERDOT = 50;
@@ -87,7 +96,9 @@ public class Game {
      * @param screenHeight Height in pixels of the screen.
      */
     public Game(final int iconRows, final int iconCols, final int screenWidth, final int screenHeight) {
-    	this.mGhostCount = Game.DEFAULT_GHOST_COUNT;
+        //Load all preferences or their defaults
+        Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
+        this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
     	
     	//Create entities
     	this.mTheMan = new TheMan();
@@ -99,46 +110,110 @@ public class Game {
     	if (this.mGhostCount > 3) { this.mGhosts[3] = new Ghost.Clyde(); }
     	
     	int i = 0;
-    	this.mEntities = new Entity[2 + this.mGhostCount]; //TheMan, Fruit, and Ghosts
+    	this.mEntities = new Entity[2 + this.mGhostCount]; //The Man, Fruit, and Ghosts
     	this.mEntities[i++] = this.mTheMan;
     	this.mEntities[i++] = this.mFruit;
     	for (Ghost ghost : this.mGhosts) {
     		this.mEntities[i++] = ghost;
     	}
     	
-    	//Screen and grid data
-        this.mDotGridPaddingLeft = -5;
-        this.mDotGridPaddingRight = -5;
-        this.mDotGridPaddingTop = 35;
-        this.mDotGridPaddingBottom = 75;
-    	this.mIconRows = iconRows;
-    	this.mIconCols = iconCols;
-    	Log.v(Game.TAG, "Icon Rows: " + iconRows);
-    	Log.v(Game.TAG, "Icon Cols: " + iconCols);
-    	this.performResize(screenWidth, screenHeight);
-    	
     	//Create playing board
         this.mBoard = new Cell[this.mCellsTall][this.mCellsWide];
-    	
+        
+        //Create Paints
+        this.mDotForeground = new Paint(); 
+        this.mHudForeground = new Paint();
+        
+        this.newGame();
+    }
+    
+	public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
+		final boolean all = (key == null);
+
+		// GENERAL //
+		
+    	this.mGhostCount = Game.DEFAULT_GHOST_COUNT;
         this.mIsBonusLifeAllowed = Game.DEFAULT_BONUS_ALLOWED;
         this.mBonusLifeThreshold = Game.DEFAULT_BONUS_THRESHOLD;
-        this.mIsOnKillScreen = false;
         this.mIsKillScreenEnabled = Game.DEFAULT_KILL_SCREEN_ENABLED;
+		
+		final String displayHud = Wallpaper.CONTEXT.getString(R.string.settings_display_showhud_key);
+		if (all || key.equals(displayHud)) {
+			this.mIsDisplayingHud = Wallpaper.PREFERENCES.getBoolean(key, Game.DEFAULT_DISPLAY_HUD);
+		}
+		
+		// COLORS //
         
-        this.mDotForeground = new Paint();
+        this.mGameBackground = Game.DEFAULT_GAME_BACKGROUND;
+        
         this.mDotForeground.setColor(Game.DEFAULT_DOT_FOREGROUND);
         this.mDotForeground.setAntiAlias(true);
-        this.mGameBackground = Game.DEFAULT_GAME_BACKGROUND;
-    	
-        this.mHudForeground = new Paint();
+        
         this.mHudForeground.setColor(Game.DEFAULT_HUD_FOREGROUND);
         this.mHudForeground.setAntiAlias(true);
         this.mHudForeground.setTextSize(20f);
         this.mHudForeground.setShadowLayer(1, -1, 1, Game.DEFAULT_HUD_BACKGROUND);
-        this.mIsDisplayingHud = Game.DEFAULT_DISPLAY_HUD;
-        
-        this.newGame();
-    }
+    	
+		
+		// GRID //
+		
+		final String dotGridPaddingLeft = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_left_key);
+		if (all || key.equals(dotGridPaddingLeft)) {
+			this.mDotGridPaddingLeft = Wallpaper.PREFERENCES.getInt(dotGridPaddingLeft, Game.DEFAULT_GRID_PADDING_LEFT);
+		}
+
+		final String dotGridPaddingRight = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_right_key);
+		if (all || key.equals(dotGridPaddingRight)) {
+			this.mDotGridPaddingRight = Wallpaper.PREFERENCES.getInt(dotGridPaddingRight, Game.DEFAULT_GRID_PADDING_RIGHT);
+		}
+
+		final String dotGridPaddingTop = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_top_key);
+		if (all || key.equals(dotGridPaddingTop)) {
+			this.mDotGridPaddingTop = Wallpaper.PREFERENCES.getInt(dotGridPaddingTop, Game.DEFAULT_GRID_PADDING_TOP);
+		}
+
+		final String dotGridPaddingBottom = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_bottom_key);
+		if (all || key.equals(dotGridPaddingBottom)) {
+			this.mDotGridPaddingBottom = Wallpaper.PREFERENCES.getInt(dotGridPaddingBottom, Game.DEFAULT_GRID_PADDING_BOTTOM);
+		}
+		
+		// CELLS //
+		
+		boolean cellChanged = false;
+		
+		final String iconRows = Wallpaper.CONTEXT.getString(R.string.settings_display_iconrows_key);
+		if (all || key.equals(iconRows)) {
+			this.mIconRows = Wallpaper.PREFERENCES.getInt(iconRows, Game.DEFAULT_ICON_ROWS);
+			cellChanged = true;
+		}
+		
+		final String iconCols = Wallpaper.CONTEXT.getString(R.string.settings_display_iconcols_key);
+		if (all || key.equals(iconCols)) {
+			this.mIconCols = Wallpaper.PREFERENCES.getInt(iconCols, Game.DEFAULT_ICON_COLS);
+			cellChanged = true;
+		}
+		
+		final String cellSpacingRow = Wallpaper.CONTEXT.getString(R.string.settings_display_rowspacing_key);
+		if (all || key.equals(cellSpacingRow)) {
+			this.mCellRowSpacing = Wallpaper.PREFERENCES.getInt(cellSpacingRow, Game.DEFAULT_CELL_SPACING_ROWS);
+	    	Log.v(Game.TAG, "Cell Row Spacing: " + this.mCellRowSpacing);
+			cellChanged = true;
+		}
+		
+		final String cellSpacingCol = Wallpaper.CONTEXT.getString(R.string.settings_display_colspacing_key);
+		if (all || key.equals(cellSpacingCol)) {
+			this.mCellColumnSpacing = Wallpaper.PREFERENCES.getInt(cellSpacingCol, Game.DEFAULT_CELL_SPACING_COLUMNS);
+	    	Log.v(Game.TAG, "Cell Column Spacing: " + this.mCellColumnSpacing);
+			cellChanged = true;
+		}
+		
+		if (cellChanged) {
+	    	this.mCellsWide = (this.mIconCols * (mCellColumnSpacing + 1)) + 1;
+	    	Log.v(Game.TAG, "Cells Wide: " + this.mCellsWide);
+	    	this.mCellsTall = (this.mIconRows * (mCellRowSpacing + 1)) + 1;
+	    	Log.v(Game.TAG, "Cells Tall: " + this.mCellsTall);
+		}
+	}
     
     /**
      * Get the Cell value for a specific coordinate.
@@ -403,6 +478,7 @@ public class Game {
 		this.mScore = 0;
 		this.mLevel = 0; //changed to 1 in newLevel
 		this.mIsBonusLifeGiven = false;
+        this.mIsOnKillScreen = false;
     	
     	//Reset board
     	this.newLevel();
@@ -477,14 +553,6 @@ public class Game {
     	Log.v(Game.TAG, "Screen Width: " + screenWidth);
     	this.mScreenHeight = screenHeight;
     	Log.v(Game.TAG, "Screen Height: " + screenHeight);
-    	this.mCellColumnSpacing = 4; //TODO: calculate this from width and left/right padding
-    	Log.v(Game.TAG, "Cell Column Spacing: " + this.mCellColumnSpacing);
-    	this.mCellRowSpacing = 6; //TODO: calculate this from height and top/bottom padding
-    	Log.v(Game.TAG, "Cell Row Spacing: " + this.mCellRowSpacing);
-    	this.mCellsWide = (this.mIconCols * (mCellColumnSpacing + 1)) + 1;
-    	Log.v(Game.TAG, "Cells Wide: " + this.mCellsWide);
-    	this.mCellsTall = (this.mIconRows * (mCellRowSpacing + 1)) + 1;
-    	Log.v(Game.TAG, "Cells Tall: " + this.mCellsTall);
     	
     	if (this.mIsLandscape) {
     		this.mCellWidth = (screenWidth - this.mDotGridPaddingTop) / (this.mCellsWide * 1.0f);
