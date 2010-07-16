@@ -61,54 +61,6 @@ public abstract class Entity {
 			return new Direction[] { NORTH, WEST, SOUTH, EAST };
 		}
 	}
-	public static class Position {
-		private final Point mPosition;
-		private final Direction mDirection;
-		private final Direction mInitialDirection;
-		
-		public Position(final Point position, final Direction direction) {
-			this(position, direction, null);
-		}
-		private Position(final Point position, final Direction direction, final Direction initialDirection) {
-			this.mPosition = position;
-			this.mDirection = direction;
-			this.mInitialDirection = initialDirection;
-		}
-		
-		public Point getPosition() {
-			return this.mPosition;
-		}
-		public int getPositionX() {
-			return this.mPosition.x;
-		}
-		public int getPositionY() {
-			return this.mPosition.y;
-		}
-		public Direction getDirection() {
-			return this.mDirection;
-		}
-		public Direction getInitialDirection() {
-			return this.mInitialDirection;
-		}
-		public Position[] getPossibleMoves() {
-			final Position[] moves = new Position[4];
-			int i = 0;
-			
-			if (this.mDirection != null) {
-				//favor the same direction
-				moves[i++] = new Position(Entity.move(this.mPosition, this.mDirection), this.mDirection, (this.mInitialDirection == null) ? this.mDirection : this.mInitialDirection);
-			}
-			
-			//add other three directions
-			for (Direction direction : Direction.movingValues()) {
-				if (direction != this.mDirection) {
-					moves[i++] = new Position(Entity.move(this.mPosition, direction), direction, (this.mInitialDirection == null) ? direction : this.mInitialDirection);
-				}
-			}
-			
-			return moves;
-		}
-	}
 	
 	protected final Point mPosition;
 	protected final PointF mLocation;
@@ -148,21 +100,39 @@ public abstract class Entity {
 		this.mCellHeightOverTwo = this.mCellHeight / 2.0f;
 	}
 	
-	public int getPositionX() {
-		return this.mPosition.x;
+	/**
+	 * Get the current position of the entity.
+	 * @return Position.
+	 */
+	public Point getPosition() {
+		return this.mPosition;
 	}
 	
-	public int getPositionY() {
-		return this.mPosition.y;
+	/**
+	 * Get the current direction of the entity.
+	 * @return Position.
+	 */
+	public Direction getDirection() {
+		return this.mDirection;
 	}
 	
-	public void setPosition(int x, int y) {
-		this.mPosition.set(x, y);
-		this.mLocation.set((x * this.mCellWidth) + this.mCellWidthOverTwo, (y * this.mCellHeight) + this.mCellHeightOverTwo);
+	/**
+	 * Set the board position and location.
+	 * @param x X coordinate.
+	 * @param y Y coordinate.
+	 */
+	public void setPosition(final Point position) {
+		this.mPosition.set(position.x, position.y);
+		this.mLocation.set((position.x * this.mCellWidth) + this.mCellWidthOverTwo, (position.y * this.mCellHeight) + this.mCellHeightOverTwo);
 	}
 	
+	/**
+	 * Test if this entity is occupying the same cell as another.
+	 * @param other Other entity.
+	 * @return Whether or not they are occupying the same cell.
+	 */
 	public boolean isCollidingWith(Entity other) {
-		return ((this.mPosition.x == other.getPositionX()) && (this.mPosition.y == other.getPositionY()));
+		return ((this.mPosition.x == other.getPosition().x) && (this.mPosition.y == other.getPosition().y));
 	}
 
     /**
@@ -194,18 +164,18 @@ public abstract class Entity {
     /**
      * Render the entity on the Canvas.
      * 
-     * @param c Canvas to draw on.
+     * @param c Canvas on which to draw.
      */
 	public abstract void draw(final Canvas c);
 	
 	/**
-	 * Callback when we have moved into a new cell.
+	 * Triggered when we have moved into a new cell.
 	 * @param game Game instance
 	 */
 	protected abstract void moved(final Game game);
 	
 	/**
-	 * Callback to reset to initial game position
+	 * Triggered to reset to initial game position.
 	 * @param game Game instance
 	 */
 	protected abstract void newLevel(final Game game);
@@ -219,23 +189,35 @@ public abstract class Entity {
 	 * @return New point coordinates.
 	 */
 	protected static Point move(final Point point, final Direction direction) {
+		return Entity.move(point, direction, 1);
+	}
+	
+	/**
+	 * Update the point in the direction specified by a specific number of steps.
+	 * 
+	 * @param point Point of original coordinates.
+	 * @param direction Direction in which to move the point.
+	 * @param setps Number of steps to move point.
+	 * @return New point coordinates.
+	 */
+	protected static Point move(final Point point, final Direction direction, final int steps) {
     	final Point newPoint = new Point(point);
     	if (direction != null) {
 	    	switch (direction) {
 	    		case NORTH:
-	    			newPoint.y -= 1;
+	    			newPoint.y -= steps;
 					break;
 					
 	    		case SOUTH:
-	    			newPoint.y += 1;
+	    			newPoint.y += steps;
 					break;
 					
 	    		case WEST:
-	    			newPoint.x -= 1;
+	    			newPoint.x -= steps;
 					break;
 					
 	    		case EAST:
-	    			newPoint.x += 1;
+	    			newPoint.x += steps;
 					break;
 	    	}
     	}

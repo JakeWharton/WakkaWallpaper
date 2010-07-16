@@ -182,7 +182,7 @@ public abstract class Ghost extends Entity {
 	protected void newLevel(final Game game) {
 		this.mDirection = null;
 		this.mNextDirection = null;
-		this.setPosition(this.getInitialPositionX(game), this.getInitialPositionY(game));
+		this.setPosition(this.getInitialPosition(game));
 	}
 	
 	@Override
@@ -199,15 +199,15 @@ public abstract class Ghost extends Entity {
 	protected void determineNextDirection(final Game game, final boolean isStateChange) {
 		switch (this.mState) {
 			case CHASE:
-				this.determindNextDirectionWhenChasing(game, isStateChange);				
+				this.determineNextDirectionByLineOfSight(game, this.getChasingPosition(game), isStateChange);				
 				break;
 				
 			case SCATTER:
-				this.determineNextDirectionByLineOfSight(game, this.getInitialCorner(game), isStateChange);
+				this.determineNextDirectionByLineOfSight(game, this.getScatterPosition(game), isStateChange);
 				break;
 				
 			case EATEN:
-				this.determineNextDirectionByLineOfSight(game, new Point(this.getInitialPositionX(game), this.getInitialPositionY(game)), isStateChange);
+				this.determineNextDirectionByLineOfSight(game, this.getInitialPosition(game), isStateChange);
 				break;
 				
 			case FRIGHTENED:
@@ -276,28 +276,21 @@ public abstract class Ghost extends Entity {
 	 * @param game Game instance
 	 * @return X coordinate
 	 */
-	protected abstract int getInitialPositionX(final Game game);
-	
-	/**
-	 * Y coordinate of initial starting position
-	 * @param game Game instance
-	 * @return Y coordinate
-	 */
-	protected abstract int getInitialPositionY(final Game game);
+	protected abstract Point getInitialPosition(final Game game);
 	
 	/**
 	 * Point off of the board of the initial starting corner
 	 * @param game Game instance
 	 * @return Point
 	 */
-	protected abstract Point getInitialCorner(final Game game);
+	protected abstract Point getScatterPosition(final Game game);
 	
 	/**
-	 * Determine the next location to travel in when chasing
-	 * @param game Game instance
-	 * @param isStateChange Whether or not this new direction is occuring from a state change
+	 * Point to use when chasing down The Man.
+	 * @param game Game instance.
+	 * @return Point
 	 */
-	protected abstract void determindNextDirectionWhenChasing(final Game game, final boolean isStateChange);
+	protected abstract Point getChasingPosition(final Game game);
 
 	
 	
@@ -317,26 +310,21 @@ public abstract class Ghost extends Entity {
 		}
 		
 		@Override
-		protected int getInitialPositionX(final Game game) {
-			//last column
-			return game.getCellsWide() - 1;
+		protected Point getInitialPosition(final Game game) {
+			//last column, second row
+			return new Point(game.getCellsWide() - 1, game.getCellRowSpacing() + 1);
 		}
 
 		@Override
-		protected int getInitialPositionY(final Game game) {
-			//second row
-			return game.getCellRowSpacing() + 1;
-		}
-
-		@Override
-		protected Point getInitialCorner(final Game game) {
+		protected Point getScatterPosition(final Game game) {
 			//upper right
-			return new Point(game.getCellsWide(), 0);
+			return new Point(game.getCellsWide(), -1);
 		}
 
 		@Override
-		protected void determindNextDirectionWhenChasing(final Game game, final boolean isStateChange) {
-			// TODO Auto-generated method stub
+		protected Point getChasingPosition(final Game game) {
+			//use The Man's position as a target
+			return new Point(game.getTheMan().getPosition());
 		}
 	}
 	
@@ -347,6 +335,7 @@ public abstract class Ghost extends Entity {
 	 */
 	public static class Pinky extends Ghost {
 		private static final int BACKGROUND_COLOR = 0xffff00f0;
+		private static final int LEADING_FACTOR = 4;
 		
 		/**
 		 * Create a new instance of the ghost Pinky (Speedy).
@@ -356,26 +345,25 @@ public abstract class Ghost extends Entity {
 		}
 
 		@Override
-		protected int getInitialPositionX(final Game game) {
-			//second column
-			return game.getCellColumnSpacing() + 1;
+		protected Point getInitialPosition(final Game game) {
+			//second column, first row
+			return new Point(game.getCellColumnSpacing() + 1, 0);
 		}
 
 		@Override
-		protected int getInitialPositionY(final Game game) {
-			//first row
-			return 0;
-		}
-
-		@Override
-		protected Point getInitialCorner(final Game game) {
+		protected Point getScatterPosition(final Game game) {
 			//upper left
-			return new Point(0, 0);
+			return new Point(-1, -1);
 		}
 
 		@Override
-		protected void determindNextDirectionWhenChasing(final Game game, final boolean isStateChange) {
-			// TODO Auto-generated method stub
+		protected Point getChasingPosition(final Game game) {
+			//the target is 4 tiles in front of The Man, unless he is going upward, then it is up 4 and left 4
+			Point position = Entity.move(game.getTheMan().getPosition(), game.getTheMan().getDirection(), Pinky.LEADING_FACTOR);
+			if (game.getTheMan().getDirection() == Direction.NORTH) {
+				position.x -= Pinky.LEADING_FACTOR;
+			}
+			return position;
 		}
 	}
 	
@@ -386,6 +374,8 @@ public abstract class Ghost extends Entity {
 	 */
 	public static class Inky extends Ghost {
 		private static final int BACKGROUND_COLOR = 0xff01d8ff;
+		private static final int LEADING_FACTOR = 2;
+		private static final int BLINKY_INDEX = 0; //always the first ghost initialized
 		
 		/**
 		 * Create a new instance of the ghost Inky (Bashful).
@@ -395,26 +385,28 @@ public abstract class Ghost extends Entity {
 		}
 
 		@Override
-		protected int getInitialPositionX(final Game game) {
-			//second to last column
-			return game.getCellsWide() - game.getCellColumnSpacing() - 2;
+		protected Point getInitialPosition(final Game game) {
+			//second to last column, last row
+			return new Point(game.getCellsWide() - game.getCellColumnSpacing() - 2, game.getCellsTall() - 1);
 		}
 
 		@Override
-		protected int getInitialPositionY(final Game game) {
-			//last row
-			return game.getCellsTall() - 1;
-		}
-
-		@Override
-		protected Point getInitialCorner(final Game game) {
+		protected Point getScatterPosition(final Game game) {
 			//lower right
 			return new Point(game.getCellsWide(), game.getCellsTall());
 		}
 
 		@Override
-		protected void determindNextDirectionWhenChasing(final Game game, final boolean isStateChange) {
-			// TODO Auto-generated method stub
+		protected Point getChasingPosition(final Game game) {
+			//the leading position is 2 tiles in front of The Man, unless he is going upward, then it is up 2 and left 2
+			Point position = Entity.move(game.getTheMan().getPosition(), game.getTheMan().getDirection(), Inky.LEADING_FACTOR);
+			if (game.getTheMan().getDirection() == Direction.NORTH) {
+				position.x -= Inky.LEADING_FACTOR;
+			}
+			//add the offset between the leading position and blinky to the leading position for our target
+			position.x += game.getGhost(Inky.BLINKY_INDEX).getPosition().x - position.x;
+			position.y += game.getGhost(Inky.BLINKY_INDEX).getPosition().y - position.y;
+			return position;
 		}
 	}
 	
@@ -425,6 +417,7 @@ public abstract class Ghost extends Entity {
 	 */
 	public static class Clyde extends Ghost {
 		private static final int BACKGROUND_COLOR = 0xffff8401;
+		private static final int PROXIMITY_THRESHOLD = 8;
 		
 		/**
 		 * Create a new instance of the ghost Clyde (Pokey).
@@ -434,26 +427,27 @@ public abstract class Ghost extends Entity {
 		}
 
 		@Override
-		protected int getInitialPositionX(final Game game) {
-			//first column
-			return 0;
+		protected Point getInitialPosition(final Game game) {
+			//first column, second to last row
+			return new Point(-1, game.getCellsTall() - game.getCellRowSpacing() - 2);
 		}
 
 		@Override
-		protected int getInitialPositionY(final Game game) {
-			//second to last row
-			return game.getCellsTall() - game.getCellRowSpacing() - 2;
-		}
-
-		@Override
-		protected Point getInitialCorner(final Game game) {
+		protected Point getScatterPosition(final Game game) {
 			//lower left
-			return new Point(0, game.getCellsTall());
+			return new Point(-1, game.getCellsTall());
 		}
 
 		@Override
-		protected void determindNextDirectionWhenChasing(final Game game, final boolean isStateChange) {
-			// TODO Auto-generated method stub
+		protected Point getChasingPosition(final Game game) {
+			double distance = Math.sqrt(Math.pow(this.mPosition.x - game.getTheMan().getPosition().x, 2) + Math.pow(this.mPosition.y - game.getTheMan().getPosition().y, 2));
+			if (distance > Clyde.PROXIMITY_THRESHOLD) {
+				//outside proximity zone, The Man's position is the target
+				return new Point(game.getTheMan().getPosition());
+			} else {
+				//inside proximity zone, scatter position is the target
+				return this.getScatterPosition(game);
+			}
 		}
 	}
 }

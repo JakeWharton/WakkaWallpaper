@@ -144,8 +144,8 @@ public class Game {
      * @param y Vertical coordinate.
      * @return Cell value.
      */
-    public Cell getCell(final int x, final int y) {
-    	return this.mBoard[y][x];
+    public Cell getCell(final Point position) {
+    	return this.mBoard[position.y][position.x];
     }
     
     /**
@@ -154,6 +154,17 @@ public class Game {
      */
     public TheMan getTheMan() {
     	return this.mTheMan;
+    }
+    
+    /**
+     * Get the ghost at specified index.
+     * 
+     * @param index Index of ghost.
+     * @return Ghost instance.
+     */
+    public Ghost getGhost(final int index) {
+    	//WARNING: unchecked
+    	return this.mGhosts[index];
     }
     
     /**
@@ -266,7 +277,9 @@ public class Game {
     
     /**
      * Get a unique integer hash for the position on the board.
-     * @param position Position on the board.
+     * 
+     * @param x X coordinate of position.
+     * @param y Y coordinate of position.
      * @return Integer hash.
      */
     public int hashPosition(final Point position) {
@@ -291,7 +304,7 @@ public class Game {
      * Check to see if The Man has eaten a dot or juggerdot.
      */
     public void checkDots() {
-    	if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.DOT) {
+    	if (this.getCell(this.mTheMan.getPosition()) == Cell.DOT) {
     		this.mDotsEaten += 1;
     		this.mDotsRemaining -= 1;
     		this.addToScore(Game.POINTS_DOT);
@@ -300,7 +313,7 @@ public class Game {
         	if (this.mDotsRemaining <= 0) {
         		this.newLevel();
         	}
-    	} else if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.JUGGERDOT) {
+    	} else if (this.getCell(this.mTheMan.getPosition()) == Cell.JUGGERDOT) {
     		this.addToScore(Game.POINTS_JUGGERDOT);
     		this.switchGhostsState(Ghost.State.FRIGHTENED);
     	}

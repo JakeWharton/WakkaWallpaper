@@ -8,6 +8,7 @@ import com.jakewharton.wakkawallpaper.Game.Cell;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.Paint.Style;
 import android.util.Log;
@@ -63,18 +64,18 @@ public class TheMan extends Entity {
 		this.mNextDirection = null; //fallback to stopped
 		
 		//Breadth-first search for new next direction
-		final Queue<Entity.Position> queue = new LinkedList<Entity.Position>();
+		final Queue<Vector> queue = new LinkedList<Vector>();
 		final HashSet<Integer> seen = new HashSet<Integer>();
-		queue.add(new Entity.Position(this.mPosition, this.mDirection));
-		Entity.Position current;
+		queue.add(new Vector(this.mPosition, this.mDirection));
+		Vector current;
 		
 		while (!queue.isEmpty()) {
 			current = queue.remove();
 			seen.add(game.hashPosition(current.getPosition()));
 			
-			for (Entity.Position next : current.getPossibleMoves()) {
+			for (Vector next : current.getPossibleMoves()) {
 				if (game.isValidPosition(next.getPosition()) && !seen.contains(game.hashPosition(next.getPosition()))) {
-					if (game.getCell(next.getPositionX(), next.getPositionY()) == Cell.DOT) {
+					if (game.getCell(next.getPosition()) == Cell.DOT) {
 						this.mNextDirection = next.getInitialDirection();
 						queue.clear(); //exit while
 						break; //exit for
@@ -115,7 +116,7 @@ public class TheMan extends Entity {
 	@Override
 	protected void newLevel(Game game) {
 		//Position in the center-most region of the board.
-		this.setPosition(game.getCellsWide() / 2, ((game.getIconRows() / 2) * (game.getCellRowSpacing() + 1)));
+		this.setPosition(new Point(game.getCellsWide() / 2, ((game.getIconRows() / 2) * (game.getCellRowSpacing() + 1))));
 		
 		this.mDirection = null;
 		this.mNextDirection = null;
