@@ -12,7 +12,7 @@ import android.graphics.RectF;
  * @author Jake Wharton
  */
 public abstract class Ghost extends Entity {
-	enum State { HUNT, FLEE, EYES_ONLY }
+	enum State { CHASE, SCATTER, FRIGHTENED, EATEN }
 	
 	private static final int FLEE_LENGTH = 7000;
 	private static final int FLEE_BLINK_THRESHOLD = 2000;
@@ -37,7 +37,6 @@ public abstract class Ghost extends Entity {
 	private float mCellHeightOverThree;
 	private float mCellWidthOverSeven;
 	private float mCellWidthOverFourteen;
-
 	private int mFleeLength;
 	
     /**
@@ -48,7 +47,7 @@ public abstract class Ghost extends Entity {
 	protected Ghost(final int backgroundColor) {
 		super();
 
-		this.mState = State.HUNT;
+		this.mState = State.CHASE;
 		this.mFleeLength = Ghost.FLEE_LENGTH;
 		
 		this.mBodyBackground = new Paint();
@@ -123,14 +122,15 @@ public abstract class Ghost extends Entity {
 	@Override
 	public void draw(final Canvas c) {
 		c.save();
-		c.translate(this.mLocation.x, this.mLocation.y);
+		c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
 		
 		switch (this.mState) {
-			case HUNT:
-				c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mBodyBackground);
+			case CHASE:
+			case SCATTER:
+				c.drawPath(this.mBodyPaths[(int)(this.mTickCount % this.mBodyPaths.length)], this.mBodyBackground);
 				
 				//fall through to eyes only case
-			case EYES_ONLY:
+			case EATEN:
 				Point eyeOffset = Entity.move(new Point(0, 0), this.mDirection);
 				
 				c.drawCircle(this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverSeven, this.mEyeBackground);
@@ -139,28 +139,65 @@ public abstract class Ghost extends Entity {
 				c.drawCircle((2.0f * this.mCellWidthOverThree) + (eyeOffset.x * this.mCellWidthOverFourteen), this.mCellHeightOverThree + (eyeOffset.y * this.mCellWidthOverFourteen), this.mCellWidthOverFourteen, this.mEyeForeground);
 				break;
 				
-			case FLEE:
+			case FRIGHTENED:
 				if ((this.mFleeLength <= Ghost.FLEE_BLINK_THRESHOLD) && ((this.mFleeLength / Ghost.FLEE_BLINK_INTERVAL) % 2 == 0)) {
 					//draw scared blink
-					c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mScaredBlinkBackground);
+					c.drawPath(this.mBodyPaths[(int)(this.mTickCount % this.mBodyPaths.length)], this.mScaredBlinkBackground);
 				} else {
 					//draw normal scared
-					c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mScaredBackground);
+					c.drawPath(this.mBodyPaths[(int)(this.mTickCount % this.mBodyPaths.length)], this.mScaredBackground);
 				}
 				break;
 		}
 		
 		c.restore();
 	}
+
+	/**
+	 * Get ghost state.
+	 * @return State
+	 */
+	public State getState() {
+		return this.mState;
+	}
 	
+	/**
+	 * Change ghost state. This will trigger the locating of a new next direction.
+	 * @param game Game instance
+	 * @param state Next ghost state
+	 */
+	public void setState(final Game game, final State state) {
+		this.mState = state;
+		this.determineNextDirection(game, true);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.jakewharton.wakkawallpaper.Entity#newLevel(com.jakewharton.wakkawallpaper.Game)
+	 */
 	@Override
-	protected void reset(final Game game) {
+	protected void newLevel(final Game game) {
 		this.mDirection = Direction.STOPPED;
 		this.mNextDirection = Direction.STOPPED;
 	}
 	
-
+	/*
+	 * (non-Javadoc)
+	 * @see com.jakewharton.wakkawallpaper.Entity#moved(com.jakewharton.wakkawallpaper.Game)
+	 */
+	@Override
+	protected void moved(final Game game) {
+		game.checkGhosts();
+		this.determineNextDirection(game, false);
+	}
 	
+	/**
+	 * Determine the next direction to travel in.
+	 * @param game Game instance
+	 */
+	protected abstract void determineNextDirection(final Game game, final boolean isStateChange);
+	
+
 	/**
 	 * The ghost Blinky (Shadow).
 	 * 
@@ -176,60 +213,25 @@ public abstract class Ghost extends Entity {
 			super(Blinky.BACKGROUND_COLOR);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.jakewharton.wakkawallpaper.Ghost#determineNextDirection(com.jakewharton.wakkawallpaper.Game)
+		 */
 		@Override
-		protected void moved(Game game) {
-			//TODO: use real logic, per ghost
-			switch (this.mState) {
-				case HUNT:
-			    	boolean success = false;
-			    	Direction nextDirection = null;
-			    	while (!success) {
-		    			switch (Game.RANDOM.nextInt(10)) {
-		    				case 0:
-		        				nextDirection = Direction.NORTH;
-		        				break;
-		        			case 1:
-		        				nextDirection = Direction.SOUTH;
-		        				break;
-		        			case 2:
-		        				nextDirection = Direction.EAST;
-		        				break;
-		        			case 3:
-		        				nextDirection = Direction.WEST;
-		        				break;
-		        			default: //4-9, most of the time stay straight (if possible)
-		        				if (this.mDirection != null) {
-		        					nextDirection = this.mDirection;
-		        				}
-		        				break;
-		    			}
-	
-						if (nextDirection != null) {
-							if (nextDirection == this.mNextDirection.getOpposite()) {
-								success = false;
-							} else {
-								success = game.isValidPosition(Entity.move(this.mPosition, nextDirection));
-							}
-						}
-		    		}
-			    	
-			    	this.mDirection = this.mNextDirection;
-			    	this.mNextDirection = nextDirection;
-					break;
-					
-				case EYES_ONLY:
-					break;
-					
-				case FLEE:
-					break;
-			}
+		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
+			// TODO Auto-generated method stub
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.jakewharton.wakkawallpaper.Ghost#newLevel(com.jakewharton.wakkawallpaper.Game)
+		 */
 		@Override
-		protected void reset(Game game) {
-			super.reset(game);
+		protected void newLevel(final Game game) {
+			super.newLevel(game);
 			
-			//TODO: move to position
+			//Position in the second column, first row
+			this.setPosition(game.getCellColumnSpacing() + 1, 0);
 		}
 	}
 	
@@ -248,17 +250,25 @@ public abstract class Ghost extends Entity {
 			super(Pinky.BACKGROUND_COLOR);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.jakewharton.wakkawallpaper.Ghost#determineNextDirection(com.jakewharton.wakkawallpaper.Game)
+		 */
 		@Override
-		protected void moved(Game game) {
+		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
 			// TODO Auto-generated method stub
-			
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.jakewharton.wakkawallpaper.Ghost#newLevel(com.jakewharton.wakkawallpaper.Game)
+		 */
 		@Override
-		protected void reset(Game game) {
-			super.reset(game);
+		protected void newLevel(Game game) {
+			super.newLevel(game);
 			
-			//TODO: move to position
+			//Position in the last column, second to last row
+			this.setPosition(game.getCellsWide() - game.getCellColumnSpacing() - 2, game.getCellsTall() - 1);
 		}
 	}
 	
@@ -277,17 +287,25 @@ public abstract class Ghost extends Entity {
 			super(Inky.BACKGROUND_COLOR);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.jakewharton.wakkawallpaper.Ghost#determineNextDirection(com.jakewharton.wakkawallpaper.Game)
+		 */
 		@Override
-		protected void moved(Game game) {
+		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
 			// TODO Auto-generated method stub
-			
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.jakewharton.wakkawallpaper.Ghost#newLevel(com.jakewharton.wakkawallpaper.Game)
+		 */
 		@Override
-		protected void reset(Game game) {
-			super.reset(game);
+		protected void newLevel(Game game) {
+			super.newLevel(game);
 			
-			//TODO: move to position
+			//Position in the first column, second to last row
+			this.setPosition(0, game.getCellsTall() - game.getCellRowSpacing() - 2);
 		}
 	}
 	
@@ -306,17 +324,25 @@ public abstract class Ghost extends Entity {
 			super(Clyde.BACKGROUND_COLOR);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.jakewharton.wakkawallpaper.Ghost#determineNextDirection(com.jakewharton.wakkawallpaper.Game)
+		 */
 		@Override
-		protected void moved(Game game) {
+		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
 			// TODO Auto-generated method stub
-			
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see com.jakewharton.wakkawallpaper.Ghost#newLevel(com.jakewharton.wakkawallpaper.Game)
+		 */
 		@Override
-		protected void reset(Game game) {
-			super.reset(game);
+		protected void newLevel(Game game) {
+			super.newLevel(game);
 			
-			//TODO: move to position
+			//Position in the last column, second row
+			this.setPosition(game.getCellsWide() - 1, game.getCellRowSpacing() + 1);
 		}
 	}
 }

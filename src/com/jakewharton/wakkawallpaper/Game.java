@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Random;
 
+import com.jakewharton.wakkawallpaper.Ghost.State;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -27,8 +29,14 @@ public class Game {
 	private static final int DEFAULT_GAME_BACKGROUND = 0xff000040;
     private static final int DEFAULT_HUD_FOREGROUND = 0xff8181c1;
     private static final int DEFAULT_HUD_BACKGROUND = 0xff000000;
+    private static final boolean DEFAULT_KILL_SCREEN_ENABLED = true;
+    private static final int DEFAULT_GHOST_COUNT = 4;
 	private static final int POINTS_DOT = 10;
 	private static final int POINTS_JUGGERDOT = 50;
+	private static final int[] POINTS_FLEEING_GHOSTS = new int[] { 200, 400, 800, 1600 };
+	private static final int POINTS_ALL_FLEEDING_GHOSTS = 12000;
+	private static final int NUMBER_OF_JUGGERDOTS = 4;
+	private static final int KILL_SCREEN_LEVEL = 256;
 	
 	private int mCellsWide;
 	private int mCellsTall;
@@ -41,17 +49,23 @@ public class Game {
     private boolean mIsLandscape;
     private int mIconRows;
     private int mIconCols;
+    private boolean mIsOnKillScreen;
+    private boolean mIsKillScreenEnabled;
 	private Cell[][] mBoard;
 	private Entity[] mEntities;
 	private TheMan mTheMan;
 	private Fruit mFruit;
+	private Ghost[] mGhosts;
+	private int mGhostCount;
+	private int mFleeingGhostsEaten;
+	private int mAllFleedingGhostsEaten;
 	private int mDotsRemaining;
 	private int mDotsEaten;
 	private int mLives;
 	private int mScore;
 	private int mLevel;
-    private boolean mBonusLifeAllowed;
-    private boolean mBonusLifeGiven;
+    private boolean mIsBonusLifeAllowed;
+    private boolean mIsBonusLifeGiven;
     private final Paint mDotForeground;
     private int mGameBackground;
     private int mBonusLifeThreshold;
@@ -70,16 +84,24 @@ public class Game {
      * @param screenHeight Height in pixels of the screen.
      */
     public Game(final int iconRows, final int iconCols, final int screenWidth, final int screenHeight) {
+    	this.mGhostCount = Game.DEFAULT_GHOST_COUNT;
+    	
     	//Create entities
     	this.mTheMan = new TheMan();
     	this.mFruit = new Fruit();
-    	this.mEntities = new Entity[6];
-    	this.mEntities[0] = this.mTheMan;
-    	this.mEntities[1] = new Ghost.Blinky();
-    	this.mEntities[2] = new Ghost.Pinky();
-    	this.mEntities[3] = new Ghost.Inky();
-    	this.mEntities[4] = new Ghost.Clyde();
-    	this.mEntities[5] = this.mFruit;
+    	this.mGhosts = new Ghost[this.mGhostCount];
+    	if (this.mGhostCount > 0) { this.mGhosts[0] = new Ghost.Blinky(); }
+    	if (this.mGhostCount > 1) { this.mGhosts[1] = new Ghost.Pinky(); }
+    	if (this.mGhostCount > 2) { this.mGhosts[2] = new Ghost.Inky(); }
+    	if (this.mGhostCount > 3) { this.mGhosts[3] = new Ghost.Clyde(); }
+    	
+    	int i = 0;
+    	this.mEntities = new Entity[2 + this.mGhostCount]; //TheMan, Fruit, and Ghosts
+    	this.mEntities[i++] = this.mTheMan;
+    	for (Ghost ghost : this.mGhosts) {
+    		this.mEntities[i++] = ghost;
+    	}
+    	this.mEntities[i++] = this.mFruit;
     	
     	//Screen and grid data
         this.mDotGridPaddingLeft = -5;
@@ -87,17 +109,18 @@ public class Game {
         this.mDotGridPaddingTop = 35;
         this.mDotGridPaddingBottom = 75;
     	this.mIconRows = iconRows;
-    	
-    	Log.v(Game.TAG, "Icon Rows: " + iconRows);
     	this.mIconCols = iconCols;
+    	Log.v(Game.TAG, "Icon Rows: " + iconRows);
     	Log.v(Game.TAG, "Icon Cols: " + iconCols);
     	this.performResize(screenWidth, screenHeight);
     	
     	//Create playing board
         this.mBoard = new Cell[this.mCellsTall][this.mCellsWide];
     	
-        this.mBonusLifeAllowed = Game.DEFAULT_BONUS_ALLOWED;
+        this.mIsBonusLifeAllowed = Game.DEFAULT_BONUS_ALLOWED;
         this.mBonusLifeThreshold = Game.DEFAULT_BONUS_THRESHOLD;
+        this.mIsOnKillScreen = false;
+        this.mIsKillScreenEnabled = Game.DEFAULT_KILL_SCREEN_ENABLED;
         
         this.mDotForeground = new Paint();
         this.mDotForeground.setColor(Game.DEFAULT_DOT_FOREGROUND);
@@ -128,6 +151,10 @@ public class Game {
     	return this.mTheMan;
     }
     
+    public int getDotsEaten() {
+    	return this.mDotsEaten;
+    }
+    
     public int getLevel() {
     	return this.mLevel;
     }
@@ -135,8 +162,33 @@ public class Game {
     public float getCellWidth() {
     	return this.mCellWidth;
     }
+    
     public float getCellHeight() {
     	return this.mCellHeight;
+    }
+    
+    public int getCellsWide() {
+    	return this.mCellsWide;
+    }
+    
+    public int getCellsTall() {
+    	return this.mCellsTall;
+    }
+    
+    public int getCellColumnSpacing() {
+    	return this.mCellColumnSpacing;
+    }
+    
+    public int getCellRowSpacing() {
+    	return this.mCellRowSpacing;
+    }
+    
+    public int getIconRows() {
+    	return this.mIconRows;
+    }
+    
+    public int getIconCols() {
+    	return this.mIconCols;
     }
     
     /**
@@ -155,24 +207,77 @@ public class Game {
     	return (position.y * this.mCellsWide) + position.x;
     }
     
-    public void checkForDot() {
-    	if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.DOT) {
-    		this.mDotsEaten += 1;
-    		this.mDotsRemaining -= 1;
-    		this.mScore += Game.POINTS_DOT;
-    	} else if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.JUGGERDOT) {
-    		this.mScore += Game.POINTS_JUGGERDOT;
-    	}
+    private void addToScore(final int amount) {
+    	this.mScore += amount;
     	
-    	//Check for level complete
-    	if (this.mDotsRemaining <= 0) {
-    		this.mLevel += 1;
-    		this.reset();
+    	//Check bonus life
+    	if (this.mIsBonusLifeAllowed && !this.mIsBonusLifeGiven && (this.mScore > this.mBonusLifeThreshold)) {
+    		this.mIsBonusLifeGiven = true;
+    		this.mLives += 1;
     	}
     }
     
-    public void checkForGhost() {
-    	//TODO: check ghost collisions
+    public void checkDots() {
+    	if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.DOT) {
+    		this.mDotsEaten += 1;
+    		this.mDotsRemaining -= 1;
+    		this.addToScore(Game.POINTS_DOT);
+        	
+        	//Check for level complete
+        	if (this.mDotsRemaining <= 0) {
+        		this.newLevel();
+        	}
+    	} else if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.JUGGERDOT) {
+    		this.addToScore(Game.POINTS_JUGGERDOT);
+    		this.switchGhostsState(Ghost.State.FRIGHTENED);
+    	}
+    }
+    
+    public void checkFruit() {
+    	if (this.mTheMan.isCollidingWith(this.mFruit)) {
+    		//eat the fruit
+    		this.addToScore(this.mFruit.eat());
+    	}
+    }
+    
+    public void checkGhosts() {
+    	for (Ghost ghost : this.mGhosts) {
+    		if (this.mTheMan.isCollidingWith(ghost)) {
+    			switch (ghost.getState()) {
+					case CHASE:
+					case SCATTER:
+						//TODO: Kill pacman
+						break;
+	
+					case FRIGHTENED:
+						//Eat ghost
+						this.mFleeingGhostsEaten += 1;
+						this.addToScore(Game.POINTS_FLEEING_GHOSTS[this.mFleeingGhostsEaten]);
+						ghost.setState(this, State.EATEN);
+						
+						//See if we have eaten all the ghosts for this juggerdot
+						if (this.mFleeingGhostsEaten == this.mGhostCount) {
+							this.mAllFleedingGhostsEaten += 1;
+							
+							//See if we have eaten all the ghosts for every juggerdot
+							if (this.mAllFleedingGhostsEaten == Game.NUMBER_OF_JUGGERDOTS) {
+								this.addToScore(Game.POINTS_ALL_FLEEDING_GHOSTS);
+							}
+						}
+						
+						break;
+				}
+    		}
+    	}
+    }
+    
+    private void switchGhostsState(final State state) {
+    	for (Ghost ghost : this.mGhosts) {
+    		ghost.setState(this, state);
+    	}
+    	if (state == State.FRIGHTENED) {
+    		this.mFleeingGhostsEaten = 0;
+    	}
     }
     
     /**
@@ -182,17 +287,24 @@ public class Game {
     	//Game level values
 		this.mLives = 3;
 		this.mScore = 0;
-		this.mLevel = 1;
-		this.mBonusLifeGiven = false;
+		this.mLevel = 0; //changed to 1 in newLevel
+		this.mIsBonusLifeGiven = false;
     	
     	//Reset board
-    	this.reset();
+    	this.newLevel();
     }
     
     /**
      * Reset the board state to that of a level's first initialization.
      */
-    private void reset() {
+    private void newLevel() {
+    	this.mLevel += 1;
+    	
+    	//Kill screen is shown randomly one out of 256 levels as long as we are not on level one
+    	if ((this.mLevel > 1) && (Game.RANDOM.nextInt(Game.KILL_SCREEN_LEVEL) == 0) && this.mIsKillScreenEnabled) {
+    		this.mIsOnKillScreen = true;
+    	}
+    	
     	//Initialize dots
     	this.mDotsRemaining = 0;
     	this.mDotsEaten = 0;
@@ -207,16 +319,18 @@ public class Game {
     		}
     	}
     	
+    	this.mAllFleedingGhostsEaten = 0;
+    	
     	//Initialize juggerdots
     	this.mBoard[this.mCellRowSpacing + 1][0] = Cell.JUGGERDOT;
     	this.mBoard[0][this.mCellsWide - this.mCellColumnSpacing - 2] = Cell.JUGGERDOT;
     	this.mBoard[this.mCellsTall - this.mCellRowSpacing - 2][this.mCellsWide - 1] = Cell.JUGGERDOT;
     	this.mBoard[this.mCellsTall - 1][this.mCellColumnSpacing + 1] = Cell.JUGGERDOT;
-    	this.mDotsRemaining -= 4;
+    	this.mDotsRemaining -= Game.NUMBER_OF_JUGGERDOTS;
     	
-    	//Initialize "The Man"
+    	//Initialize entities
     	for (Entity entity : this.mEntities) {
-    		entity.reset(this);
+    		entity.newLevel(this);
     	}
     }
     
@@ -226,12 +340,6 @@ public class Game {
     public void tick() {
     	for (Entity entity : this.mEntities) {
     		entity.tick(this);
-    	}
-    	
-    	//Check bonus life
-    	if (this.mBonusLifeAllowed && !this.mBonusLifeGiven && (this.mScore > this.mBonusLifeThreshold)) {
-    		this.mBonusLifeGiven = true;
-    		this.mLives += 1;
     	}
     }
 
@@ -326,6 +434,10 @@ public class Game {
         //Draw the entities
         for (Entity entity : this.mEntities) {
         	entity.draw(c);
+        }
+        
+        if (this.mIsOnKillScreen) {
+        	//TODO: draw garbled text on right half of screen using dot, entity, and HUD colors
         }
         
         c.restore();

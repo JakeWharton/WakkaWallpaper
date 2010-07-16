@@ -25,7 +25,6 @@ public class TheMan extends Entity {
 	
     private final Paint mForeground;
 	private Direction mWantsToGo;
-	private int mDotsEaten;
     
 	public TheMan() {
 		super();
@@ -47,10 +46,6 @@ public class TheMan extends Entity {
     	Log.d(TheMan.TAG, "Wants to go " + direction.toString());
     	this.mWantsToGo = direction;
     }
-    
-    public int getDotsEaten() {
-    	return this.mDotsEaten;
-    }
 
     /*
      * (non-Javadoc)
@@ -58,8 +53,9 @@ public class TheMan extends Entity {
      */
 	@Override
     protected void moved(final Game game) {
-		game.checkForDot();
-		game.checkForGhost();
+		game.checkDots();
+		game.checkFruit();
+		game.checkGhosts();
 		this.determineNextDirection(game);
     }
 	
@@ -101,15 +97,12 @@ public class TheMan extends Entity {
     @Override
 	public void draw(final Canvas c) {
 		c.save();
-		c.translate(this.mLocation.x, this.mLocation.y);
-		
-		//keep us low
-		this.mTickCount %= TheMan.CHOMP_ANGLE_COUNT;
+		c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
 		
 		float startingAngle = 0;
 		int degrees = 360;
 		if (this.mDirection != Direction.STOPPED) {
-			final int angle = TheMan.CHOMP_ANGLES[this.mTickCount];
+			final int angle = TheMan.CHOMP_ANGLES[(int)(this.mTickCount % TheMan.CHOMP_ANGLE_COUNT)];
 			startingAngle = this.mDirection.getAngle(this.mNextDirection) + (angle / 2.0f);
 			degrees -= angle;
 		}
@@ -124,8 +117,9 @@ public class TheMan extends Entity {
      * @see com.jakewharton.wakkawallpaper.Entity#reset(com.jakewharton.wakkawallpaper.Game)
      */
 	@Override
-	protected void reset(Game game) {
-		this.mDotsEaten = 0;
+	protected void newLevel(Game game) {
+		//Position in the center-most region of the board.
+		this.setPosition(game.getCellsWide() / 2, ((game.getIconRows() / 2) * (game.getCellRowSpacing() + 1)));
 		
 		this.mDirection = Direction.STOPPED;
 		this.mNextDirection = Direction.STOPPED;

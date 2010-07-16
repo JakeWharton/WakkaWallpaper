@@ -117,7 +117,9 @@ public abstract class Entity {
 	protected float mSpeed;
 	protected float mCellWidth;
 	protected float mCellHeight;
-	protected int mTickCount;
+	protected float mCellWidthOverTwo;
+	protected float mCellHeightOverTwo;
+	protected long mTickCount;
 	
 	/**
 	 * Create a new entity.
@@ -142,6 +144,8 @@ public abstract class Entity {
 	public void performResize(final Game game) {
 		this.mCellWidth = game.getCellWidth();
 		this.mCellHeight = game.getCellHeight();
+		this.mCellWidthOverTwo = this.mCellWidth / 2.0f;
+		this.mCellHeightOverTwo = this.mCellHeight / 2.0f;
 	}
 	
 	public int getPositionX() {
@@ -150,6 +154,15 @@ public abstract class Entity {
 	
 	public int getPositionY() {
 		return this.mPosition.y;
+	}
+	
+	public void setPosition(int x, int y) {
+		this.mPosition.set(x, y);
+		this.mLocation.set((x * this.mCellWidth) + this.mCellWidthOverTwo, (y * this.mCellHeight) + this.mCellHeightOverTwo);
+	}
+	
+	public boolean isCollidingWith(Entity other) {
+		return ((this.mPosition.x == other.getPositionX()) && (this.mPosition.y == other.getPositionY()));
 	}
 
     /**
@@ -195,7 +208,8 @@ public abstract class Entity {
 	 * Callback to reset to initial game position
 	 * @param game Game instance
 	 */
-	protected abstract void reset(final Game game);
+	protected abstract void newLevel(final Game game);
+	
 	
 	/**
 	 * Update the point one step in the direction specified.

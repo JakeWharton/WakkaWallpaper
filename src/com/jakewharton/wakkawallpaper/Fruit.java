@@ -86,12 +86,21 @@ public class Fruit extends Entity {
 	}
 	
 	/**
-	 * The number of points the current fruit is worth.
+	 * Return the number of points the current fruit is worth and hide from the screen.
 	 * 
 	 * @return Integer point value.
 	 */
-	public int getPoints() {
+	public int eat() {
+		this.hide();
 		return this.mType.points;
+	}
+	
+	/**
+	 * Move off screen and make invisible.
+	 */
+	private void hide() {
+		this.mVisible = false;
+		this.mPosition.set(-1, -1);
 	}
 	
 	/*
@@ -102,15 +111,14 @@ public class Fruit extends Entity {
 	public void tick(Game game) {
 		if (this.mVisible) {
 			if ((System.currentTimeMillis() - this.mCreated) > this.mVisibleLength) {
-				this.reset(game);
+				this.newLevel(game);
 			}
 		} else {
-			final int dotsEaten = game.getTheMan().getDotsEaten();
+			final int dotsEaten = game.getDotsEaten();
 			if ((dotsEaten > this.mThresholdFirst) || (dotsEaten > this.mThresholdSecond)) {
-				this.mVisible = true;
-				this.mType = Fruit.Type.getForLevel(game.getLevel());
+				this.mVisible = true; 
 				this.mVisibleLength = Game.RANDOM.nextInt(this.mVisibleUpper - this.mVisibleLower + 1) + this.mVisibleLower;
-				//TODO: determine location
+				//TODO: determine random valid location
 				this.mCreated = System.currentTimeMillis();
 			}
 		}
@@ -124,7 +132,7 @@ public class Fruit extends Entity {
 	public void draw(Canvas c) {
 		if (this.mType != null) {
 			c.save();
-			c.translate(this.mLocation.x, this.mLocation.y);
+			c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
 			
 			switch (this.mType) {
 				case CHERRY:
@@ -170,8 +178,8 @@ public class Fruit extends Entity {
 	 * @see com.jakewharton.wakkawallpaper.Entity#reset(com.jakewharton.wakkawallpaper.Game)
 	 */
 	@Override
-	protected void reset(Game game) {
-		this.mVisible = false;
-		this.mType = null;
+	protected void newLevel(Game game) {
+		this.hide();
+		this.mType = Fruit.Type.getForLevel(game.getLevel());
 	}
 }
