@@ -163,6 +163,12 @@ public class Game {
     	} else if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.JUGGERDOT) {
     		this.mScore += Game.POINTS_JUGGERDOT;
     	}
+    	
+    	//Check for level complete
+    	if (this.mDotsRemaining <= 0) {
+    		this.mLevel += 1;
+    		this.reset();
+    	}
     }
     
     public void checkForGhost() {
