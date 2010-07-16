@@ -71,7 +71,7 @@ public abstract class Entity {
 		private Position(final Point position, final Direction direction, final Direction initialDirection) {
 			this.mPosition = position;
 			this.mDirection = direction;
-			this.mInitialDirection = direction;
+			this.mInitialDirection = initialDirection;
 		}
 		
 		public Point getPosition() {
