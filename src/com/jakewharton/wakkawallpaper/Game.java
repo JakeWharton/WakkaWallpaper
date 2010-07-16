@@ -266,7 +266,7 @@ public class Game {
      */
     public boolean isIntersection(final Point position) {
     	int directions = 0;
-    	for (Direction direction : Direction.movingValues()) {
+    	for (Direction direction : Direction.values()) {
     		if (this.isValidPosition(Entity.move(position, direction))) {
     			directions += 1;
     		}

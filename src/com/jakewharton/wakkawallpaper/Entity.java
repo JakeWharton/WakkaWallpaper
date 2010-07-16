@@ -15,21 +15,27 @@ public abstract class Entity {
 		
 		private static final int DEGREES_IN_CIRCLE = 360;
 		
-		private final int angle;
+		protected final int angle;
 		
+		/**
+		 * Create a direction with specified angle.
+		 * @param angle Angle in degrees.
+		 */
 		private Direction(final int angle) {
 			this.angle = angle;
 		}
 		
-		public int getAngle() {
-			return this.angle;
-		}
+		/**
+		 * Get the angle of the direction taking into account the next direction.
+		 * @param nextDirection The next direction.
+		 * @return Angle.
+		 */
 		public int getAngle(final Direction nextDirection) {
 			if ((nextDirection == null) || (this == nextDirection) || (this.getOpposite() == nextDirection)) {
 				return this.angle;
 			} else {
 				int angle1 = this.angle;
-				int angle2 = nextDirection.getAngle();
+				int angle2 = nextDirection.angle;
 				
 				//Special case NORTH and EAST since (270+0)/2 is not what we want
 				if ((this == Direction.NORTH) && (nextDirection == Direction.EAST)) {
@@ -42,6 +48,10 @@ public abstract class Entity {
 			}
 		}
 		
+		/**
+		 * Get the direction that is the opposite of this one.
+		 * @return Opposite direction.
+		 */
 		public Direction getOpposite() {
 			switch (this) {
 				case NORTH:
@@ -53,12 +63,8 @@ public abstract class Entity {
 				case WEST:
 					return Direction.EAST;
 				default:
-					return this;
+					return null;
 			}
-		}
-		
-		public static Direction[] movingValues() {
-			return new Direction[] { NORTH, WEST, SOUTH, EAST };
 		}
 	}
 	
