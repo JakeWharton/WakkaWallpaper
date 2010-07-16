@@ -143,6 +143,14 @@ public abstract class Entity {
 		this.mCellWidth = width;
 		this.mCellHeight = height;
 	}
+	
+	public int getPositionX() {
+		return this.mPosition.x;
+	}
+	
+	public int getPositionY() {
+		return this.mPosition.y;
+	}
 
     /**
      * Iterate the entity one step.

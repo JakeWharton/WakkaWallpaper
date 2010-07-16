@@ -110,6 +110,7 @@ public class Fruit extends Entity {
 				this.mVisible = true;
 				this.mType = Fruit.Type.getForLevel(game.getLevel());
 				this.mVisibleLength = Game.RANDOM.nextInt(this.mVisibleUpper - this.mVisibleLower + 1) + this.mVisibleLower;
+				//TODO: determine location
 				this.mCreated = System.currentTimeMillis();
 			}
 		}

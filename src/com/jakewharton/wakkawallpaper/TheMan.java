@@ -58,18 +58,10 @@ public class TheMan extends Entity {
      */
 	@Override
     protected void moved(final Game game) {
-		this.checkForDot(game);
-		this.checkForGhost(game);
+		game.checkForDot();
+		game.checkForGhost();
 		this.determineNextDirection(game);
     }
-	
-	private void checkForDot(final Game game) {
-		
-	}
-	
-	private void checkForGhost(final Game game) {
-		
-	}
 	
 	private void determineNextDirection(final Game game) {
 		//TODO: account for this.mWantsToGo

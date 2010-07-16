@@ -22,9 +22,6 @@ public class Game {
 
 	public static final Random RANDOM = new Random();
 	private static final String TAG = "WakkaWallpaper.Game";
-	private static final int NUMBER_OF_GHOSTS = 4;
-	private static final int POINTS_DOT = 10;
-	private static final int POINTS_JUGGERDOT = 50;
 	private static final NumberFormat SCORE_FORMAT = new DecimalFormat("000000");
 	private static final boolean DEFAULT_BONUS_ALLOWED = true;
 	private static final int DEFAULT_BONUS_THRESHOLD = 10000;
@@ -32,6 +29,8 @@ public class Game {
 	private static final int DEFAULT_GAME_BACKGROUND = 0xff000040;
     private static final int DEFAULT_HUD_FOREGROUND = 0xff8181c1;
     private static final int DEFAULT_HUD_BACKGROUND = 0xff000000;
+	private static final int POINTS_DOT = 10;
+	private static final int POINTS_JUGGERDOT = 50;
 	
 	private int mCellsWide;
 	private int mCellsTall;
@@ -160,6 +159,20 @@ public class Game {
     	return (position.y * this.mCellsWide) + position.x;
     }
     
+    public void checkForDot() {
+    	if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.DOT) {
+    		this.mDotsEaten += 1;
+    		this.mDotsRemaining -= 1;
+    		this.mScore += Game.POINTS_DOT;
+    	} else if (this.mBoard[this.mTheMan.getPositionY()][this.mTheMan.getPositionX()] == Cell.JUGGERDOT) {
+    		this.mScore += Game.POINTS_JUGGERDOT;
+    	}
+    }
+    
+    public void checkForGhost() {
+    	//TODO: check ghost collisions
+    }
+    
     /**
      * Reset the game state to that of first initialization.
      */
@@ -211,6 +224,12 @@ public class Game {
     public void tick() {
     	for (Entity entity : this.mEntities) {
     		entity.tick(this);
+    	}
+    	
+    	//Check bonus life
+    	if (this.mBonusLifeAllowed && !this.mBonusLifeGiven && (this.mScore > this.mBonusLifeThreshold)) {
+    		this.mBonusLifeGiven = true;
+    		this.mLives += 1;
     	}
     }
 
