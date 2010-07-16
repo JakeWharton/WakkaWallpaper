@@ -64,7 +64,7 @@ public class TheMan extends Entity {
 		
 		//Promote next direction to current
 		this.mDirection = this.mNextDirection;
-		this.mNextDirection = Direction.STOPPED; //fallback
+		this.mNextDirection = null; //fallback to stopped
 		
 		//Breadth-first search for new next direction
 		final Queue<Entity.Position> queue = new LinkedList<Entity.Position>();
@@ -101,8 +101,8 @@ public class TheMan extends Entity {
 		
 		float startingAngle = 0;
 		int degrees = 360;
-		if (this.mDirection != Direction.STOPPED) {
-			final int angle = TheMan.CHOMP_ANGLES[(int)(this.mTickCount % TheMan.CHOMP_ANGLE_COUNT)];
+		if (this.mDirection != null) {
+			final int angle = TheMan.CHOMP_ANGLES[this.mTickCount % TheMan.CHOMP_ANGLE_COUNT];
 			startingAngle = this.mDirection.getAngle(this.mNextDirection) + (angle / 2.0f);
 			degrees -= angle;
 		}
@@ -121,8 +121,8 @@ public class TheMan extends Entity {
 		//Position in the center-most region of the board.
 		this.setPosition(game.getCellsWide() / 2, ((game.getIconRows() / 2) * (game.getCellRowSpacing() + 1)));
 		
-		this.mDirection = Direction.STOPPED;
-		this.mNextDirection = Direction.STOPPED;
+		this.mDirection = null;
+		this.mNextDirection = null;
 		this.determineNextDirection(game);
 	}
 }

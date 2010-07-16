@@ -127,7 +127,7 @@ public abstract class Ghost extends Entity {
 		switch (this.mState) {
 			case CHASE:
 			case SCATTER:
-				c.drawPath(this.mBodyPaths[(int)(this.mTickCount % this.mBodyPaths.length)], this.mBodyBackground);
+				c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mBodyBackground);
 				
 				//fall through to eyes only case
 			case EATEN:
@@ -142,10 +142,10 @@ public abstract class Ghost extends Entity {
 			case FRIGHTENED:
 				if ((this.mFleeLength <= Ghost.FLEE_BLINK_THRESHOLD) && ((this.mFleeLength / Ghost.FLEE_BLINK_INTERVAL) % 2 == 0)) {
 					//draw scared blink
-					c.drawPath(this.mBodyPaths[(int)(this.mTickCount % this.mBodyPaths.length)], this.mScaredBlinkBackground);
+					c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mScaredBlinkBackground);
 				} else {
 					//draw normal scared
-					c.drawPath(this.mBodyPaths[(int)(this.mTickCount % this.mBodyPaths.length)], this.mScaredBackground);
+					c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mScaredBackground);
 				}
 				break;
 		}
@@ -168,7 +168,14 @@ public abstract class Ghost extends Entity {
 	 */
 	public void setState(final Game game, final State state) {
 		this.mState = state;
-		this.determineNextDirection(game, true);
+		
+		if (state == State.FRIGHTENED) {
+			//reverse direction immediately if frightened
+			this.mNextDirection = this.mDirection.getOpposite();
+		} else {
+			//otherwise get new next direction
+			this.determineNextDirection(game, true);
+		}
 	}
 	
 	/*
@@ -177,8 +184,8 @@ public abstract class Ghost extends Entity {
 	 */
 	@Override
 	protected void newLevel(final Game game) {
-		this.mDirection = Direction.STOPPED;
-		this.mNextDirection = Direction.STOPPED;
+		this.mDirection = null;
+		this.mNextDirection = null;
 	}
 	
 	/*
@@ -196,6 +203,31 @@ public abstract class Ghost extends Entity {
 	 * @param game Game instance
 	 */
 	protected abstract void determineNextDirection(final Game game, final boolean isStateChange);
+	
+	protected void determineNextFrightenedDirection(final Game game) {
+		if (game.isIntersection(this.mPosition)) {
+			//Try a random direction
+			Direction nextDirection = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
+			
+			if (!game.isValidPosition(Entity.move(this.mPosition, nextDirection))) {
+				//If the random direction was not valid, iterate over all possible directions looking for a valid one
+				for (Direction direction : Direction.values()) {
+					//See if the direction is a valid position and not the opposite of our current direction
+					if (game.isValidPosition(Entity.move(this.mPosition, direction)) && (direction != this.mDirection.getOpposite())) {
+						//Save and exit the loop
+						nextDirection = direction;
+						break;
+					}
+				}
+			}
+			
+			//Store new direction
+			this.mNextDirection = nextDirection;
+		} else {
+			//Not at intersection, go straight
+			this.mNextDirection = this.mDirection;
+		}
+	}
 	
 
 	/**
@@ -219,7 +251,23 @@ public abstract class Ghost extends Entity {
 		 */
 		@Override
 		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
-			// TODO Auto-generated method stub
+			switch (this.mState) {
+				case CHASE:
+					//TODO: logic!
+					break;
+					
+				case SCATTER:
+					//TODO: head toward initial corner
+					break;
+					
+				case EATEN:
+					//TODO: head toward initial position
+					break;
+					
+				case FRIGHTENED:
+					this.determineNextFrightenedDirection(game);
+					break;
+			}
 		}
 
 		/*
@@ -256,7 +304,23 @@ public abstract class Ghost extends Entity {
 		 */
 		@Override
 		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
-			// TODO Auto-generated method stub
+			switch (this.mState) {
+			case CHASE:
+				//TODO: logic!
+				break;
+				
+			case SCATTER:
+				//TODO: head toward initial corner
+				break;
+				
+			case EATEN:
+				//TODO: head toward initial position
+				break;
+				
+			case FRIGHTENED:
+				this.determineNextFrightenedDirection(game);
+				break;
+		}
 		}
 
 		/*
@@ -293,7 +357,23 @@ public abstract class Ghost extends Entity {
 		 */
 		@Override
 		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
-			// TODO Auto-generated method stub
+			switch (this.mState) {
+			case CHASE:
+				//TODO: logic!
+				break;
+				
+			case SCATTER:
+				//TODO: head toward initial corner
+				break;
+				
+			case EATEN:
+				//TODO: head toward initial position
+				break;
+				
+			case FRIGHTENED:
+				this.determineNextFrightenedDirection(game);
+				break;
+		}
 		}
 
 		/*
@@ -330,7 +410,23 @@ public abstract class Ghost extends Entity {
 		 */
 		@Override
 		protected void determineNextDirection(final Game game, final boolean isStateChanged) {
-			// TODO Auto-generated method stub
+			switch (this.mState) {
+			case CHASE:
+				//TODO: logic!
+				break;
+				
+			case SCATTER:
+				//TODO: head toward initial corner
+				break;
+				
+			case EATEN:
+				//TODO: head toward initial position
+				break;
+				
+			case FRIGHTENED:
+				this.determineNextFrightenedDirection(game);
+				break;
+		}
 		}
 
 		/*

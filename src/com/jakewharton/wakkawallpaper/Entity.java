@@ -11,7 +11,7 @@ import android.graphics.PointF;
  */
 public abstract class Entity {
 	enum Direction {
-		NORTH(270), SOUTH(90), EAST(0), WEST(180), STOPPED(-1);
+		NORTH(270), SOUTH(90), EAST(0), WEST(180);
 		
 		private static final int DEGREES_IN_CIRCLE = 360;
 		
@@ -25,7 +25,7 @@ public abstract class Entity {
 			return this.angle;
 		}
 		public int getAngle(final Direction nextDirection) {
-			if ((nextDirection == null) || (nextDirection == Direction.STOPPED) || (this == nextDirection) || (this.getOpposite() == nextDirection)) {
+			if ((nextDirection == null) || (this == nextDirection) || (this.getOpposite() == nextDirection)) {
 				return this.angle;
 			} else {
 				int angle1 = this.angle;
@@ -58,7 +58,7 @@ public abstract class Entity {
 		}
 		
 		public static Direction[] movingValues() {
-			return new Direction[] { NORTH, EAST, SOUTH, WEST };
+			return new Direction[] { NORTH, WEST, SOUTH, EAST };
 		}
 	}
 	public static class Position {
@@ -94,7 +94,7 @@ public abstract class Entity {
 			final Position[] moves = new Position[4];
 			int i = 0;
 			
-			if (this.mDirection != Direction.STOPPED) {
+			if (this.mDirection != null) {
 				//favor the same direction
 				moves[i++] = new Position(Entity.move(this.mPosition, this.mDirection), this.mDirection, (this.mInitialDirection == null) ? this.mDirection : this.mInitialDirection);
 			}
@@ -119,7 +119,7 @@ public abstract class Entity {
 	protected float mCellHeight;
 	protected float mCellWidthOverTwo;
 	protected float mCellHeightOverTwo;
-	protected long mTickCount;
+	protected int mTickCount;
 	
 	/**
 	 * Create a new entity.
@@ -220,22 +220,24 @@ public abstract class Entity {
 	 */
 	protected static Point move(final Point point, final Direction direction) {
     	final Point newPoint = new Point(point);
-    	switch (direction) {
-    		case NORTH:
-    			newPoint.y -= 1;
-				break;
-				
-    		case SOUTH:
-    			newPoint.y += 1;
-				break;
-				
-    		case WEST:
-    			newPoint.x -= 1;
-				break;
-				
-    		case EAST:
-    			newPoint.x += 1;
-				break;
+    	if (direction != null) {
+	    	switch (direction) {
+	    		case NORTH:
+	    			newPoint.y -= 1;
+					break;
+					
+	    		case SOUTH:
+	    			newPoint.y += 1;
+					break;
+					
+	    		case WEST:
+	    			newPoint.x -= 1;
+					break;
+					
+	    		case EAST:
+	    			newPoint.x += 1;
+					break;
+	    	}
     	}
     	return newPoint;
     }

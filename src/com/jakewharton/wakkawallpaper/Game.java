@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Random;
 
+import com.jakewharton.wakkawallpaper.Entity.Direction;
 import com.jakewharton.wakkawallpaper.Ghost.State;
 
 import android.graphics.Canvas;
@@ -201,6 +202,17 @@ public class Game {
     	return ((position.x >= 0) && (position.x < this.mCellsWide)
     		    && (position.y >= 0) && (position.y < this.mCellsTall)
     		    && (this.mBoard[position.y][position.x] != Cell.WALL));
+    }
+    
+    public boolean isIntersection(final Point position) {
+    	int directions = 0;
+    	for (Direction direction : Direction.movingValues()) {
+    		if (this.isValidPosition(Entity.move(position, direction))) {
+    			directions += 1;
+    		}
+    	}
+    	
+    	return (directions > 1);
     }
     
     public int hashPosition(final Point position) {
