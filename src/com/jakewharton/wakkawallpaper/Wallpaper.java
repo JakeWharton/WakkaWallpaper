@@ -132,15 +132,15 @@ public class Wallpaper extends WallpaperService {
         		
         		if (Math.abs(deltaX) > Math.abs(deltaY)) {
         			if (deltaX > 0) {
-        				this.mGame.setWantsToGo(Direction.WEST);
+        				this.mGame.getTheMan().setWantsToGo(Direction.WEST);
         			} else {
-        				this.mGame.setWantsToGo(Direction.EAST);
+        				this.mGame.getTheMan().setWantsToGo(Direction.EAST);
         			}
         		} else {
         			if (deltaY > 0) {
-        				this.mGame.setWantsToGo(Direction.NORTH);
+        				this.mGame.getTheMan().setWantsToGo(Direction.NORTH);
         			} else {
-        				this.mGame.setWantsToGo(Direction.SOUTH);
+        				this.mGame.getTheMan().setWantsToGo(Direction.SOUTH);
         			}
         		}
         	}

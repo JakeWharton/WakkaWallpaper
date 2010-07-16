@@ -10,8 +10,6 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.Log;
 
-import com.jakewharton.wakkawallpaper.Entity.Direction;
-
 /**
  * The Game class manages the playing board and all of the entities contained within.
  * 
@@ -113,15 +111,6 @@ public class Game {
         this.mHUDForeground.setShadowLayer(1, -1, 1, Game.DEFAULT_HUD_BACKGROUND);
         
         this.newGame();
-    }
-    
-    /**
-     * Specify a direction you would like "The Man" to travel in next (if possible).
-     * 
-     * @param direction Desired direction.
-     */
-    public void setWantsToGo(final Direction direction) {
-    	this.mTheMan.setWantsToGo(direction);
     }
     
     /**
