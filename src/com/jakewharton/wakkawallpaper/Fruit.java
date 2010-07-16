@@ -16,42 +16,6 @@ public class Fruit extends Entity {
 		private Type(int points) {
 			this.points = points;
 		}
-		
-		/**
-		 * Return which type of fruit should appear on which level.
-		 * 
-		 * @param level The level you wish to get fruit for.
-		 * @return The Type of fruit for the level.
-		 */
-		public static Type getForLevel(int level) {
-			if (level <= 0) {
-				throw new IllegalArgumentException("Level number must be greater than zero.");
-			}
-			
-			switch (level) {
-				case 1:
-					return CHERRY;
-				case 2:
-					return STRAWBERRY;
-				case 3:
-				case 4:
-					return PEACH;
-				case 5:
-				case 6:
-					return APPLE;
-				case 7:
-				case 8:
-					return GRAPES;
-				case 9:
-				case 10:
-					return GALAXIAN;
-				case 11:
-				case 12:
-					return BELL;
-				default:
-					return KEY;
-			}
-		}
 	}
 	
     private static final int DEFAULT_THRESHOLD_FIRST = 70;
@@ -180,6 +144,43 @@ public class Fruit extends Entity {
 	@Override
 	protected void newLevel(Game game) {
 		this.hide();
-		this.mType = Fruit.Type.getForLevel(game.getLevel());
+		this.mType = Fruit.getForLevel(game.getLevel());
+	}
+	
+
+	/**
+	 * Return which type of fruit should appear on which level.
+	 * 
+	 * @param level The level you wish to get fruit for.
+	 * @return The Type of fruit for the level.
+	 */
+	private static Type getForLevel(int level) {
+		if (level <= 0) {
+			throw new IllegalArgumentException("Level number must be greater than zero.");
+		}
+		
+		switch (level) {
+			case 1:
+				return Type.CHERRY;
+			case 2:
+				return Type.STRAWBERRY;
+			case 3:
+			case 4:
+				return Type.PEACH;
+			case 5:
+			case 6:
+				return Type.APPLE;
+			case 7:
+			case 8:
+				return Type.GRAPES;
+			case 9:
+			case 10:
+				return Type.GALAXIAN;
+			case 11:
+			case 12:
+				return Type.BELL;
+			default:
+				return Type.KEY;
+		}
 	}
 }
