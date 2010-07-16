@@ -143,6 +143,13 @@ public class Game {
     	return this.mLevel;
     }
     
+    public float getCellWidth() {
+    	return this.mCellWidth;
+    }
+    public float getCellHeight() {
+    	return this.mCellHeight;
+    }
+    
     /**
      * Test if a Point is a valid coordinate on the game board.
      * 
@@ -273,7 +280,7 @@ public class Game {
     	Log.v(Game.TAG, "Cell Height: " + this.mCellHeight);
     	
     	for (Entity entity : this.mEntities) {
-    		entity.performResize(screenWidth, screenHeight);
+    		entity.performResize(this);
     	}
     }
     

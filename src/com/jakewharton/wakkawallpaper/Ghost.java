@@ -83,8 +83,8 @@ public abstract class Ghost extends Entity {
 	 * @param height New height.
 	 */
     @Override
-	public void performResize(final float width, final float height) {
-		super.performResize(width, height);
+	public void performResize(final Game game) {
+		super.performResize(game);
 		
 		this.mBodyPaths[0] = new Path();
 		this.mBodyPaths[0].moveTo(0, 0.75f * this.mCellHeight);
@@ -109,9 +109,9 @@ public abstract class Ghost extends Entity {
 		this.mBodyPaths[1].lineTo(this.mCellWidth, this.mCellHeight);
 		this.mBodyPaths[1].arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
 		
-		this.mCellWidthOverThree = width / 3.0f;
-		this.mCellHeightOverThree = height / 3.0f;
-		this.mCellWidthOverSeven = width / 7.0f;
+		this.mCellWidthOverThree = this.mCellWidth / 3.0f;
+		this.mCellHeightOverThree = this.mCellHeight / 3.0f;
+		this.mCellWidthOverSeven = this.mCellWidth / 7.0f;
 		this.mCellWidthOverFourteen = this.mCellWidthOverSeven / 2.0f;
 	}
 

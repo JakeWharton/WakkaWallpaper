@@ -139,9 +139,9 @@ public abstract class Entity {
 	 * @param width New width.
 	 * @param height New height.
 	 */
-	public void performResize(final float width, final float height) {
-		this.mCellWidth = width;
-		this.mCellHeight = height;
+	public void performResize(final Game game) {
+		this.mCellWidth = game.getCellWidth();
+		this.mCellHeight = game.getCellHeight();
 	}
 	
 	public int getPositionX() {
