@@ -80,11 +80,19 @@ public class Wallpaper extends WallpaperService {
 			final String iconRows = Wallpaper.this.getString(R.string.settings_display_iconrows_key); 
 			if (all || key.equals(iconRows)) {
 				this.mIconRows = preferences.getInt(iconRows, WakkaEngine.DEFAULT_ICON_ROWS);
+				if (this.mGame != null) {
+					//TODO: perform resize
+					this.mGame.reset();
+				}
 			}
 			
 			final String iconCols = Wallpaper.this.getString(R.string.settings_display_iconcols_key);
 			if (all || key.equals(iconCols)) {
 				this.mIconCols = preferences.getInt(iconCols, WakkaEngine.DEFAULT_ICON_COLS);
+				if (this.mGame != null) {
+					//TODO: perform resize
+					this.mGame.reset();
+				}
 			}
 		}
 
