@@ -2,6 +2,7 @@ package com.jakewharton.wakkawallpaper;
 
 import android.graphics.Canvas;
 import android.graphics.Point;
+import android.graphics.PointF;
 
 /**
  * The Entity class represents an object that can move within the game board.
@@ -93,8 +94,10 @@ public abstract class Entity {
 			final Position[] moves = new Position[4];
 			int i = 0;
 			
-			//favor the same direction
-			moves[i++] = new Position(Entity.move(this.mPosition, this.mDirection), this.mDirection, (this.mInitialDirection == null) ? this.mDirection : this.mInitialDirection);
+			if (this.mDirection != Direction.STOPPED) {
+				//favor the same direction
+				moves[i++] = new Position(Entity.move(this.mPosition, this.mDirection), this.mDirection, (this.mInitialDirection == null) ? this.mDirection : this.mInitialDirection);
+			}
 			
 			//add other three directions
 			for (Direction direction : Direction.movingValues()) {
@@ -108,54 +111,26 @@ public abstract class Entity {
 	}
 	
 	protected final Point mPosition;
+	protected final PointF mLocation;
 	protected Direction mDirection;
 	protected Direction mNextDirection;
-	protected int mDeltaX;
-	protected int mDeltaY;
-	protected int mGranularity;
+	protected float mSpeed;
 	protected float mCellWidth;
 	protected float mCellHeight;
 	protected int mTickCount;
-	protected boolean mMovedThisTick;
 	
 	/**
-	 * Create a new entity adhering to the parameters.
-	 * 
-	 * @param startingPositionX X coordinate of initial starting position.
-	 * @param startingPositionY Y coordinate of initial starting position.
-	 * @param startingDirection Initial direction to travel in.
+	 * Create a new entity.
 	 */
-	protected Entity(final int startingPositionX, final int startingPositionY, final Direction startingDirection) {
+	protected Entity() {
 		this.mPosition = new Point();
-		this.setPosition(startingPositionX, startingPositionY);
-		this.mDirection = Direction.STOPPED;
-		this.mNextDirection = startingDirection;
+		this.mLocation = new PointF();
+		this.mDirection = null;
+		this.mNextDirection = null;
+		this.mSpeed = 1.0f; //100%
 		this.mCellWidth = 0;
 		this.mCellHeight = 0;
-		this.mGranularity = 2;
     	this.mTickCount = 0;
-    	this.mMovedThisTick = false;
-	}
-	
-	/**
-	 * Set the current position of the entity.
-	 * 
-	 * @param x X coordinate.
-	 * @param y Y coordinate.
-	 */
-	public void setPosition(final int x, final int y) {
-		this.mPosition.set(x, y);
-		this.mDeltaX = 0;
-		this.mDeltaY = 0;
-	}
-	
-	/**
-	 * Set the current direction of the entity.
-	 * 
-	 * @param direction New Direction.
-	 */
-	public void setDirection(final Direction direction) {
-		this.mDirection = direction;
 	}
 	
 	/**
@@ -168,42 +143,6 @@ public abstract class Entity {
 		this.mCellWidth = width;
 		this.mCellHeight = height;
 	}
-	
-	/**
-	 * Return only the X coordinate of the current location on the screen.
-	 * 
-	 * @return Float corresponding to the coordinate value.
-	 */
-	public float getLocationX() {
-		return (this.mPosition.x * this.mCellWidth) + ((this.mDeltaX / ((this.mGranularity + 1) * 2.0f)) * this.mCellWidth);
-	}
-	
-	/**
-	 * Return only the Y coordinate of the current location on the screen.
-	 * 
-	 * @return Float corresponding to the coordinate value.
-	 */
-	public float getLocationY() {
-		return (this.mPosition.y * this.mCellHeight) + ((this.mDeltaY / ((this.mGranularity + 1) * 2.0f)) * this.mCellHeight);
-	}
-	
-	/**
-	 * Return only the X coordinate of the current position on the board.
-	 * 
-	 * @return Integer coordinate.
-	 */
-	public int getPositionX() {
-		return this.mPosition.x;
-	}
-	
-	/**
-	 * Return only the Y coordinate of the current position on the board.
-	 * 
-	 * @return Integer coordinate.
-	 */
-	public int getPositionY() {
-		return this.mPosition.y;
-	}
 
     /**
      * Iterate the entity one step.
@@ -212,91 +151,22 @@ public abstract class Entity {
      */
 	public void tick(final Game game) {
 		this.mTickCount += 1;
-		this.mMovedThisTick = false;
 		
-		switch (this.mDirection) {
-			case NORTH:
-				if (this.mDeltaY > 0) {
-					this.mDeltaY -= 1;
-				}
-				if ((this.mDeltaX > 0) && (this.mNextDirection != Direction.EAST)) {
-					this.mDeltaX -= 1;
-				} else if ((this.mDeltaX < 0) && (this.mNextDirection != Direction.WEST)) {
-					this.mDeltaX += 1;
-				}
-				break;
-			case SOUTH:
-				if (this.mDeltaY < 0) {
-					this.mDeltaY += 1;
-				}
-				if ((this.mDeltaX > 0) && (this.mNextDirection != Direction.EAST)) {
-					this.mDeltaX -= 1;
-				} else if ((this.mDeltaX < 0) && (this.mNextDirection != Direction.WEST)) {
-					this.mDeltaX += 1;
-				}
-				break;
-			case EAST:
-				if (this.mDeltaX < 0) {
-					this.mDeltaX += 1;
-				}
-				if ((this.mDeltaY > 0) && (this.mNextDirection != Direction.SOUTH)) {
-					this.mDeltaY -= 1;
-				} else if ((this.mDeltaY < 0) && (this.mNextDirection != Direction.NORTH)) {
-					this.mDeltaY += 1;
-				}
-				break;
-			case WEST:
-				if (this.mDeltaX > 0) {
-					this.mDeltaX -= 1;
-				}
-				if ((this.mDeltaY > 0) && (this.mNextDirection != Direction.SOUTH)) {
-					this.mDeltaY -= 1;
-				} else if ((this.mDeltaY < 0) && (this.mNextDirection != Direction.NORTH)) {
-					this.mDeltaY += 1;
-				}
-				break;
-		}
-		
-		switch (this.mNextDirection) {
-			case NORTH:
-				if (this.mDeltaY <= 0) {
-					this.mDeltaY -= 1;
-				}
-				break;
-			case SOUTH:
-				if (this.mDeltaY >= 0) {
-					this.mDeltaY += 1;
-				}
-				break;
-			case EAST:
-				if (this.mDeltaX >= 0) {
-					this.mDeltaX += 1;
-				}
-				break;
-			case WEST:
-				if (this.mDeltaX <= 0) {
-					this.mDeltaX -= 1;
-				}
-				break;
-		}
+		//TODO: move this.mLocation based on this.mSpeed and this.mDirection
 		
 		//Move to next space if we are far enough
-		if (this.mDeltaX > this.mGranularity) {
+		if (this.mLocation.x >= ((this.mPosition.x + 1) * this.mCellWidth)) {
 			this.mPosition.x += 1;
-			this.mDeltaX = -this.mGranularity;
-			this.mMovedThisTick = true;
-		} else if (this.mDeltaX < -this.mGranularity) {
+			this.moved(game);
+		} else if (this.mLocation.x < (this.mPosition.x * this.mCellWidth)) {
 			this.mPosition.x -= 1;
-			this.mDeltaX = this.mGranularity;
-			this.mMovedThisTick = true;
-		} else if (this.mDeltaY > this.mGranularity) {
+			this.moved(game);
+		} else if (this.mLocation.y >= ((this.mPosition.y + 1) * this.mCellHeight)) {
 			this.mPosition.y += 1;
-			this.mDeltaY = -this.mGranularity;
-			this.mMovedThisTick = true;
-		} else if (this.mDeltaY < -this.mGranularity) {
+			this.moved(game);
+		} else if (this.mLocation.y < (this.mPosition.y * this.mCellHeight)) {
 			this.mPosition.y -= 1;
-			this.mDeltaY = this.mGranularity;
-			this.mMovedThisTick = true;
+			this.moved(game);
 		}
 	}
 
@@ -306,6 +176,18 @@ public abstract class Entity {
      * @param c Canvas to draw on.
      */
 	public abstract void draw(final Canvas c);
+	
+	/**
+	 * Callback when we have moved into a new cell.
+	 * @param game Game instance
+	 */
+	protected abstract void moved(final Game game);
+	
+	/**
+	 * Callback to reset to initial game position
+	 * @param game Game instance
+	 */
+	protected abstract void reset(final Game game);
 	
 	/**
 	 * Update the point one step in the direction specified.

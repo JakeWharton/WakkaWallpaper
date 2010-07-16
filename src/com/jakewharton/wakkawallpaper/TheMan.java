@@ -25,9 +25,10 @@ public class TheMan extends Entity {
 	
     private final Paint mForeground;
 	private Direction mWantsToGo;
+	private int mDotsEaten;
     
 	public TheMan() {
-		super(0, 0, Direction.EAST);
+		super();
         
         this.mForeground = new Paint();
         this.mForeground.setColor(TheMan.DEFAULT_FOREGROUND_COLOR);
@@ -46,74 +47,96 @@ public class TheMan extends Entity {
     	Log.d(TheMan.TAG, "Wants to go " + direction.toString());
     	this.mWantsToGo = direction;
     }
+    
+    public int getDotsEaten() {
+    	return this.mDotsEaten;
+    }
 
-    /**
-     * Iterate the entity one step.
-     * 
-     * @param game Game instance
+    /*
+     * (non-Javadoc)
+     * @see com.jakewharton.wakkawallpaper.Entity#moved(com.jakewharton.wakkawallpaper.Game)
      */
-    @Override
-	public void tick(final Game game) {
-		super.tick(game);
+	@Override
+    protected void moved(final Game game) {
+		this.checkForDot(game);
+		this.checkForGhost(game);
+		this.determineNextDirection(game);
+    }
+	
+	private void checkForDot(final Game game) {
 		
-		if (this.mMovedThisTick || (this.mWantsToGo != null)) {
-			//Promote next direction to current
-			this.mDirection = this.mNextDirection;
-			this.mNextDirection = Direction.STOPPED; //fallback
+	}
+	
+	private void checkForGhost(final Game game) {
+		
+	}
+	
+	private void determineNextDirection(final Game game) {
+		//TODO: account for this.mWantsToGo
+		
+		//Promote next direction to current
+		this.mDirection = this.mNextDirection;
+		this.mNextDirection = Direction.STOPPED; //fallback
+		
+		//Breadth-first search for new next direction
+		final Queue<Entity.Position> queue = new LinkedList<Entity.Position>();
+		final HashSet<Integer> seen = new HashSet<Integer>();
+		queue.add(new Entity.Position(this.mPosition, this.mDirection));
+		Entity.Position current;
+		
+		while (!queue.isEmpty()) {
+			current = queue.remove();
+			seen.add(game.hashPosition(current.getPosition()));
 			
-			//Breadth-first search for new next direction
-			final Queue<Entity.Position> queue = new LinkedList<Entity.Position>();
-			final HashSet<Integer> seen = new HashSet<Integer>();
-			queue.add(new Entity.Position(this.mPosition, this.mDirection));
-			Entity.Position current;
-			
-			//Log.d(TheMan.TAG, "--------------");
-			//Log.d(TheMan.TAG, "Current position: (" + this.mPosition.x + "," + this.mPosition.y + ")");
-			
-			while (!queue.isEmpty()) {
-				current = queue.remove();
-				seen.add(game.hashPosition(current.getPosition()));
-				
-				for (Entity.Position next : current.getPossibleMoves()) {
-					//Log.d(TheMan.TAG, "Checking " + next.getDirection() + " of (" + current.getPositionX() + "," + current.getPositionY() + ") to (" + next.getPositionX() + "," + next.getPositionY() +")");
-					if (game.isValidPosition(next.getPosition()) && !seen.contains(game.hashPosition(next.getPosition()))) {
-						if (game.getCell(next.getPositionX(), next.getPositionY()) == Cell.DOT) {
-							//Log.d(TheMan.TAG, "Going " + next.getInitialDirection() + " toward (" + next.getPositionX() + "," + next.getPositionY() + ")");
-							this.mNextDirection = next.getInitialDirection();
-							queue.clear(); //exit while
-							break; //exit for
-						} else {
-							//Log.d(TheMan.TAG, "Pushing " + next.getDirection() + " from (" + next.getPositionX() + "," + next.getPositionY() + ")");
-							queue.add(next);
-						}
+			for (Entity.Position next : current.getPossibleMoves()) {
+				if (game.isValidPosition(next.getPosition()) && !seen.contains(game.hashPosition(next.getPosition()))) {
+					if (game.getCell(next.getPositionX(), next.getPositionY()) == Cell.DOT) {
+						this.mNextDirection = next.getInitialDirection();
+						queue.clear(); //exit while
+						break; //exit for
+					} else {
+						queue.add(next);
 					}
 				}
 			}
 		}
 	}
 
-    /**
-     * Render the entity on the Canvas.
-     * 
-     * @param c Canvas to draw on.
+    /*
+     * (non-Javadoc)
+     * @see com.jakewharton.wakkawallpaper.Entity#draw(android.graphics.Canvas)
      */
     @Override
 	public void draw(final Canvas c) {
 		c.save();
-		c.translate(this.getLocationX(), this.getLocationY());
+		c.translate(this.mLocation.x, this.mLocation.y);
 		
 		//keep us low
 		this.mTickCount %= TheMan.CHOMP_ANGLE_COUNT;
 		
-		final int angle = TheMan.CHOMP_ANGLES[this.mTickCount];
-		final float startingAngle = this.mDirection.getAngle(this.mNextDirection) + (angle / 2.0f);
+		float startingAngle = 0;
 		int degrees = 360;
 		if (this.mDirection != Direction.STOPPED) {
+			final int angle = TheMan.CHOMP_ANGLES[this.mTickCount];
+			startingAngle = this.mDirection.getAngle(this.mNextDirection) + (angle / 2.0f);
 			degrees -= angle;
 		}
 		
 		c.drawArc(new RectF(0, 0, this.mCellWidth, this.mCellHeight), startingAngle, degrees, true, this.mForeground);
 		
 		c.restore();
+	}
+
+    /*
+     * (non-Javadoc)
+     * @see com.jakewharton.wakkawallpaper.Entity#reset(com.jakewharton.wakkawallpaper.Game)
+     */
+	@Override
+	protected void reset(Game game) {
+		this.mDotsEaten = 0;
+		
+		this.mDirection = Direction.STOPPED;
+		this.mNextDirection = Direction.STOPPED;
+		this.determineNextDirection(game);
 	}
 }

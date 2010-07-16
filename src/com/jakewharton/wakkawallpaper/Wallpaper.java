@@ -42,6 +42,8 @@ public class Wallpaper extends WallpaperService {
     	private int mIconCols;
         private boolean mIsVisible;
         private int mFPS;
+        private int mScreenWidth;
+        private int mScreenHeight;
         private float mScreenCenterX;
         private float mScreenCenterY;
         private final SharedPreferences mPreferences;
@@ -77,21 +79,23 @@ public class Wallpaper extends WallpaperService {
 				this.mFPS = preferences.getInt(fps, WakkaEngine.DEFAULT_FPS);
 			}
 			
+			boolean iconsChanged = false;
 			final String iconRows = Wallpaper.this.getString(R.string.settings_display_iconrows_key); 
 			if (all || key.equals(iconRows)) {
 				this.mIconRows = preferences.getInt(iconRows, WakkaEngine.DEFAULT_ICON_ROWS);
-				if (this.mGame != null) {
-					//TODO: perform resize
-					this.mGame.reset();
-				}
+				iconsChanged = true;
 			}
 			
 			final String iconCols = Wallpaper.this.getString(R.string.settings_display_iconcols_key);
 			if (all || key.equals(iconCols)) {
 				this.mIconCols = preferences.getInt(iconCols, WakkaEngine.DEFAULT_ICON_COLS);
+				iconsChanged = true;
+			}
+			
+			if (iconsChanged) {
 				if (this.mGame != null) {
-					//TODO: perform resize
-					this.mGame.reset();
+					this.mGame.performResize(this.mScreenWidth, this.mScreenHeight);
+					this.mGame.newGame();
 				}
 			}
 		}
@@ -148,6 +152,8 @@ public class Wallpaper extends WallpaperService {
             
             Log.v(WakkaEngine.TAG, "Screen Height: " + height);
             Log.v(WakkaEngine.TAG, "Screen Width: " + width);
+            this.mScreenWidth = width;
+            this.mScreenHeight = height;
             
             this.mScreenCenterX = width / 2.0f;
             Log.v(WakkaEngine.TAG, "Center X: " + this.mScreenCenterX);

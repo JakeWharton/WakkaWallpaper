@@ -24,7 +24,7 @@ public abstract class Ghost extends Entity {
 	private static final int DEFAULT_SCARED_BLINK_BACKGROUND = 0xffff0000;
 	private static final int DEFAULT_SCARED_BLINK_FOREGROUND = 0xfffafafa;
 	
-	private State mState;
+	protected State mState;
 	private final Paint mBodyBackground;
 	private final Paint mEyeBackground;
 	private final Paint mEyeForeground;
@@ -46,7 +46,7 @@ public abstract class Ghost extends Entity {
      * @param backgroundColor Primary color of the ghost.
      */
 	protected Ghost(final int backgroundColor) {
-		super(0, 0, Direction.STOPPED);
+		super();
 
 		this.mState = State.HUNT;
 		this.mFleeLength = Ghost.FLEE_LENGTH;
@@ -116,66 +116,6 @@ public abstract class Ghost extends Entity {
 	}
 
     /**
-     * Iterate the entity one step.
-     * 
-     * @param game Game instance
-     */
-	@Override
-	public void tick(final Game game) {
-		super.tick(game);
-		
-		switch (this.mState) {
-			case HUNT:
-		    	boolean success = false;
-		    	Direction nextDirection = null;
-		    	while (!success) {
-	    			switch (Game.RANDOM.nextInt(10)) {
-	    				case 0:
-	        				nextDirection = Direction.NORTH;
-	        				break;
-	        			case 1:
-	        				nextDirection = Direction.SOUTH;
-	        				break;
-	        			case 2:
-	        				nextDirection = Direction.EAST;
-	        				break;
-	        			case 3:
-	        				nextDirection = Direction.WEST;
-	        				break;
-	        			default: //4-9, most of the time stay straight (if possible)
-	        				if (this.mDirection != null) {
-	        					nextDirection = this.mDirection;
-	        				}
-	        				break;
-	    			}
-
-					if (nextDirection != null) {
-						if (nextDirection == this.mNextDirection.getOpposite()) {
-							success = false;
-						} else {
-							success = game.isValidPosition(Entity.move(this.mPosition, nextDirection));
-						}
-					}
-	    		}
-		    	
-		    	this.mDirection = this.mNextDirection;
-		    	this.mNextDirection = nextDirection;
-				break;
-				
-			case EYES_ONLY:
-				break;
-				
-			case FLEE:
-				this.mFleeLength -= 1;
-				if (this.mFleeLength < 0) {
-					this.mState = State.HUNT;
-					this.mFleeLength = Ghost.FLEE_LENGTH;
-				}
-				break;
-		}
-	}
-
-    /**
      * Render the entity on the Canvas.
      * 
      * @param c Canvas to draw on.
@@ -183,7 +123,7 @@ public abstract class Ghost extends Entity {
 	@Override
 	public void draw(final Canvas c) {
 		c.save();
-		c.translate(this.getLocationX(), this.getLocationY());
+		c.translate(this.mLocation.x, this.mLocation.y);
 		
 		switch (this.mState) {
 			case HUNT:
@@ -213,6 +153,12 @@ public abstract class Ghost extends Entity {
 		c.restore();
 	}
 	
+	@Override
+	protected void reset(final Game game) {
+		this.mDirection = Direction.STOPPED;
+		this.mNextDirection = Direction.STOPPED;
+	}
+	
 
 	
 	/**
@@ -228,6 +174,62 @@ public abstract class Ghost extends Entity {
 		 */
 		public Blinky() {
 			super(Blinky.BACKGROUND_COLOR);
+		}
+
+		@Override
+		protected void moved(Game game) {
+			//TODO: use real logic, per ghost
+			switch (this.mState) {
+				case HUNT:
+			    	boolean success = false;
+			    	Direction nextDirection = null;
+			    	while (!success) {
+		    			switch (Game.RANDOM.nextInt(10)) {
+		    				case 0:
+		        				nextDirection = Direction.NORTH;
+		        				break;
+		        			case 1:
+		        				nextDirection = Direction.SOUTH;
+		        				break;
+		        			case 2:
+		        				nextDirection = Direction.EAST;
+		        				break;
+		        			case 3:
+		        				nextDirection = Direction.WEST;
+		        				break;
+		        			default: //4-9, most of the time stay straight (if possible)
+		        				if (this.mDirection != null) {
+		        					nextDirection = this.mDirection;
+		        				}
+		        				break;
+		    			}
+	
+						if (nextDirection != null) {
+							if (nextDirection == this.mNextDirection.getOpposite()) {
+								success = false;
+							} else {
+								success = game.isValidPosition(Entity.move(this.mPosition, nextDirection));
+							}
+						}
+		    		}
+			    	
+			    	this.mDirection = this.mNextDirection;
+			    	this.mNextDirection = nextDirection;
+					break;
+					
+				case EYES_ONLY:
+					break;
+					
+				case FLEE:
+					break;
+			}
+		}
+
+		@Override
+		protected void reset(Game game) {
+			super.reset(game);
+			
+			//TODO: move to position
 		}
 	}
 	
@@ -245,6 +247,19 @@ public abstract class Ghost extends Entity {
 		public Pinky() {
 			super(Pinky.BACKGROUND_COLOR);
 		}
+
+		@Override
+		protected void moved(Game game) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		protected void reset(Game game) {
+			super.reset(game);
+			
+			//TODO: move to position
+		}
 	}
 	
 	/**
@@ -261,6 +276,19 @@ public abstract class Ghost extends Entity {
 		public Inky() {
 			super(Inky.BACKGROUND_COLOR);
 		}
+
+		@Override
+		protected void moved(Game game) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		protected void reset(Game game) {
+			super.reset(game);
+			
+			//TODO: move to position
+		}
 	}
 	
 	/**
@@ -276,6 +304,19 @@ public abstract class Ghost extends Entity {
 		 */
 		public Clyde() {
 			super(Clyde.BACKGROUND_COLOR);
+		}
+
+		@Override
+		protected void moved(Game game) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		protected void reset(Game game) {
+			super.reset(game);
+			
+			//TODO: move to position
 		}
 	}
 }

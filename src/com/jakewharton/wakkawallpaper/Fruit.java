@@ -54,9 +54,19 @@ public class Fruit extends Entity {
 		}
 	}
 	
-	private final Type mType;
-	private final int mVisible;
-	private final long mCreated;
+    private static final int DEFAULT_THRESHOLD_FIRST = 70;
+    private static final int DEFAULT_THRESHOLD_SECOND = 170;
+    private static final int DEFAULT_VISIBLE_LOWER = 9000;
+    private static final int DEFAULT_VISIBLE_UPPER = 10000;
+	
+	private Type mType;
+	private long mCreated;
+	private boolean mVisible;
+	private int mVisibleLength;
+	private int mVisibleLower;
+	private int mVisibleUpper;
+	private int mThresholdFirst;
+	private int mThresholdSecond;
 	
 	/**
 	 * Initialize a new fruit adhering to the parameters.
@@ -66,21 +76,13 @@ public class Fruit extends Entity {
 	 * @param type Type value representing the type of fruit.
 	 * @param visible The length (in milliseconds) that the fruit will be visible on screen.
 	 */
-	public Fruit(int startingPositionX, int startingPositionY, Type type, int visible) {
-		super(startingPositionX, startingPositionY, Direction.STOPPED);
+	public Fruit() {
+		super();
 		
-		this.mType = type;
-		this.mVisible = visible;
-		this.mCreated = System.currentTimeMillis();
-	}
-	
-	/**
-	 * Boolean to indicate whether or not the fruit should still be visible.
-	 * 
-	 * @return Boolean.
-	 */
-	public boolean isStillVisible() {
-		return ((System.currentTimeMillis() - this.mCreated) <= this.mVisible);
+        this.mThresholdFirst = Fruit.DEFAULT_THRESHOLD_FIRST;
+        this.mThresholdSecond = Fruit.DEFAULT_THRESHOLD_SECOND;
+        this.mVisibleLower = Fruit.DEFAULT_VISIBLE_LOWER;
+        this.mVisibleUpper = Fruit.DEFAULT_VISIBLE_UPPER;
 	}
 	
 	/**
@@ -91,43 +93,84 @@ public class Fruit extends Entity {
 	public int getPoints() {
 		return this.mType.points;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.jakewharton.wakkawallpaper.Entity#tick(com.jakewharton.wakkawallpaper.Game)
+	 */
+	@Override
+	public void tick(Game game) {
+		if (this.mVisible) {
+			if ((System.currentTimeMillis() - this.mCreated) > this.mVisibleLength) {
+				this.reset(game);
+			}
+		} else {
+			final int dotsEaten = game.getTheMan().getDotsEaten();
+			if ((dotsEaten > this.mThresholdFirst) || (dotsEaten > this.mThresholdSecond)) {
+				this.mVisible = true;
+				this.mType = Fruit.Type.getForLevel(game.getLevel());
+				this.mVisibleLength = Game.RANDOM.nextInt(this.mVisibleUpper - this.mVisibleLower + 1) + this.mVisibleLower;
+				this.mCreated = System.currentTimeMillis();
+			}
+		}
+	}
 
-    /**
-     * Render the entity on the Canvas.
-     * 
-     * @param c Canvas to draw on.
+    /*
+     * (non-Javadoc)
+     * @see com.jakewharton.wakkawallpaper.Entity#draw(android.graphics.Canvas)
      */
 	@Override
 	public void draw(Canvas c) {
-		c.save();
-		c.translate(this.getLocationX(), this.getLocationY());
-		
-		switch (this.mType) {
-			case CHERRY:
-				break;
-				
-			case STRAWBERRY:
-				break;
-				
-			case PEACH:
-				break;
-				
-			case APPLE:
-				break;
-				
-			case GRAPES:
-				break;
-				
-			case GALAXIAN:
-				break;
-				
-			case BELL:
-				break;
-				
-			case KEY:
-				break;
+		if (this.mType != null) {
+			c.save();
+			c.translate(this.mLocation.x, this.mLocation.y);
+			
+			switch (this.mType) {
+				case CHERRY:
+					break;
+					
+				case STRAWBERRY:
+					break;
+					
+				case PEACH:
+					break;
+					
+				case APPLE:
+					break;
+					
+				case GRAPES:
+					break;
+					
+				case GALAXIAN:
+					break;
+					
+				case BELL:
+					break;
+					
+				case KEY:
+					break;
+			}
+			
+			c.restore();
 		}
-		
-		c.restore();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.jakewharton.wakkawallpaper.Entity#moved(com.jakewharton.wakkawallpaper.Game)
+	 */
+	@Override
+	protected void moved(Game game) {
+		//We do not move
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.jakewharton.wakkawallpaper.Entity#reset(com.jakewharton.wakkawallpaper.Game)
+	 */
+	@Override
+	protected void reset(Game game) {
+		this.mVisible = false;
+		this.mType = null;
 	}
 }
