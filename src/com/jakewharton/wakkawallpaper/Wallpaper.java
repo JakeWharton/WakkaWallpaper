@@ -19,6 +19,8 @@ import android.view.SurfaceHolder;
 public class Wallpaper extends WallpaperService {
     public static SharedPreferences PREFERENCES;
     public static Context CONTEXT;
+    public static final boolean LOG_DEBUG = true;
+    public static final boolean LOG_VERBOSE = true;
     
     private final Handler mHandler = new Handler();
 
@@ -38,16 +40,10 @@ public class Wallpaper extends WallpaperService {
     	private static final String TAG = "WakkaWallpaper.WakkaEngine";
     	private static final int MILLISECONDS_IN_SECOND = 1000;
     	private static final int DEFAULT_FPS = 10;
-    	private static final int DEFAULT_ICON_ROWS = 4;
-    	private static final int DEFAULT_ICON_COLS = 4;
     	
     	private Game mGame;
-    	private int mIconRows;
-    	private int mIconCols;
         private boolean mIsVisible;
         private int mFPS;
-        private int mScreenWidth;
-        private int mScreenHeight;
         private float mScreenCenterX;
         private float mScreenCenterY;
 
@@ -62,43 +58,43 @@ public class Wallpaper extends WallpaperService {
          * Create instance of the engine.
          */
         public WakkaEngine() {
-            this.mGame = null;
+        	if (Wallpaper.LOG_VERBOSE) {
+        		Log.v(WakkaEngine.TAG, "> WakkaEngine()");
+        	}
+        	
+            this.mGame = new Game();
 
             //Load all preferences or their defaults
             Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
             this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
+            
+        	if (Wallpaper.LOG_VERBOSE) {
+        		Log.v(WakkaEngine.TAG, "< WakkaEngine()");
+        	}
         }
 
         /**
          * Handle the changing of a preference.
          */
 		public void onSharedPreferenceChanged(final SharedPreferences preferences, final String key) {
+        	if (Wallpaper.LOG_VERBOSE) {
+        		Log.v(WakkaEngine.TAG, "> onSharedPreferenceChanged()");
+        	}
+        	
 			final boolean all = (key == null);
 			
 			final String fps = Wallpaper.this.getString(R.string.settings_display_fps_key);
 			if (all || key.equals(fps)) {
 				this.mFPS = preferences.getInt(fps, WakkaEngine.DEFAULT_FPS);
-			}
-			
-			boolean iconsChanged = false;
-			final String iconRows = Wallpaper.this.getString(R.string.settings_display_iconrows_key); 
-			if (all || key.equals(iconRows)) {
-				this.mIconRows = preferences.getInt(iconRows, WakkaEngine.DEFAULT_ICON_ROWS);
-				iconsChanged = true;
-			}
-			
-			final String iconCols = Wallpaper.this.getString(R.string.settings_display_iconcols_key);
-			if (all || key.equals(iconCols)) {
-				this.mIconCols = preferences.getInt(iconCols, WakkaEngine.DEFAULT_ICON_COLS);
-				iconsChanged = true;
-			}
-			
-			if (iconsChanged) {
-				if (this.mGame != null) {
-					this.mGame.performResize(this.mScreenWidth, this.mScreenHeight);
-					this.mGame.newGame();
+				
+				if (Wallpaper.LOG_DEBUG) {
+					Log.d(WakkaEngine.TAG, "FPS = " + this.mFPS);
 				}
 			}
+
+        	if (Wallpaper.LOG_VERBOSE) {
+        		Log.v(WakkaEngine.TAG, "< onSharedPreferenceChanged()");
+        	}
 		}
 
         @Override
@@ -149,25 +145,26 @@ public class Wallpaper extends WallpaperService {
 
         @Override
         public void onSurfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height) {
+        	if (Wallpaper.LOG_VERBOSE) {
+        		Log.v(WakkaEngine.TAG, "> onSurfaceChanged(width = " + width + ", height = " + height + ")");
+        	}
+        	
             super.onSurfaceChanged(holder, format, width, height);
-            
-            this.mScreenWidth = width;
-            Log.v(WakkaEngine.TAG, "Screen Width: " + width);
-            this.mScreenHeight = height;
-            Log.v(WakkaEngine.TAG, "Screen Height: " + height);
             
             this.mScreenCenterX = width / 2.0f;
             Log.v(WakkaEngine.TAG, "Center X: " + this.mScreenCenterX);
             this.mScreenCenterY = height / 2.0f;
             Log.v(WakkaEngine.TAG, "Center Y: " + this.mScreenCenterY);
             
-            if (this.mGame != null) {
-            	this.mGame.performResize(width, height);
-            } else {
-            	this.mGame = new Game(this.mIconRows, this.mIconCols, width, height);
-            }
+            //Trickle down
+            this.mGame.performResize(width, height);
             
+            //Redraw with new settings
             this.drawFrame();
+            
+            if (Wallpaper.LOG_VERBOSE) {
+            	Log.v(WakkaEngine.TAG, "< onSurfaceChanged()");
+            }
         }
 
         @Override

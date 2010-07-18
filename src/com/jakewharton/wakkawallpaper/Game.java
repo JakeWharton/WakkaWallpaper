@@ -42,10 +42,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private static final int DEFAULT_CELL_SPACING_ROWS = 6;
     private static final int DEFAULT_CELL_SPACING_COLUMNS = 4;
     private static final int DEFAULT_GHOST_COUNT = 4;
+    private static final boolean DEFAULT_GHOST_DEADLY = true;
 	private static final int POINTS_DOT = 10;
 	private static final int POINTS_JUGGERDOT = 50;
 	private static final int[] POINTS_FLEEING_GHOSTS = new int[] { 200, 400, 800, 1600 };
-	private static final int POINTS_ALL_FLEEDING_GHOSTS = 12000;
+	private static final int POINTS_ALL_FLEEING_GHOSTS = 12000;
 	private static final int NUMBER_OF_JUGGERDOTS = 4;
 	private static final int KILL_SCREEN_LEVEL = 256;
 	
@@ -68,8 +69,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	private Fruit mFruit;
 	private Ghost[] mGhosts;
 	private int mGhostCount;
+	private boolean mIsGhostDeadly;
 	private int mFleeingGhostsEaten;
-	private int mAllFleedingGhostsEaten;
+	private int mAllFleeingGhostsEaten;
 	private int mDotsRemaining;
 	private int mDotsEaten;
 	private int mLives;
@@ -95,51 +97,68 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * @param screenWidth Width in pixels of the screen.
      * @param screenHeight Height in pixels of the screen.
      */
-    public Game(final int iconRows, final int iconCols, final int screenWidth, final int screenHeight) {
-        //Load all preferences or their defaults
-        Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
-        this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
-    	
-    	//Create entities
-    	this.mTheMan = new TheMan();
-    	this.mFruit = new Fruit();
-    	this.mGhosts = new Ghost[this.mGhostCount];
-    	if (this.mGhostCount > 0) { this.mGhosts[0] = new Ghost.Blinky(); }
-    	if (this.mGhostCount > 1) { this.mGhosts[1] = new Ghost.Pinky(); }
-    	if (this.mGhostCount > 2) { this.mGhosts[2] = new Ghost.Inky(); }
-    	if (this.mGhostCount > 3) { this.mGhosts[3] = new Ghost.Clyde(); }
-    	
-    	int i = 0;
-    	this.mEntities = new Entity[2 + this.mGhostCount]; //The Man, Fruit, and Ghosts
-    	this.mEntities[i++] = this.mTheMan;
-    	this.mEntities[i++] = this.mFruit;
-    	for (Ghost ghost : this.mGhosts) {
-    		this.mEntities[i++] = ghost;
+    public Game() {
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Game.TAG, "> Game()");
     	}
     	
-    	//Create playing board
-        this.mBoard = new Cell[this.mCellsTall][this.mCellsWide];
-        
         //Create Paints
         this.mDotForeground = new Paint(); 
         this.mHudForeground = new Paint();
         
-        this.newGame();
+        //Create "The Man" and fruit
+    	this.mTheMan = new TheMan();
+    	this.mFruit = new Fruit();
+        
+        //Load all preferences or their defaults
+        Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
+        this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
+
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Game.TAG, "< Game()");
+    	}
     }
     
 	public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Game.TAG, "> onSharedPreferenceChanged()");
+    	}
+    	
 		final boolean all = (key == null);
 
 		// GENERAL //
 		
-    	this.mGhostCount = Game.DEFAULT_GHOST_COUNT;
         this.mIsBonusLifeAllowed = Game.DEFAULT_BONUS_ALLOWED;
         this.mBonusLifeThreshold = Game.DEFAULT_BONUS_THRESHOLD;
         this.mIsKillScreenEnabled = Game.DEFAULT_KILL_SCREEN_ENABLED;
+        this.mIsGhostDeadly = Game.DEFAULT_GHOST_DEADLY;
+        
+        boolean ghostCountChanged = true;
+    	this.mGhostCount = Game.DEFAULT_GHOST_COUNT;
+
+    	if (ghostCountChanged) {
+	    	this.mGhosts = new Ghost[this.mGhostCount];
+	    	if (this.mGhostCount > 0) { this.mGhosts[0] = new Ghost.Blinky(); }
+	    	if (this.mGhostCount > 1) { this.mGhosts[1] = new Ghost.Pinky(); }
+	    	if (this.mGhostCount > 2) { this.mGhosts[2] = new Ghost.Inky(); }
+	    	if (this.mGhostCount > 3) { this.mGhosts[3] = new Ghost.Clyde(); }
+	    	
+	    	int i = 0;
+	    	this.mEntities = new Entity[2 + this.mGhostCount]; //The Man, Fruit, and Ghosts
+	    	this.mEntities[i++] = this.mTheMan;
+	    	this.mEntities[i++] = this.mFruit;
+	    	for (Ghost ghost : this.mGhosts) {
+	    		this.mEntities[i++] = ghost;
+	    	}
+    	}
 		
 		final String displayHud = Wallpaper.CONTEXT.getString(R.string.settings_display_showhud_key);
 		if (all || key.equals(displayHud)) {
 			this.mIsDisplayingHud = Wallpaper.PREFERENCES.getBoolean(key, Game.DEFAULT_DISPLAY_HUD);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Is Displaying HUD: " + this.mIsDisplayingHud);
+			}
 		}
 		
 		// COLORS //
@@ -160,59 +179,98 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String dotGridPaddingLeft = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_left_key);
 		if (all || key.equals(dotGridPaddingLeft)) {
 			this.mDotGridPaddingLeft = Wallpaper.PREFERENCES.getInt(dotGridPaddingLeft, Game.DEFAULT_GRID_PADDING_LEFT);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Dot Grid Padding Left: " + this.mDotGridPaddingLeft);
+			}
 		}
 
 		final String dotGridPaddingRight = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_right_key);
 		if (all || key.equals(dotGridPaddingRight)) {
 			this.mDotGridPaddingRight = Wallpaper.PREFERENCES.getInt(dotGridPaddingRight, Game.DEFAULT_GRID_PADDING_RIGHT);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Dot Grid Padding Right: " + this.mDotGridPaddingRight);
+			}
 		}
 
 		final String dotGridPaddingTop = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_top_key);
 		if (all || key.equals(dotGridPaddingTop)) {
 			this.mDotGridPaddingTop = Wallpaper.PREFERENCES.getInt(dotGridPaddingTop, Game.DEFAULT_GRID_PADDING_TOP);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Dot Grid Padding Top: " + this.mDotGridPaddingTop);
+			}
 		}
 
 		final String dotGridPaddingBottom = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_bottom_key);
 		if (all || key.equals(dotGridPaddingBottom)) {
 			this.mDotGridPaddingBottom = Wallpaper.PREFERENCES.getInt(dotGridPaddingBottom, Game.DEFAULT_GRID_PADDING_BOTTOM);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Dot Grid Padding Bottom: " + this.mDotGridPaddingBottom);
+			}
 		}
 		
 		// CELLS //
 		
-		boolean cellChanged = false;
+		boolean layoutChanged = false;
 		
 		final String iconRows = Wallpaper.CONTEXT.getString(R.string.settings_display_iconrows_key);
 		if (all || key.equals(iconRows)) {
 			this.mIconRows = Wallpaper.PREFERENCES.getInt(iconRows, Game.DEFAULT_ICON_ROWS);
-			cellChanged = true;
+			layoutChanged = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Icon Rows: " + this.mIconRows);
+			}
 		}
 		
 		final String iconCols = Wallpaper.CONTEXT.getString(R.string.settings_display_iconcols_key);
 		if (all || key.equals(iconCols)) {
 			this.mIconCols = Wallpaper.PREFERENCES.getInt(iconCols, Game.DEFAULT_ICON_COLS);
-			cellChanged = true;
+			layoutChanged = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Icon Cols: " + this.mIconCols);
+			}
 		}
 		
 		final String cellSpacingRow = Wallpaper.CONTEXT.getString(R.string.settings_display_rowspacing_key);
 		if (all || key.equals(cellSpacingRow)) {
 			this.mCellRowSpacing = Wallpaper.PREFERENCES.getInt(cellSpacingRow, Game.DEFAULT_CELL_SPACING_ROWS);
-	    	Log.v(Game.TAG, "Cell Row Spacing: " + this.mCellRowSpacing);
-			cellChanged = true;
+			layoutChanged = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+		    	Log.d(Game.TAG, "Cell Row Spacing: " + this.mCellRowSpacing);
+			}
 		}
 		
 		final String cellSpacingCol = Wallpaper.CONTEXT.getString(R.string.settings_display_colspacing_key);
 		if (all || key.equals(cellSpacingCol)) {
 			this.mCellColumnSpacing = Wallpaper.PREFERENCES.getInt(cellSpacingCol, Game.DEFAULT_CELL_SPACING_COLUMNS);
-	    	Log.v(Game.TAG, "Cell Column Spacing: " + this.mCellColumnSpacing);
-			cellChanged = true;
+			layoutChanged = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+		    	Log.d(Game.TAG, "Cell Column Spacing: " + this.mCellColumnSpacing);
+			}
 		}
 		
-		if (cellChanged) {
+		if (layoutChanged) {
 	    	this.mCellsWide = (this.mIconCols * (mCellColumnSpacing + 1)) + 1;
 	    	Log.v(Game.TAG, "Cells Wide: " + this.mCellsWide);
 	    	this.mCellsTall = (this.mIconRows * (mCellRowSpacing + 1)) + 1;
 	    	Log.v(Game.TAG, "Cells Tall: " + this.mCellsTall);
+	    	
+	    	//Create playing board
+	        this.mBoard = new Cell[this.mCellsTall][this.mCellsWide];
+	    	
+	    	this.newGame();
 		}
+
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Game.TAG, "< onSharedPreferenceChanged()");
+    	}
 	}
     
     /**
@@ -224,6 +282,15 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      */
     public Cell getCell(final Point position) {
     	return this.mBoard[position.y][position.x];
+    }
+    
+    /**
+     * Sets the cell value for a specific position.
+     * @param position Position to change.
+     * @param newCell New cell value.
+     */
+    public void setCell(final Point position, Cell newCell) {
+    	this.mBoard[position.y][position.x] = newCell; 
     }
     
     /**
@@ -401,6 +468,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		this.mDotsEaten += 1;
     		this.mDotsRemaining -= 1;
     		this.addToScore(Game.POINTS_DOT);
+    		
+    		//Blank cell since we've eaten the dot
+    		this.setCell(this.mTheMan.getPosition(), Cell.BLANK);
         	
         	//Check for level complete
         	if (this.mDotsRemaining <= 0) {
@@ -431,7 +501,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     			switch (ghost.getState()) {
 					case CHASE:
 					case SCATTER:
-						//TODO: Kill pacman
+				    	if (this.mIsGhostDeadly) {
+				    		//TODO: Kill pacman
+				    	}
 						break;
 	
 					case FRIGHTENED:
@@ -442,11 +514,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 						
 						//See if we have eaten all the ghosts for this juggerdot
 						if (this.mFleeingGhostsEaten == this.mGhostCount) {
-							this.mAllFleedingGhostsEaten += 1;
+							this.mAllFleeingGhostsEaten += 1;
 							
 							//See if we have eaten all the ghosts for every juggerdot
-							if (this.mAllFleedingGhostsEaten == Game.NUMBER_OF_JUGGERDOTS) {
-								this.addToScore(Game.POINTS_ALL_FLEEDING_GHOSTS);
+							if (this.mAllFleeingGhostsEaten == Game.NUMBER_OF_JUGGERDOTS) {
+								this.addToScore(Game.POINTS_ALL_FLEEING_GHOSTS);
 							}
 						}
 						
@@ -509,7 +581,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		}
     	}
     	
-    	this.mAllFleedingGhostsEaten = 0;
+    	this.mAllFleeingGhostsEaten = 0;
     	
     	//Initialize juggerdots
     	this.mBoard[this.mCellRowSpacing + 1][0] = Cell.JUGGERDOT;
@@ -540,6 +612,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * @param screenHeight New height.
      */
     public void performResize(int screenWidth, int screenHeight) {
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Game.TAG, "> performResize(width = " + screenWidth + ", height = " + screenHeight + ")");
+    	}
+    	
     	if (screenWidth > screenHeight) {
     		this.mIsLandscape = true;
     		final int temp = screenHeight;
@@ -550,9 +626,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     	
     	this.mScreenWidth = screenWidth;
-    	Log.v(Game.TAG, "Screen Width: " + screenWidth);
     	this.mScreenHeight = screenHeight;
-    	Log.v(Game.TAG, "Screen Height: " + screenHeight);
     	
     	if (this.mIsLandscape) {
     		this.mCellWidth = (screenWidth - this.mDotGridPaddingTop) / (this.mCellsWide * 1.0f);
@@ -561,11 +635,21 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		this.mCellWidth = (screenWidth - (this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / (this.mCellsWide * 1.0f);
     		this.mCellHeight = (screenHeight - (this.mDotGridPaddingTop + this.mDotGridPaddingBottom)) / (this.mCellsTall * 1.0f);
     	}
-    	Log.v(Game.TAG, "Cell Width: " + this.mCellWidth);
-    	Log.v(Game.TAG, "Cell Height: " + this.mCellHeight);
+    	
+    	if (Wallpaper.LOG_DEBUG) {
+    		Log.d(Game.TAG, "Is Landscape: " + this.mIsLandscape);
+    		Log.d(Game.TAG, "Screen Width: " + screenWidth);
+    		Log.d(Game.TAG, "Screen Height: " + screenHeight);
+    		Log.d(Game.TAG, "Cell Width: " + this.mCellWidth);
+    		Log.d(Game.TAG, "Cell Height: " + this.mCellHeight);
+    	}
     	
     	for (Entity entity : this.mEntities) {
     		entity.performResize(this);
+    	}
+
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Game.TAG, "< performResize()");
     	}
     }
     

@@ -85,28 +85,30 @@ public abstract class Ghost extends Entity {
 	public void performResize(final Game game) {
 		super.performResize(game);
 		
-		this.mBodyPaths[0] = new Path();
-		this.mBodyPaths[0].moveTo(0, 0.75f * this.mCellHeight);
-		this.mBodyPaths[0].lineTo(0, 0.9f * this.mCellHeight);
-		this.mBodyPaths[0].lineTo(0.1f * this.mCellWidth, this.mCellHeight);
-		this.mBodyPaths[0].lineTo(0.3f * this.mCellWidth, 0.8f * this.mCellHeight);
-		this.mBodyPaths[0].lineTo(0.5f * this.mCellWidth, this.mCellHeight);
-		this.mBodyPaths[0].lineTo(0.7f * this.mCellWidth, 0.8f * this.mCellHeight);
-		this.mBodyPaths[0].lineTo(0.9f * this.mCellWidth, this.mCellHeight);
-		this.mBodyPaths[0].lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
-		this.mBodyPaths[0].arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+		final Path shapeOne = new Path();
+		shapeOne.moveTo(0, 0.75f * this.mCellHeight);
+		shapeOne.lineTo(0, 0.9f * this.mCellHeight);
+		shapeOne.lineTo(0.1f * this.mCellWidth, this.mCellHeight);
+		shapeOne.lineTo(0.3f * this.mCellWidth, 0.8f * this.mCellHeight);
+		shapeOne.lineTo(0.5f * this.mCellWidth, this.mCellHeight);
+		shapeOne.lineTo(0.7f * this.mCellWidth, 0.8f * this.mCellHeight);
+		shapeOne.lineTo(0.9f * this.mCellWidth, this.mCellHeight);
+		shapeOne.lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
+		shapeOne.arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+		this.mBodyPaths[0] = shapeOne;
 
 		final float widthOverSix = this.mCellWidth / 6.0f;
-		this.mBodyPaths[1] = new Path();
-		this.mBodyPaths[1].moveTo(0, 0.75f * this.mCellHeight);
-		this.mBodyPaths[1].lineTo(0, this.mCellHeight);
-		this.mBodyPaths[1].lineTo(1 * widthOverSix, 0.8f * this.mCellHeight);
-		this.mBodyPaths[1].lineTo(2 * widthOverSix, this.mCellHeight);
-		this.mBodyPaths[1].lineTo(3 * widthOverSix, 0.8f * this.mCellHeight);
-		this.mBodyPaths[1].lineTo(4 * widthOverSix, this.mCellHeight);
-		this.mBodyPaths[1].lineTo(5 * widthOverSix, 0.8f * this.mCellHeight);
-		this.mBodyPaths[1].lineTo(this.mCellWidth, this.mCellHeight);
-		this.mBodyPaths[1].arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+		final Path shapeTwo = new Path();
+		shapeTwo.moveTo(0, 0.75f * this.mCellHeight);
+		shapeTwo.lineTo(0, this.mCellHeight);
+		shapeTwo.lineTo(1 * widthOverSix, 0.8f * this.mCellHeight);
+		shapeTwo.lineTo(2 * widthOverSix, this.mCellHeight);
+		shapeTwo.lineTo(3 * widthOverSix, 0.8f * this.mCellHeight);
+		shapeTwo.lineTo(4 * widthOverSix, this.mCellHeight);
+		shapeTwo.lineTo(5 * widthOverSix, 0.8f * this.mCellHeight);
+		shapeTwo.lineTo(this.mCellWidth, this.mCellHeight);
+		shapeTwo.arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+		this.mBodyPaths[1] = shapeTwo;
 		
 		this.mCellWidthOverThree = this.mCellWidth / 3.0f;
 		this.mCellHeightOverThree = this.mCellHeight / 3.0f;
@@ -247,6 +249,7 @@ public abstract class Ghost extends Entity {
 	
 	/**
 	 * Use line-of-sight distance to a target point to determine the next direction
+	 * 
 	 * @param game Game instance
 	 * @param target Target Point
 	 * @param isStateChange Whether or not this is occurring because of a state change
@@ -258,7 +261,7 @@ public abstract class Ghost extends Entity {
 		double shortestDistance = Double.MAX_VALUE;
 		
 		for (Direction direction : Direction.values()) {
-			if (isStateChange || (direction != this.mDirection.getOpposite())) {
+			if (isStateChange || (this.mDirection == null) || (direction != this.mDirection.getOpposite())) {
 				nextPoint = Entity.move(this.mPosition, direction);
 				nextDistance = Math.sqrt(Math.pow(nextPoint.x - target.x, 2) + Math.pow(nextPoint.y - target.y, 2));
 				if (nextDistance < shortestDistance) {

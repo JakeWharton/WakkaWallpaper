@@ -3,6 +3,7 @@ package com.jakewharton.wakkawallpaper;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.util.Log;
 
 /**
  * The Entity class represents an object that can move within the game board.
@@ -68,6 +69,8 @@ public abstract class Entity {
 		}
 	}
 	
+	private static final String TAG = "WakkaWallpaper.Entity";
+	
 	protected final Point mPosition;
 	protected final PointF mLocation;
 	protected Direction mDirection;
@@ -100,10 +103,21 @@ public abstract class Entity {
 	 * @param height New height.
 	 */
 	public void performResize(final Game game) {
+		if (Wallpaper.LOG_VERBOSE) {
+			Log.v(Entity.TAG, "> performResize()");
+		}
+		
 		this.mCellWidth = game.getCellWidth();
 		this.mCellHeight = game.getCellHeight();
 		this.mCellWidthOverTwo = this.mCellWidth / 2.0f;
 		this.mCellHeightOverTwo = this.mCellHeight / 2.0f;
+		
+		//Reset position to update location
+		this.setPosition(this.mPosition);
+
+		if (Wallpaper.LOG_VERBOSE) {
+			Log.v(Entity.TAG, "< performResize()");
+		}
 	}
 	
 	/**
@@ -149,6 +163,8 @@ public abstract class Entity {
 	public void tick(final Game game) {
 		this.mTickCount += 1;
 		
+		this.mDirection = this.mNextDirection;
+		this.mNextDirection = null; //fallback
 		//TODO: move this.mLocation based on this.mSpeed and this.mDirection
 		
 		//Move to next space if we are far enough
