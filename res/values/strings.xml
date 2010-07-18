@@ -96,9 +96,32 @@
     <string name="settings_color_game_hudbg">HUD Shadow</string>
     <string name="settings_color_game_hudbg_key">color_game_hudbg</string>
     <string name="settings_color_game_hudbg_summary">Lives and score text shadow</string>
+    
     <string name="settings_color_theman">"The Man" Color</string>
     <string name="settings_color_theman_key">color_theman</string>
     <string name="settings_color_theman_summary">Foreground color</string>
+    
+    <string name="settings_color_ghost">Ghost Colors</string>
+    <string name="settings_color_ghost_key">color_ghost</string>
+    <string name="settings_color_ghost_summary">Body, eyes, and scared</string>
+    <string name="settings_color_ghost_eyefg">Eye Foreground</string>
+    <string name="settings_color_ghost_eyefg_key">color_ghost_eyefg</string>
+    <string name="settings_color_ghost_eyefg_summary"></string>
+    <string name="settings_color_ghost_eyebg">Eye Background</string>
+    <string name="settings_color_ghost_eyebg_key"></string>
+    <string name="settings_color_ghost_eyebg_summary"></string>
+    <string name="settings_color_ghost_scaredfg">Scared Eye</string>
+    <string name="settings_color_ghost_scaredfg_key">color_ghost_scaredfg</string>
+    <string name="settings_color_ghost_scaredfg_summary"></string>
+    <string name="settings_color_ghost_scaredbg">Scared Body</string>
+    <string name="settings_color_ghost_scaredbg_key">color_ghost_scaredbg</string>
+    <string name="settings_color_ghost_scaredbg_summary"></string>
+    <string name="settings_color_ghost_scaredblinkfg">Scared Blinking Eye</string>
+    <string name="settings_color_ghost_scaredblinkfg_key">color_ghost_scaredblinkfg</string>
+    <string name="settings_color_ghost_scaredblinkfg_summary"></string>
+    <string name="settings_color_ghost_scaredblinkbg">Scared Blinking Body</string>
+    <string name="settings_color_ghost_scaredblinkbg_key">color_ghost_scaredblinkbg</string>
+    <string name="settings_color_ghost_scaredblinkbg_summary"></string>
     
     <string name="information_header">Information</string>
     <string name="information_version">Version</string>

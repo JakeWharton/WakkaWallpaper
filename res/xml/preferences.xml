@@ -127,6 +127,35 @@
 				android:key="@string/settings_color_theman_key"
 				android:title="@string/settings_color_theman"
 				android:summary="@string/settings_color_theman_summary"/>
+			<PreferenceScreen
+				android:key="@string/settings_color_ghost_key"
+				android:title="@string/settings_color_ghost"
+				android:summary="@string/settings_color_ghost_summary">
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_color_ghost_eyebg_key"
+					android:title="@string/settings_color_ghost_eyebg"
+					android:summary="@string/settings_color_ghost_eyebg_summary"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_color_ghost_eyefg_key"
+					android:title="@string/settings_color_ghost_eyefg"
+					android:summary="@string/settings_color_ghost_eyefg_summary"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_color_ghost_scaredbg_key"
+					android:title="@string/settings_color_ghost_scaredbg"
+					android:summary="@string/settings_color_ghost_scaredbg_summary"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_color_ghost_scaredfg_key"
+					android:title="@string/settings_color_ghost_scaredfg"
+					android:summary="@string/settings_color_ghost_scaredfg_summary"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_color_ghost_scaredblinkbg_key"
+					android:title="@string/settings_color_ghost_scaredblinkbg"
+					android:summary="@string/settings_color_ghost_scaredblinkbg_summary"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_color_ghost_scaredblinkfg_key"
+					android:title="@string/settings_color_ghost_scaredblinkfg"
+					android:summary="@string/settings_color_ghost_scaredblinkfg_summary"/>
+			</PreferenceScreen>
 		</PreferenceScreen>
 	</PreferenceCategory>
 	

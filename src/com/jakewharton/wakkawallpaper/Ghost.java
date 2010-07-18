@@ -1,19 +1,22 @@
 package com.jakewharton.wakkawallpaper;
 
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.util.Log;
 
 /**
  * The Ghost class represents an enemy on the board.
  * 
  * @author Jake Wharton
  */
-public abstract class Ghost extends Entity {
+public abstract class Ghost extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum State { CHASE, SCATTER, FRIGHTENED, EATEN }
 
+	private static final String TAG = "WakkaWallpaper.Ghost";
 	private static final int FLEE_BLINK_INTERVAL = 200;
 	
 	private static final int DEFAULT_FLEE_LENGTH = 7000;
@@ -52,28 +55,96 @@ public abstract class Ghost extends Entity {
 		this.mFleeLength = Ghost.DEFAULT_FLEE_LENGTH;
 		
 		this.mBodyBackground = new Paint();
-		this.mBodyBackground.setColor(backgroundColor);
 		this.mBodyBackground.setAntiAlias(true);
+		this.mBodyBackground.setColor(backgroundColor);
 		this.mEyeBackground = new Paint();
-		this.mEyeBackground.setColor(Ghost.DEFAULT_EYE_BACKGROUND);
 		this.mEyeBackground.setAntiAlias(true);
 		this.mEyeForeground = new Paint();
-		this.mEyeForeground.setColor(Ghost.DEFAULT_EYE_FOREGROUND);
 		this.mEyeForeground.setAntiAlias(true);
 		this.mScaredBackground = new Paint();
-		this.mScaredBackground.setColor(Ghost.DEFAULT_SCARED_BACKGROUND);
 		this.mScaredBackground.setAntiAlias(true);
 		this.mScaredForeground = new Paint();
-		this.mScaredForeground.setColor(Ghost.DEFAULT_SCARED_FOREGROUND);
 		this.mScaredForeground.setAntiAlias(true);
 		this.mScaredBlinkBackground = new Paint();
-		this.mScaredBlinkBackground.setColor(Ghost.DEFAULT_SCARED_BLINK_BACKGROUND);
 		this.mScaredBlinkBackground.setAntiAlias(true);
 		this.mScaredBlinkForeground = new Paint();
-		this.mScaredBlinkForeground.setColor(Ghost.DEFAULT_SCARED_BLINK_FOREGROUND);
 		this.mScaredBlinkForeground.setAntiAlias(true);
+
+        //Load all preferences or their defaults
+        Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
+        this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
 		
 		this.mBodyPaths = new Path[2];
+	}
+
+    /**
+     * Handle the changing of a preference.
+     */
+	public void onSharedPreferenceChanged(final SharedPreferences preferences, final String key) {
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Ghost.TAG, "> onSharedPreferenceChanged()");
+    	}
+    	
+		final boolean all = (key == null);
+		
+		final String eyeBg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_eyebg_key);
+		if (all || key.equals(eyeBg)) {
+			this.mEyeBackground.setColor(Wallpaper.PREFERENCES.getInt(eyeBg, Ghost.DEFAULT_EYE_BACKGROUND));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Eye Background: " + Integer.toHexString(this.mEyeBackground.getColor()));
+			}
+		}
+		
+		final String eyeFg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_eyefg_key);
+		if (all || key.equals(eyeFg)) {
+			this.mEyeForeground.setColor(Wallpaper.PREFERENCES.getInt(eyeFg, Ghost.DEFAULT_EYE_FOREGROUND));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Eye Foreground: " + Integer.toHexString(this.mEyeForeground.getColor()));
+			}
+		}
+		
+		final String scaredBg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredbg_key);
+		if (all || key.equals(scaredBg)) {
+			this.mScaredBackground.setColor(Wallpaper.PREFERENCES.getInt(scaredBg, Ghost.DEFAULT_SCARED_BACKGROUND));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Scared Background: " + Integer.toHexString(this.mScaredBackground.getColor()));
+			}
+		}
+		
+		final String scaredFg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredfg_key);
+		if (all || key.equals(scaredFg)) {
+			this.mScaredForeground.setColor(Wallpaper.PREFERENCES.getInt(scaredFg, Ghost.DEFAULT_SCARED_FOREGROUND));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Scared Foreground: " + Integer.toHexString(this.mScaredForeground.getColor()));
+			}
+		}
+		
+		final String scaredBlinkBg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredblinkbg_key);
+		if (all || key.equals(scaredBlinkBg)) {
+			this.mScaredBlinkBackground.setColor(Wallpaper.PREFERENCES.getInt(scaredBlinkBg, Ghost.DEFAULT_SCARED_BLINK_BACKGROUND));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Scared Blink Background: " + Integer.toHexString(this.mScaredBlinkBackground.getColor()));
+			}
+		}
+		
+		final String scaredBlinkFg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredblinkfg_key);
+		if (all || key.equals(scaredBlinkFg)) {
+			this.mScaredBlinkForeground.setColor(Wallpaper.PREFERENCES.getInt(scaredBlinkFg, Ghost.DEFAULT_SCARED_BLINK_FOREGROUND));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Scared Blink Foreground: " + Integer.toHexString(this.mScaredBlinkForeground.getColor()));
+			}
+		}
+		
+
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Ghost.TAG, "< onSharedPreferenceChanged()");
+    	}
 	}
 
 	/**
@@ -146,9 +217,11 @@ public abstract class Ghost extends Entity {
 				if ((this.mFleeLength <= Ghost.DEFAULT_FLEE_BLINK_THRESHOLD) && ((this.mFleeLength / Ghost.FLEE_BLINK_INTERVAL) % 2 == 0)) {
 					//draw scared blink
 					c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mScaredBlinkBackground);
+					//TODO: draw eyes
 				} else {
 					//draw normal scared
 					c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mScaredBackground);
+					//TODO: draw eyes
 				}
 				break;
 		}
