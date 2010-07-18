@@ -19,8 +19,10 @@ import android.view.SurfaceHolder;
 public class Wallpaper extends WallpaperService {
     public static SharedPreferences PREFERENCES;
     public static Context CONTEXT;
+    
     public static final boolean LOG_DEBUG = true;
     public static final boolean LOG_VERBOSE = true;
+    private static final boolean AUTO_TICK = false;
     
     private final Handler mHandler = new Handler();
 
@@ -49,8 +51,8 @@ public class Wallpaper extends WallpaperService {
 
         private final Runnable mDrawWakka = new Runnable() {
             public void run() {
-            	WakkaEngine.this.mGame.tick();
-                WakkaEngine.this.drawFrame();
+            	WakkaEngine.this.tick();
+                WakkaEngine.this.draw();
             }
         };
 
@@ -101,7 +103,7 @@ public class Wallpaper extends WallpaperService {
         public void onVisibilityChanged(final boolean visible) {
             this.mIsVisible = visible;
             if (visible) {
-                this.drawFrame();
+                this.draw();
             } else {
                 Wallpaper.this.mHandler.removeCallbacks(this.mDrawWakka);
             }
@@ -123,7 +125,7 @@ public class Wallpaper extends WallpaperService {
         
         @Override
         public void onTouchEvent(final MotionEvent event) {
-        	if ((event.getAction() == MotionEvent.ACTION_DOWN) && (this.mGame != null)) {
+        	if (event.getAction() == MotionEvent.ACTION_DOWN) {
         		final float deltaX = this.mScreenCenterX - event.getX();
         		final float deltaY = this.mScreenCenterY - event.getY();
         		
@@ -139,6 +141,11 @@ public class Wallpaper extends WallpaperService {
         			} else {
         				this.mGame.getTheMan().setWantsToGo(Direction.SOUTH);
         			}
+        		}
+        		
+        		if (!Wallpaper.AUTO_TICK) {
+        			this.tick();
+        			this.draw();
         		}
         	}
         }
@@ -160,7 +167,7 @@ public class Wallpaper extends WallpaperService {
             this.mGame.performResize(width, height);
             
             //Redraw with new settings
-            this.drawFrame();
+            this.draw();
             
             if (Wallpaper.LOG_VERBOSE) {
             	Log.v(WakkaEngine.TAG, "< onSurfaceChanged()");
@@ -173,11 +180,21 @@ public class Wallpaper extends WallpaperService {
             this.mIsVisible = false;
             Wallpaper.this.mHandler.removeCallbacks(this.mDrawWakka);
         }
+        
+        private void tick() {
+        	this.mGame.tick();
+
+        	if (Wallpaper.AUTO_TICK) {
+        		if (this.mIsVisible) {
+            		Wallpaper.this.mHandler.postDelayed(this.mDrawWakka, WakkaEngine.MILLISECONDS_IN_SECOND / this.mFPS);
+            	}
+            }
+        }
 
         /**
          * Draws the current state of the game to the wallpaper.
          */
-        private void drawFrame() {
+        private void draw() {
             final SurfaceHolder holder = this.getSurfaceHolder();
 
             Canvas c = null;
@@ -190,10 +207,6 @@ public class Wallpaper extends WallpaperService {
                 if (c != null) {
                 	holder.unlockCanvasAndPost(c);
                 }
-            }
-
-            if (this.mIsVisible) {
-                Wallpaper.this.mHandler.postDelayed(this.mDrawWakka, WakkaEngine.MILLISECONDS_IN_SECOND / this.mFPS);
             }
         }
     }

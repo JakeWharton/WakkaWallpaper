@@ -25,6 +25,14 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	public static final Random RANDOM = new Random();
 	private static final String TAG = "WakkaWallpaper.Game";
 	private static final NumberFormat SCORE_FORMAT = new DecimalFormat("000000");
+	private static final int POINTS_DOT = 10;
+	private static final int POINTS_JUGGERDOT = 50;
+	private static final int[] POINTS_FLEEING_GHOSTS = new int[] { 200, 400, 800, 1600 };
+	private static final int POINTS_ALL_FLEEING_GHOSTS = 12000;
+	private static final float HUD_TEXT_SIZE = 20;
+	private static final int NUMBER_OF_JUGGERDOTS = 4;
+	private static final int KILL_SCREEN_LEVEL = 256;
+
 	private static final boolean DEFAULT_BONUS_ALLOWED = true;
 	private static final int DEFAULT_BONUS_THRESHOLD = 10000;
 	private static final int DEFAULT_DOT_FOREGROUND = 0xff6161a1;
@@ -43,12 +51,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private static final int DEFAULT_CELL_SPACING_COLUMNS = 4;
     private static final int DEFAULT_GHOST_COUNT = 4;
     private static final boolean DEFAULT_GHOST_DEADLY = true;
-	private static final int POINTS_DOT = 10;
-	private static final int POINTS_JUGGERDOT = 50;
-	private static final int[] POINTS_FLEEING_GHOSTS = new int[] { 200, 400, 800, 1600 };
-	private static final int POINTS_ALL_FLEEING_GHOSTS = 12000;
-	private static final int NUMBER_OF_JUGGERDOTS = 4;
-	private static final int KILL_SCREEN_LEVEL = 256;
 	
 	private int mCellsWide;
 	private int mCellsTall;
@@ -104,7 +106,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
         //Create Paints
         this.mDotForeground = new Paint(); 
+        this.mDotForeground.setAntiAlias(true);
         this.mHudForeground = new Paint();
+        this.mHudForeground.setAntiAlias(true);
+        this.mHudForeground.setTextSize(Game.HUD_TEXT_SIZE);
         
         //Create "The Man" and fruit
     	this.mTheMan = new TheMan();
@@ -126,24 +131,70 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
 		final boolean all = (key == null);
 
+		boolean hasBonusChanged = false;
+        boolean hasGhostCountChanged = false;
+		boolean hasLayoutChanged = false;
+
+		
 		// GENERAL //
 		
-        this.mIsBonusLifeAllowed = Game.DEFAULT_BONUS_ALLOWED;
-        this.mBonusLifeThreshold = Game.DEFAULT_BONUS_THRESHOLD;
-        this.mIsKillScreenEnabled = Game.DEFAULT_KILL_SCREEN_ENABLED;
-        this.mIsGhostDeadly = Game.DEFAULT_GHOST_DEADLY;
+		final String bonusAllowed = Wallpaper.CONTEXT.getString(R.string.settings_game_bonuslife_key);
+		if (all || key.equals(bonusAllowed)) {
+			this.mIsBonusLifeAllowed = Wallpaper.PREFERENCES.getBoolean(bonusAllowed, Game.DEFAULT_BONUS_ALLOWED);
+			hasBonusChanged = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Bonus Allowed: " + this.mIsBonusLifeAllowed);
+			}
+		}
         
-        boolean ghostCountChanged = true;
-    	this.mGhostCount = Game.DEFAULT_GHOST_COUNT;
+		final String bonusThreshold = Wallpaper.CONTEXT.getString(R.string.settings_game_bonuslifethreshold_key);
+		if (all || key.equals(bonusThreshold)) {
+			this.mBonusLifeThreshold = Wallpaper.PREFERENCES.getInt(key, Game.DEFAULT_BONUS_THRESHOLD);
+			hasBonusChanged = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Bonus Threshold: " + this.mBonusLifeThreshold);
+			}
+		}
+        
+        final String killScreen = Wallpaper.CONTEXT.getString(R.string.settings_game_killscreen_key);
+        if (all || key.equals(killScreen)) {
+        	this.mIsKillScreenEnabled = Wallpaper.PREFERENCES.getBoolean(killScreen, Game.DEFAULT_KILL_SCREEN_ENABLED);
+        	
+        	if (Wallpaper.LOG_DEBUG) {
+        		Log.d(Game.TAG, "Is Kill Screen Enabled: " + this.mIsKillScreenEnabled);
+        	}
+        }
+        
+        final String ghostsDeadly = Wallpaper.CONTEXT.getString(R.string.settings_game_deadlyghosts_key);
+        if (all || key.equals(ghostsDeadly)) {
+        	this.mIsGhostDeadly = Wallpaper.PREFERENCES.getBoolean(ghostsDeadly, Game.DEFAULT_GHOST_DEADLY);
+        	
+        	if (Wallpaper.LOG_DEBUG) {
+        		Log.d(Game.TAG, "Is Ghost Deadly: " + this.mIsGhostDeadly);
+        	}
+        }
+        
+        final String ghostCount = Wallpaper.CONTEXT.getString(R.string.settings_game_ghostcount_key);
+        if (all || key.equals(ghostCount)) {
+        	this.mGhostCount = Wallpaper.PREFERENCES.getInt(ghostCount, Game.DEFAULT_GHOST_COUNT);
+        	hasGhostCountChanged = true;
+        	
+        	if (Wallpaper.LOG_DEBUG) {
+        		Log.d(Game.TAG, "Ghost Count: " + this.mGhostCount);
+        	}
+        }
 
-    	if (ghostCountChanged) {
+    	if (hasGhostCountChanged) {
 	    	this.mGhosts = new Ghost[this.mGhostCount];
-	    	if (this.mGhostCount > 0) { this.mGhosts[0] = new Ghost.Blinky(); }
-	    	if (this.mGhostCount > 1) { this.mGhosts[1] = new Ghost.Pinky(); }
-	    	if (this.mGhostCount > 2) { this.mGhosts[2] = new Ghost.Inky(); }
-	    	if (this.mGhostCount > 3) { this.mGhosts[3] = new Ghost.Clyde(); }
-	    	
 	    	int i = 0;
+	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Blinky(); }
+	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Pinky(); }
+	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Inky(); }
+	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Clyde(); }
+	    	
+	    	i = 0;
 	    	this.mEntities = new Entity[2 + this.mGhostCount]; //The Man, Fruit, and Ghosts
 	    	this.mEntities[i++] = this.mTheMan;
 	    	this.mEntities[i++] = this.mFruit;
@@ -161,19 +212,47 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			}
 		}
 		
+		
 		// COLORS //
         
-        this.mGameBackground = Game.DEFAULT_GAME_BACKGROUND;
+		final String gameBackground = Wallpaper.CONTEXT.getString(R.string.settings_color_game_background_key);
+		if (all || key.equals(gameBackground)) {
+			this.mGameBackground = Wallpaper.PREFERENCES.getInt(gameBackground, Game.DEFAULT_GAME_BACKGROUND);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Game Background: " + Integer.toHexString(this.mGameBackground));
+			}
+		}
         
-        this.mDotForeground.setColor(Game.DEFAULT_DOT_FOREGROUND);
-        this.mDotForeground.setAntiAlias(true);
-        
-        this.mHudForeground.setColor(Game.DEFAULT_HUD_FOREGROUND);
-        this.mHudForeground.setAntiAlias(true);
-        this.mHudForeground.setTextSize(20f);
-        this.mHudForeground.setShadowLayer(1, -1, 1, Game.DEFAULT_HUD_BACKGROUND);
-    	
+		final String dot = Wallpaper.CONTEXT.getString(R.string.settings_color_game_dot_key);
+		if (all || key.equals(dot)) {
+			this.mDotForeground.setColor(Wallpaper.PREFERENCES.getInt(dot, Game.DEFAULT_DOT_FOREGROUND));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Dot Foreground: " + Integer.toHexString(this.mDotForeground.getColor()));
+			}
+		}
 		
+		final String hudFg = Wallpaper.CONTEXT.getString(R.string.settings_color_game_hudfg_key);
+		if (all || key.equals(hudFg)) {
+			this.mHudForeground.setColor(Wallpaper.PREFERENCES.getInt(key, Game.DEFAULT_HUD_FOREGROUND));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "HUD Foreground: " + Integer.toHexString(this.mHudForeground.getColor()));
+			}
+		}
+        
+		final String hudBg = Wallpaper.CONTEXT.getString(R.string.settings_color_game_hudbg_key);
+		if (all || key.equals(hudBg)) {
+			final int hudBgColor = Wallpaper.PREFERENCES.getInt(key, Game.DEFAULT_HUD_BACKGROUND);
+			this.mHudForeground.setShadowLayer(1, -1, 1, hudBgColor);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "HUD Background: " + Integer.toHexString(hudBgColor));
+			}
+		}
+    	
+        
 		// GRID //
 		
 		final String dotGridPaddingLeft = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_left_key);
@@ -212,14 +291,13 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			}
 		}
 		
-		// CELLS //
 		
-		boolean layoutChanged = false;
+		// CELLS //
 		
 		final String iconRows = Wallpaper.CONTEXT.getString(R.string.settings_display_iconrows_key);
 		if (all || key.equals(iconRows)) {
 			this.mIconRows = Wallpaper.PREFERENCES.getInt(iconRows, Game.DEFAULT_ICON_ROWS);
-			layoutChanged = true;
+			hasLayoutChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Icon Rows: " + this.mIconRows);
@@ -229,7 +307,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String iconCols = Wallpaper.CONTEXT.getString(R.string.settings_display_iconcols_key);
 		if (all || key.equals(iconCols)) {
 			this.mIconCols = Wallpaper.PREFERENCES.getInt(iconCols, Game.DEFAULT_ICON_COLS);
-			layoutChanged = true;
+			hasLayoutChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Icon Cols: " + this.mIconCols);
@@ -239,7 +317,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String cellSpacingRow = Wallpaper.CONTEXT.getString(R.string.settings_display_rowspacing_key);
 		if (all || key.equals(cellSpacingRow)) {
 			this.mCellRowSpacing = Wallpaper.PREFERENCES.getInt(cellSpacingRow, Game.DEFAULT_CELL_SPACING_ROWS);
-			layoutChanged = true;
+			hasLayoutChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 		    	Log.d(Game.TAG, "Cell Row Spacing: " + this.mCellRowSpacing);
@@ -249,14 +327,14 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String cellSpacingCol = Wallpaper.CONTEXT.getString(R.string.settings_display_colspacing_key);
 		if (all || key.equals(cellSpacingCol)) {
 			this.mCellColumnSpacing = Wallpaper.PREFERENCES.getInt(cellSpacingCol, Game.DEFAULT_CELL_SPACING_COLUMNS);
-			layoutChanged = true;
+			hasLayoutChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 		    	Log.d(Game.TAG, "Cell Column Spacing: " + this.mCellColumnSpacing);
 			}
 		}
 		
-		if (layoutChanged) {
+		if (hasLayoutChanged) {
 	    	this.mCellsWide = (this.mIconCols * (mCellColumnSpacing + 1)) + 1;
 	    	Log.v(Game.TAG, "Cells Wide: " + this.mCellsWide);
 	    	this.mCellsTall = (this.mIconRows * (mCellRowSpacing + 1)) + 1;
@@ -264,7 +342,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	    	
 	    	//Create playing board
 	        this.mBoard = new Cell[this.mCellsTall][this.mCellsWide];
-	    	
+		}
+		
+		
+		//Check to see if we need a new game
+		if (hasBonusChanged || hasGhostCountChanged || hasLayoutChanged) {
 	    	this.newGame();
 		}
 
@@ -545,6 +627,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * Reset the game state to that of first initialization.
      */
     public void newGame() {
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Game.TAG, "> newGame()");
+    	}
+    	
     	//Game level values
 		this.mLives = 3;
 		this.mScore = 0;
@@ -554,12 +640,20 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
     	//Reset board
     	this.newLevel();
+    	
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Game.TAG, "< newGame()");
+    	}
     }
     
     /**
      * Reset the board state to that of a level's first initialization.
      */
     private void newLevel() {
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Game.TAG, "> newLevel()");
+    	}
+    	
     	this.mLevel += 1;
     	
     	//Kill screen is shown randomly one out of 256 levels as long as we are not on level one
@@ -593,6 +687,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	//Initialize entities
     	for (Entity entity : this.mEntities) {
     		entity.newLevel(this);
+    	}
+    	
+    	if (Wallpaper.LOG_VERBOSE) {
+    		Log.v(Game.TAG, "< newLevel()");
     	}
     }
     

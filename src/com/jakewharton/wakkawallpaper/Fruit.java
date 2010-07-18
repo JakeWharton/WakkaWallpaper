@@ -1,13 +1,15 @@
 package com.jakewharton.wakkawallpaper;
 
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.util.Log;
 
 /**
  * The Fruit class is a special reward entity that appears only at specific times.
  * 
  * @author Jake Wharton
  */
-public class Fruit extends Entity {
+public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum Type {
 		CHERRY(100), STRAWBERRY(300), PEACH(500), APPLE(700), GRAPES(1000), GALAXIAN(2000), BELL(3000), KEY(5000);
 		
@@ -17,6 +19,8 @@ public class Fruit extends Entity {
 			this.points = points;
 		}
 	}
+	
+	private static final String TAG = "WakkaWallpaper.Fruit";
 	
     private static final int DEFAULT_THRESHOLD_FIRST = 70;
     private static final int DEFAULT_THRESHOLD_SECOND = 170;
@@ -42,11 +46,72 @@ public class Fruit extends Entity {
 	 */
 	public Fruit() {
 		super();
+
+        //Load all preferences or their defaults
+        Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
+        this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
+	}
+
+    /**
+     * Handle the changing of a preference.
+     */
+	public void onSharedPreferenceChanged(final SharedPreferences preferences, final String key) {
+		if (Wallpaper.LOG_VERBOSE) {
+			Log.v(Fruit.TAG, "> onSharedPreferenceChanged()");
+		}
 		
-        this.mThresholdFirst = Fruit.DEFAULT_THRESHOLD_FIRST;
-        this.mThresholdSecond = Fruit.DEFAULT_THRESHOLD_SECOND;
-        this.mVisibleLower = Fruit.DEFAULT_VISIBLE_LOWER;
-        this.mVisibleUpper = Fruit.DEFAULT_VISIBLE_UPPER;
+		final boolean all = (key == null);
+		
+		boolean changed = false;
+		
+		final String thresholdFirst = Wallpaper.CONTEXT.getString(R.string.settings_game_fruitonethreshold_key);
+		if (all || key.equals(thresholdFirst)) {
+			this.mThresholdFirst = Wallpaper.PREFERENCES.getInt(key, Fruit.DEFAULT_THRESHOLD_FIRST);
+			changed = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Fruit.TAG, "First Threshold: " + this.mThresholdFirst);
+			}
+		}
+
+		final String thresholdSecond = Wallpaper.CONTEXT.getString(R.string.settings_game_fruittwothreshold_key);
+		if (all || key.equals(thresholdSecond)) {
+			this.mThresholdSecond = Wallpaper.PREFERENCES.getInt(key, Fruit.DEFAULT_THRESHOLD_SECOND);
+			changed = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Fruit.TAG, "Second Threshold: " + this.mThresholdSecond);
+			}
+		}
+		
+		final String visibleLower = Wallpaper.CONTEXT.getString(R.string.settings_game_fruitvisiblelower_key);
+		if (all || key.equals(visibleLower)) {
+			this.mVisibleLower = Wallpaper.PREFERENCES.getInt(key, Fruit.DEFAULT_VISIBLE_LOWER);
+			changed = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Fruit.TAG, "Visible Lower: " + this.mVisibleLower);
+			}
+		}
+		
+		final String visibleUpper = Wallpaper.CONTEXT.getString(R.string.settings_game_fruitvisibleupper_key);
+		if (all || key.equals(visibleUpper)) {
+			this.mVisibleUpper = Wallpaper.PREFERENCES.getInt(key, Fruit.DEFAULT_VISIBLE_UPPER);
+			changed = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Fruit.TAG, "Visible Upper: " + this.mVisibleUpper);
+			}
+		}
+		
+		
+		if (changed) {
+			this.hide();
+		}
+        
+		if (Wallpaper.LOG_VERBOSE) {
+			Log.v(Fruit.TAG, "> onSharedPreferenceChanged()");
+		}
 	}
 	
 	/**
@@ -67,10 +132,6 @@ public class Fruit extends Entity {
 		this.mPosition.set(-1, -1);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.jakewharton.wakkawallpaper.Entity#tick(com.jakewharton.wakkawallpaper.Game)
-	 */
 	@Override
 	public void tick(Game game) {
 		if (this.mVisible) {
@@ -88,10 +149,6 @@ public class Fruit extends Entity {
 		}
 	}
 
-    /*
-     * (non-Javadoc)
-     * @see com.jakewharton.wakkawallpaper.Entity#draw(android.graphics.Canvas)
-     */
 	@Override
 	public void draw(Canvas c) {
 		if (this.mType != null) {
@@ -128,19 +185,11 @@ public class Fruit extends Entity {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.jakewharton.wakkawallpaper.Entity#moved(com.jakewharton.wakkawallpaper.Game)
-	 */
 	@Override
 	protected void moved(Game game) {
 		//We do not move
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.jakewharton.wakkawallpaper.Entity#reset(com.jakewharton.wakkawallpaper.Game)
-	 */
 	@Override
 	protected void newLevel(Game game) {
 		this.hide();

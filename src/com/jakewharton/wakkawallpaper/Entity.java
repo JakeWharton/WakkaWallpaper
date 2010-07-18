@@ -73,7 +73,7 @@ public abstract class Entity {
 	
 	protected final Point mPosition;
 	protected final PointF mLocation;
-	protected Direction mDirection;
+	protected Direction mCurrentDirection;
 	protected Direction mNextDirection;
 	protected float mSpeed;
 	protected float mCellWidth;
@@ -88,7 +88,7 @@ public abstract class Entity {
 	protected Entity() {
 		this.mPosition = new Point();
 		this.mLocation = new PointF();
-		this.mDirection = null;
+		this.mCurrentDirection = null;
 		this.mNextDirection = null;
 		this.mSpeed = 1.0f; //100%
 		this.mCellWidth = 0;
@@ -133,7 +133,7 @@ public abstract class Entity {
 	 * @return Position.
 	 */
 	public Direction getDirection() {
-		return this.mDirection;
+		return this.mCurrentDirection;
 	}
 	
 	/**
@@ -163,23 +163,48 @@ public abstract class Entity {
 	public void tick(final Game game) {
 		this.mTickCount += 1;
 		
-		this.mDirection = this.mNextDirection;
-		this.mNextDirection = null; //fallback
-		//TODO: move this.mLocation based on this.mSpeed and this.mDirection
+		//TODO: move this.mLocation based on this.mSpeed and this.mCurrentDirection
+		switch (this.mCurrentDirection) {
+			case NORTH:
+				this.mLocation.y -= this.mCellHeight;
+				break;
+			case SOUTH:
+				this.mLocation.y += this.mCellHeight;
+				break;
+			case EAST:
+				this.mLocation.x += this.mCellWidth;
+				break;
+			case WEST:
+				this.mLocation.x -= this.mCellHeight;
+				break;
+		}
 		
 		//Move to next space if we are far enough
+		boolean moved = false;
 		if (this.mLocation.x >= ((this.mPosition.x + 1) * this.mCellWidth)) {
 			this.mPosition.x += 1;
-			this.moved(game);
+			moved = true;
 		} else if (this.mLocation.x < (this.mPosition.x * this.mCellWidth)) {
 			this.mPosition.x -= 1;
-			this.moved(game);
+			moved = true;
 		} else if (this.mLocation.y >= ((this.mPosition.y + 1) * this.mCellHeight)) {
 			this.mPosition.y += 1;
-			this.moved(game);
+			moved = true;
 		} else if (this.mLocation.y < (this.mPosition.y * this.mCellHeight)) {
 			this.mPosition.y -= 1;
+			moved = true;
+		}
+		
+		if (moved) {
+			//Promote next direction to current
+			this.mCurrentDirection = this.mNextDirection;
+			this.mNextDirection = null; //fallback to stopped
+			
 			this.moved(game);
+		}
+		
+		if (Wallpaper.LOG_VERBOSE) {
+			Log.v(Entity.TAG, "Position: (" + this.mPosition.x + "," + this.mPosition.y + ");  Location: (" + this.mLocation.x + "," + this.mLocation.y + ");  Direction: " + this.mCurrentDirection + ";  Next: " + this.mNextDirection);
 		}
 	}
 

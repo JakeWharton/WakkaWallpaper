@@ -13,10 +13,11 @@ import android.graphics.RectF;
  */
 public abstract class Ghost extends Entity {
 	enum State { CHASE, SCATTER, FRIGHTENED, EATEN }
-	
-	private static final int FLEE_LENGTH = 7000;
-	private static final int FLEE_BLINK_THRESHOLD = 2000;
+
 	private static final int FLEE_BLINK_INTERVAL = 200;
+	
+	private static final int DEFAULT_FLEE_LENGTH = 7000;
+	private static final int DEFAULT_FLEE_BLINK_THRESHOLD = 2000;
 	private static final int DEFAULT_EYE_BACKGROUND = 0xffffffff;
 	private static final int DEFAULT_EYE_FOREGROUND = 0xff000000;
 	private static final int DEFAULT_SCARED_BACKGROUND = 0xff0033ff;
@@ -48,7 +49,7 @@ public abstract class Ghost extends Entity {
 		super();
 
 		this.mState = State.CHASE;
-		this.mFleeLength = Ghost.FLEE_LENGTH;
+		this.mFleeLength = Ghost.DEFAULT_FLEE_LENGTH;
 		
 		this.mBodyBackground = new Paint();
 		this.mBodyBackground.setColor(backgroundColor);
@@ -133,7 +134,7 @@ public abstract class Ghost extends Entity {
 				
 				//fall through to eyes only case
 			case EATEN:
-				Point eyeOffset = Entity.move(new Point(0, 0), this.mDirection);
+				Point eyeOffset = Entity.move(new Point(0, 0), this.mCurrentDirection);
 				
 				c.drawCircle(this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverSeven, this.mEyeBackground);
 				c.drawCircle(2.0f * this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverSeven, this.mEyeBackground);
@@ -142,7 +143,7 @@ public abstract class Ghost extends Entity {
 				break;
 				
 			case FRIGHTENED:
-				if ((this.mFleeLength <= Ghost.FLEE_BLINK_THRESHOLD) && ((this.mFleeLength / Ghost.FLEE_BLINK_INTERVAL) % 2 == 0)) {
+				if ((this.mFleeLength <= Ghost.DEFAULT_FLEE_BLINK_THRESHOLD) && ((this.mFleeLength / Ghost.FLEE_BLINK_INTERVAL) % 2 == 0)) {
 					//draw scared blink
 					c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mScaredBlinkBackground);
 				} else {
@@ -173,7 +174,7 @@ public abstract class Ghost extends Entity {
 		
 		if (state == State.FRIGHTENED) {
 			//reverse direction immediately if frightened
-			this.mNextDirection = this.mDirection.getOpposite();
+			this.mNextDirection = this.mCurrentDirection.getOpposite();
 		} else {
 			//otherwise get new next direction
 			this.determineNextDirection(game, true);
@@ -182,9 +183,15 @@ public abstract class Ghost extends Entity {
 	
 	@Override
 	protected void newLevel(final Game game) {
-		this.mDirection = null;
-		this.mNextDirection = null;
+		//Set initial ghost position
 		this.setPosition(this.getInitialPosition(game));
+		
+		//Get the next direction
+		this.determineNextDirection(game, false);
+		//Promote to initial direction
+		this.mCurrentDirection = this.mNextDirection;
+		//Get the real next direction
+		this.determineNextDirection(game, false);
 	}
 	
 	@Override
@@ -231,7 +238,7 @@ public abstract class Ghost extends Entity {
 				//If the random direction was not valid, iterate over all possible directions looking for a valid one
 				for (Direction direction : Direction.values()) {
 					//See if the direction is a valid position and not the opposite of our current direction
-					if (game.isValidPosition(Entity.move(this.mPosition, direction)) && (direction != this.mDirection.getOpposite())) {
+					if (game.isValidPosition(Entity.move(this.mPosition, direction)) && (direction != this.mCurrentDirection.getOpposite())) {
 						//Save and exit the loop
 						nextDirection = direction;
 						break;
@@ -243,7 +250,7 @@ public abstract class Ghost extends Entity {
 			this.mNextDirection = nextDirection;
 		} else {
 			//Not at intersection, go straight
-			this.mNextDirection = this.mDirection;
+			this.mNextDirection = this.mCurrentDirection;
 		}
 	}
 	
@@ -261,7 +268,7 @@ public abstract class Ghost extends Entity {
 		double shortestDistance = Double.MAX_VALUE;
 		
 		for (Direction direction : Direction.values()) {
-			if (isStateChange || (this.mDirection == null) || (direction != this.mDirection.getOpposite())) {
+			if (isStateChange || (this.mCurrentDirection == null) || (direction != this.mCurrentDirection.getOpposite())) {
 				nextPoint = Entity.move(this.mPosition, direction);
 				nextDistance = Math.sqrt(Math.pow(nextPoint.x - target.x, 2) + Math.pow(nextPoint.y - target.y, 2));
 				if (nextDistance < shortestDistance) {

@@ -6,6 +6,7 @@ import java.util.Queue;
 
 import com.jakewharton.wakkawallpaper.Game.Cell;
 
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -18,11 +19,12 @@ import android.util.Log;
  * 
  * @author Jake Wharton
  */
-public class TheMan extends Entity {
+public class TheMan extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	private static final String TAG = "WakkaWallpaper.TheMan";
-	private static final int DEFAULT_FOREGROUND_COLOR = 0xfffff000;
 	private static final int CHOMP_ANGLE_COUNT = 4;
 	private static final int[] CHOMP_ANGLES = new int[] { 90, 45, 0, 45 };
+
+	private static final int DEFAULT_FOREGROUND_COLOR = 0xfffff000;
 	
     private final Paint mForeground;
 	private Direction mWantsToGo;
@@ -34,11 +36,38 @@ public class TheMan extends Entity {
 		super();
         
         this.mForeground = new Paint();
-        this.mForeground.setColor(TheMan.DEFAULT_FOREGROUND_COLOR);
         this.mForeground.setAntiAlias(true);
         this.mForeground.setStyle(Style.FILL_AND_STROKE);
+
+        //Load all preferences or their defaults
+        Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
+        this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
     	
     	this.mWantsToGo = null;
+	}
+
+    /**
+     * Handle the changing of a preference.
+     */
+	public void onSharedPreferenceChanged(final SharedPreferences preferences, final String key) {
+		if (Wallpaper.LOG_VERBOSE) {
+			Log.v(TheMan.TAG, "> onSharedPreferenceChanged()");
+		}
+		
+		final boolean all = (key == null);
+		
+		final String foregroundColor = Wallpaper.CONTEXT.getString(R.string.settings_color_theman_key);
+		if (all || key.equals(foregroundColor)) {
+			this.mForeground.setColor(Wallpaper.PREFERENCES.getInt(foregroundColor, TheMan.DEFAULT_FOREGROUND_COLOR));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(TheMan.TAG, "Foreground Color: " + Integer.toHexString(this.mForeground.getColor()));
+			}
+		}
+
+		if (Wallpaper.LOG_VERBOSE) {
+			Log.v(TheMan.TAG, "< onSharedPreferenceChanged()");
+		}
 	}
 
     /**
@@ -47,8 +76,11 @@ public class TheMan extends Entity {
      * @param direction Desired direction.
      */
     public void setWantsToGo(final Direction direction) {
-    	Log.d(TheMan.TAG, "Wants to go " + direction.toString());
     	this.mWantsToGo = direction;
+    	
+    	if (Wallpaper.LOG_DEBUG) {
+    		Log.d(TheMan.TAG, "Wants To Go: " + direction.toString());
+    	}
     }
 
 	@Override
@@ -56,6 +88,7 @@ public class TheMan extends Entity {
 		game.checkDots();
 		game.checkFruit();
 		game.checkGhosts();
+		
 		this.determineNextDirection(game);
     }
 	
@@ -67,14 +100,10 @@ public class TheMan extends Entity {
 	private void determineNextDirection(final Game game) {
 		//TODO: account for this.mWantsToGo
 		
-		//Promote next direction to current
-		this.mDirection = this.mNextDirection;
-		this.mNextDirection = null; //fallback to stopped
-		
 		//Breadth-first search for new next direction
 		final Queue<Vector> queue = new LinkedList<Vector>();
 		final HashSet<Integer> seen = new HashSet<Integer>();
-		queue.add(new Vector(this.mPosition, this.mDirection));
+		queue.add(new Vector(this.mPosition, this.mCurrentDirection));
 		Vector current;
 		
 		while (!queue.isEmpty()) {
@@ -85,13 +114,16 @@ public class TheMan extends Entity {
 				if (game.isValidPosition(next.getPosition()) && !seen.contains(game.hashPosition(next.getPosition())) && !game.isGhostAtPosition(next.getPosition())) {
 					if (game.getCell(next.getPosition()) == Cell.DOT) {
 						this.mNextDirection = next.getInitialDirection();
-						queue.clear(); //exit while
-						break; //exit for
+						return;
 					} else {
 						queue.add(next);
 					}
 				}
 			}
+		}
+		
+		if (Wallpaper.LOG_DEBUG) {
+			Log.w(TheMan.TAG, "WARNING: No path found.");
 		}
 	}
 
@@ -102,9 +134,9 @@ public class TheMan extends Entity {
 		
 		float startingAngle = 0;
 		int degrees = 360;
-		if (this.mDirection != null) {
+		if (this.mCurrentDirection != null) {
 			final int angle = TheMan.CHOMP_ANGLES[this.mTickCount % TheMan.CHOMP_ANGLE_COUNT];
-			startingAngle = this.mDirection.getAngle(this.mNextDirection) + (angle / 2.0f);
+			startingAngle = this.mCurrentDirection.getAngle(this.mNextDirection) + (angle / 2.0f);
 			degrees -= angle;
 		}
 		
@@ -115,11 +147,20 @@ public class TheMan extends Entity {
 
 	@Override
 	protected void newLevel(Game game) {
+		if (Wallpaper.LOG_VERBOSE) {
+			Log.v(TheMan.TAG, "> newLevel()");
+		}
+		
 		//Position in the center-most region of the board.
 		this.setPosition(new Point(game.getCellsWide() / 2, ((game.getIconRows() / 2) * (game.getCellRowSpacing() + 1))));
 		
-		this.mDirection = null;
-		this.mNextDirection = null;
+		//Randomize the initial direction
+		this.mCurrentDirection = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
+		//Starting using pathfinding logic
 		this.determineNextDirection(game);
+		
+		if (Wallpaper.LOG_VERBOSE) {
+			Log.v(TheMan.TAG, "< newLevel()");
+		}
 	}
 }
