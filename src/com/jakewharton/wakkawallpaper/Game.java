@@ -520,8 +520,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     /**
      * Get a unique integer hash for the position on the board.
      * 
-     * @param x X coordinate of position.
-     * @param y Y coordinate of position.
+     * @param position Point position.
      * @return Integer hash.
      */
     public int hashPosition(final Point position) {

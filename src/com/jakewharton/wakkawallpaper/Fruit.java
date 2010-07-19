@@ -143,7 +143,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 			if ((dotsEaten > this.mThresholdFirst) || (dotsEaten > this.mThresholdSecond)) {
 				this.mVisible = true; 
 				this.mVisibleLength = Game.RANDOM.nextInt(this.mVisibleUpper - this.mVisibleLower + 1) + this.mVisibleLower;
-				//TODO: determine random valid location
+				this.setPosition(game.getTheMan().getInitialPosition(game));
 				this.mCreated = System.currentTimeMillis();
 			}
 		}

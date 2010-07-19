@@ -151,16 +151,26 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 			Log.v(TheMan.TAG, "> newLevel()");
 		}
 		
-		//Position in the center-most region of the board.
-		this.setPosition(new Point(game.getCellsWide() / 2, ((game.getIconRows() / 2) * (game.getCellRowSpacing() + 1))));
+		//Get initial position
+		this.setPosition(this.getInitialPosition(game));
 		
 		//Randomize the initial direction
 		this.mCurrentDirection = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
-		//Starting using pathfinding logic
+		//Starting using path finding logic
 		this.determineNextDirection(game);
 		
 		if (Wallpaper.LOG_VERBOSE) {
 			Log.v(TheMan.TAG, "< newLevel()");
 		}
+	}
+	
+	/**
+	 * Get the position in the center-most region of the board.
+	 * 
+	 * @param game Game instance.
+	 * @return Point
+	 */
+	public Point getInitialPosition(Game game) {
+		return new Point(game.getCellsWide() / 2, ((game.getIconRows() / 2) * (game.getCellRowSpacing() + 1)));
 	}
 }
