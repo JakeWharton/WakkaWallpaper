@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.graphics.Paint.Style;
 import android.util.Log;
 
 /**
@@ -33,10 +34,13 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	private final Paint mEyeBackground;
 	private final Paint mEyeForeground;
 	private final Paint mScaredBackground;
-	private final Paint mScaredForeground;
+	private final Paint mScaredMouthForeground;
+	private final Paint mScaredEyeForeground;
 	private final Paint mScaredBlinkBackground;
-	private final Paint mScaredBlinkForeground;
-	private final Path[] mBodyPaths;
+	private final Paint mScaredBlinkMouthForeground;
+	private final Paint mScaredBlinkEyeForeground;
+	private final Path[] mBody;
+	private Path mScaredMouth;
 	private float mCellWidthOverThree;
 	private float mCellHeightOverThree;
 	private float mCellWidthOverSeven;
@@ -63,18 +67,26 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		this.mEyeForeground.setAntiAlias(true);
 		this.mScaredBackground = new Paint();
 		this.mScaredBackground.setAntiAlias(true);
-		this.mScaredForeground = new Paint();
-		this.mScaredForeground.setAntiAlias(true);
+		this.mScaredMouthForeground = new Paint();
+		this.mScaredMouthForeground.setAntiAlias(true);
+		this.mScaredMouthForeground.setStyle(Style.STROKE);
+		this.mScaredEyeForeground = new Paint();
+		this.mScaredEyeForeground.setAntiAlias(true);
+		this.mScaredEyeForeground.setStyle(Style.FILL_AND_STROKE);
 		this.mScaredBlinkBackground = new Paint();
 		this.mScaredBlinkBackground.setAntiAlias(true);
-		this.mScaredBlinkForeground = new Paint();
-		this.mScaredBlinkForeground.setAntiAlias(true);
+		this.mScaredBlinkMouthForeground = new Paint();
+		this.mScaredBlinkMouthForeground.setAntiAlias(true);
+		this.mScaredBlinkMouthForeground.setStyle(Style.STROKE);
+		this.mScaredBlinkEyeForeground = new Paint();
+		this.mScaredBlinkEyeForeground.setAntiAlias(true);
+		this.mScaredBlinkEyeForeground.setStyle(Style.FILL_AND_STROKE);
 
         //Load all preferences or their defaults
         Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
         this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
 		
-		this.mBodyPaths = new Path[2];
+		this.mBody = new Path[2];
 	}
 
     /**
@@ -116,10 +128,12 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		final String scaredFg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredfg_key);
 		if (all || key.equals(scaredFg)) {
-			this.mScaredForeground.setColor(Wallpaper.PREFERENCES.getInt(scaredFg, Ghost.DEFAULT_SCARED_FOREGROUND));
+			final int color = Wallpaper.PREFERENCES.getInt(scaredFg, Ghost.DEFAULT_SCARED_FOREGROUND);
+			this.mScaredMouthForeground.setColor(color);
+			this.mScaredEyeForeground.setColor(color);
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Ghost.TAG, "Scared Foreground: " + Integer.toHexString(this.mScaredForeground.getColor()));
+				Log.d(Ghost.TAG, "Scared Foreground: " + Integer.toHexString(color));
 			}
 		}
 		
@@ -134,10 +148,12 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		final String scaredBlinkFg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredblinkfg_key);
 		if (all || key.equals(scaredBlinkFg)) {
-			this.mScaredBlinkForeground.setColor(Wallpaper.PREFERENCES.getInt(scaredBlinkFg, Ghost.DEFAULT_SCARED_BLINK_FOREGROUND));
+			final int color = Wallpaper.PREFERENCES.getInt(scaredBlinkFg, Ghost.DEFAULT_SCARED_BLINK_FOREGROUND);
+			this.mScaredBlinkMouthForeground.setColor(color);
+			this.mScaredBlinkEyeForeground.setColor(color);
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Ghost.TAG, "Scared Blink Foreground: " + Integer.toHexString(this.mScaredBlinkForeground.getColor()));
+				Log.d(Ghost.TAG, "Scared Blink Foreground: " + Integer.toHexString(color));
 			}
 		}
 		
@@ -167,7 +183,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		shapeOne.lineTo(0.9f * this.mCellWidth, this.mCellHeight);
 		shapeOne.lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
 		shapeOne.arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
-		this.mBodyPaths[0] = shapeOne;
+		this.mBody[0] = shapeOne;
 
 		final float widthOverSix = this.mCellWidth / 6.0f;
 		final Path shapeTwo = new Path();
@@ -180,7 +196,20 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		shapeTwo.lineTo(5 * widthOverSix, 0.8f * this.mCellHeight);
 		shapeTwo.lineTo(this.mCellWidth, this.mCellHeight);
 		shapeTwo.arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
-		this.mBodyPaths[1] = shapeTwo;
+		this.mBody[1] = shapeTwo;
+		
+		final float widthOverEight = this.mCellWidth / 8.0f;
+		final float mouthHeightLower = 6 * this.mCellHeight / 8.0f;
+		final float mouthHeightUpper = 5 * this.mCellHeight / 8.0f;
+		final Path scaredMouth = new Path();
+		scaredMouth.moveTo(1 * widthOverEight, mouthHeightLower);
+		scaredMouth.lineTo(2 * widthOverEight, mouthHeightUpper);
+		scaredMouth.lineTo(3 * widthOverEight, mouthHeightLower);
+		scaredMouth.lineTo(4 * widthOverEight, mouthHeightUpper);
+		scaredMouth.lineTo(5 * widthOverEight, mouthHeightLower);
+		scaredMouth.lineTo(6 * widthOverEight, mouthHeightUpper);
+		scaredMouth.lineTo(7 * widthOverEight, mouthHeightLower);
+		this.mScaredMouth = scaredMouth;
 		
 		this.mCellWidthOverThree = this.mCellWidth / 3.0f;
 		this.mCellHeightOverThree = this.mCellHeight / 3.0f;
@@ -201,11 +230,11 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		switch (this.mState) {
 			case CHASE:
 			case SCATTER:
-				c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mBodyBackground);
+				c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mBodyBackground);
 				
 				//fall through to eyes only case
 			case EATEN:
-				Point eyeOffset = Entity.move(new Point(0, 0), this.mCurrentDirection);
+				Point eyeOffset = Entity.move(new Point(0, 0), this.mDirectionCurrent);
 				
 				c.drawCircle(this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverSeven, this.mEyeBackground);
 				c.drawCircle(2.0f * this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverSeven, this.mEyeBackground);
@@ -216,12 +245,16 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			case FRIGHTENED:
 				if ((this.mFleeLength <= Ghost.DEFAULT_FLEE_BLINK_THRESHOLD) && ((this.mFleeLength / Ghost.FLEE_BLINK_INTERVAL) % 2 == 0)) {
 					//draw scared blink
-					c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mScaredBlinkBackground);
-					//TODO: draw eyes
+					c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mScaredBlinkBackground);
+					c.drawPath(this.mScaredMouth, this.mScaredBlinkMouthForeground);
+					c.drawCircle(this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverFourteen, this.mScaredBlinkEyeForeground);
+					c.drawCircle(2.0f * this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverFourteen, this.mScaredBlinkEyeForeground);
 				} else {
 					//draw normal scared
-					c.drawPath(this.mBodyPaths[this.mTickCount % this.mBodyPaths.length], this.mScaredBackground);
-					//TODO: draw eyes
+					c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mScaredBackground);
+					c.drawPath(this.mScaredMouth, this.mScaredMouthForeground);
+					c.drawCircle(this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverFourteen, this.mScaredEyeForeground);
+					c.drawCircle(2.0f * this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverFourteen, this.mScaredEyeForeground);
 				}
 				break;
 		}
@@ -249,7 +282,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		if (state == State.FRIGHTENED) {
 			//reverse direction immediately if frightened
-			this.mNextDirection = this.mCurrentDirection.getOpposite();
+			this.mDirectionNext = this.mDirectionCurrent.getOpposite();
 		} else {
 			//otherwise get new next direction
 			this.determineNextDirection(game, true);
@@ -262,7 +295,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		this.setPosition(this.getInitialPosition(game));
 		
 		//Initial direction is stopped
-		this.mCurrentDirection = null;
+		this.mDirectionCurrent = null;
 		//Begin TheMan-seeking logic
 		this.determineNextDirection(game, false);
 	}
@@ -313,7 +346,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				//If the random direction was not valid, iterate over all possible directions looking for a valid one
 				for (Direction direction : Direction.values()) {
 					//See if the direction is a valid position and not the opposite of our current direction
-					if (game.isValidPosition(Entity.move(this.mPosition, direction)) && (direction != this.mCurrentDirection.getOpposite())) {
+					if (game.isValidPosition(Entity.move(this.mPosition, direction)) && (direction != this.mDirectionCurrent.getOpposite())) {
 						//Save and exit the loop
 						nextDirection = direction;
 						break;
@@ -322,10 +355,10 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			}
 			
 			//Store new direction
-			this.mNextDirection = nextDirection;
+			this.mDirectionNext = nextDirection;
 		} else {
 			//Not at intersection, go straight
-			this.mNextDirection = this.mCurrentDirection;
+			this.mDirectionNext = this.mDirectionCurrent;
 		}
 	}
 	
@@ -338,12 +371,12 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 */
 	protected void determineNextDirectionByLineOfSight(final Game game, final Point target, final boolean isStateChange) {
 		Point nextPoint;
-		double nextDistance;
 		Direction nextDirection = null;
+		double nextDistance;
 		double shortestDistance = Double.MAX_VALUE;
 		
 		for (Direction direction : Direction.values()) {
-			if (isStateChange || (this.mCurrentDirection == null) || (direction != this.mCurrentDirection.getOpposite())) {
+			if (isStateChange || (this.mDirectionCurrent == null) || (direction != this.mDirectionCurrent.getOpposite())) {
 				nextPoint = Entity.move(this.mPosition, direction);
 				nextDistance = Math.sqrt(Math.pow(nextPoint.x - target.x, 2) + Math.pow(nextPoint.y - target.y, 2));
 				if (game.isValidPosition(nextPoint) && (nextDistance < shortestDistance)) {
@@ -353,7 +386,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			}
 		}
 		
-		this.mNextDirection = nextDirection;
+		this.mDirectionNext = nextDirection;
 	}
 	
 	/**

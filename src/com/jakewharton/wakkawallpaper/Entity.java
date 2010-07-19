@@ -76,8 +76,9 @@ public abstract class Entity {
 	
 	protected final Point mPosition;
 	protected final PointF mLocation;
-	protected Direction mCurrentDirection;
-	protected Direction mNextDirection;
+	protected Direction mDirectionLast;
+	protected Direction mDirectionCurrent;
+	protected Direction mDirectionNext;
 	protected float mSpeed;
 	protected float mCellWidth;
 	protected float mCellHeight;
@@ -91,8 +92,8 @@ public abstract class Entity {
 	protected Entity() {
 		this.mPosition = new Point();
 		this.mLocation = new PointF();
-		this.mCurrentDirection = null;
-		this.mNextDirection = null;
+		this.mDirectionCurrent = null;
+		this.mDirectionNext = null;
 		this.mSpeed = 1.0f; //100%
 		this.mCellWidth = 0;
 		this.mCellHeight = 0;
@@ -138,7 +139,7 @@ public abstract class Entity {
 	 * @return Position.
 	 */
 	public Direction getDirection() {
-		return this.mCurrentDirection;
+		return this.mDirectionCurrent;
 	}
 	
 	/**
@@ -170,12 +171,15 @@ public abstract class Entity {
 	public void tick(final Game game) {
 		this.mTickCount += 1;
 		
+		//Promote current direction to last
+		this.mDirectionLast = this.mDirectionCurrent;
 		//Promote next direction to current
-		this.mCurrentDirection = this.mNextDirection;
-		this.mNextDirection = null; //fallback to stopped
+		this.mDirectionCurrent = this.mDirectionNext;
+		//Next direction fallback. Will be set by implementing moved() method call.
+		this.mDirectionNext = null;
 		
 		//TODO: move this.mLocation based on this.mSpeed and this.mCurrentDirection
-		switch (this.mCurrentDirection) {
+		switch (this.mDirectionCurrent) {
 			case NORTH:
 				this.mLocation.y -= this.mCellHeight;
 				break;
@@ -211,7 +215,7 @@ public abstract class Entity {
 		}
 		
 		if (Wallpaper.LOG_VERBOSE) {
-			Log.v(Entity.TAG, "Position: (" + this.mPosition.x + "," + this.mPosition.y + ");  Location: (" + this.mLocation.x + "," + this.mLocation.y + ");  Direction: " + this.mCurrentDirection + ";  Next: " + this.mNextDirection);
+			Log.v(Entity.TAG, "Position: (" + this.mPosition.x + "," + this.mPosition.y + ");  Location: (" + this.mLocation.x + "," + this.mLocation.y + ");  Direction: " + this.mDirectionCurrent + ";  Next: " + this.mDirectionNext);
 		}
 	}
 

@@ -103,7 +103,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		//Breadth-first search for new next direction
 		final Queue<Vector> queue = new LinkedList<Vector>();
 		final HashSet<Integer> seen = new HashSet<Integer>();
-		queue.add(new Vector(this.mPosition, this.mCurrentDirection));
+		queue.add(new Vector(this.mPosition, this.mDirectionCurrent));
 		Vector current;
 		
 		while (!queue.isEmpty()) {
@@ -129,7 +129,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 							Log.v(TheMan.TAG, "-- Has Dot");
 						}
 						
-						this.mNextDirection = next.getInitialDirection();
+						this.mDirectionNext = next.getInitialDirection();
 						return;
 					} else {
 						if (Wallpaper.LOG_VERBOSE) {
@@ -154,9 +154,9 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		
 		float startingAngle = 0;
 		int degrees = 360;
-		if (this.mCurrentDirection != null) {
+		if (this.mDirectionCurrent != null) {
 			final int angle = TheMan.CHOMP_ANGLES[this.mTickCount % TheMan.CHOMP_ANGLE_COUNT];
-			startingAngle = this.mCurrentDirection.getAngle(this.mNextDirection) + (angle / 2.0f);
+			startingAngle = this.mDirectionCurrent.getAngle(this.mDirectionNext) + (angle / 2.0f);
 			degrees -= angle;
 		}
 		
@@ -175,12 +175,12 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		this.setPosition(this.getInitialPosition(game));
 		
 		//Current direction is stopped
-		this.mCurrentDirection = null;
+		this.mDirectionCurrent = null;
 		//Randomize next direction
 		boolean valid = false;
 		while (!valid) {
-			this.mNextDirection = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
-			valid = game.isValidPosition(Entity.move(this.mPosition, this.mNextDirection));
+			this.mDirectionNext = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
+			valid = game.isValidPosition(Entity.move(this.mPosition, this.mDirectionNext));
 		}
 		
 		if (Wallpaper.LOG_VERBOSE) {

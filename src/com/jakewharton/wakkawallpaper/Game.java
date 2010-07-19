@@ -339,9 +339,12 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		
 		if (hasLayoutChanged) {
 	    	this.mCellsWide = (this.mIconCols * (mCellColumnSpacing + 1)) + 1;
-	    	Log.v(Game.TAG, "Cells Wide: " + this.mCellsWide);
 	    	this.mCellsTall = (this.mIconRows * (mCellRowSpacing + 1)) + 1;
-	    	Log.v(Game.TAG, "Cells Tall: " + this.mCellsTall);
+	    	
+	    	if (Wallpaper.LOG_DEBUG) {
+	    		Log.d(Game.TAG, "Cells Wide: " + this.mCellsWide);
+	    		Log.d(Game.TAG, "Cells Tall: " + this.mCellsTall);
+	    	}
 	    	
 	    	//Create playing board
 	        this.mBoard = new Cell[this.mCellsTall][this.mCellsWide];
