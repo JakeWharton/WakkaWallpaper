@@ -21,7 +21,7 @@ public class Vector {
 	 * @param direction Direction of the Vector.
 	 */
 	public Vector(final Point position, final Direction direction) {
-		this(position, direction, direction);
+		this(position, direction, null);
 	}
 	
 	/**
@@ -52,13 +52,13 @@ public class Vector {
 		
 		if (this.mDirection != null) {
 			//favor the same direction
-			moves[i++] = new Vector(Entity.move(this.mPosition, this.mDirection), this.mDirection, this.mInitialDirection);
+			moves[i++] = new Vector(Entity.move(this.mPosition, this.mDirection), this.mDirection, (this.mInitialDirection == null) ? this.mDirection : this.mInitialDirection);
 		}
 		
 		//add other three directions (four when this.mDirection is null)
 		for (Direction direction : Direction.values()) {
 			if (direction != this.mDirection) {
-				moves[i++] = new Vector(Entity.move(this.mPosition, direction), direction, this.mInitialDirection);
+				moves[i++] = new Vector(Entity.move(this.mPosition, direction), direction, (this.mInitialDirection == null) ? direction : this.mInitialDirection);
 			}
 		}
 		

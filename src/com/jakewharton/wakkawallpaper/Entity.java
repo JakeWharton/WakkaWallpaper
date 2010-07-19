@@ -20,6 +20,7 @@ public abstract class Entity {
 		
 		/**
 		 * Create a direction with specified angle.
+		 * 
 		 * @param angle Angle in degrees.
 		 */
 		private Direction(final int angle) {
@@ -28,6 +29,7 @@ public abstract class Entity {
 		
 		/**
 		 * Get the angle of the direction taking into account the next direction.
+		 * 
 		 * @param nextDirection The next direction.
 		 * @return Angle.
 		 */
@@ -51,6 +53,7 @@ public abstract class Entity {
 		
 		/**
 		 * Get the direction that is the opposite of this one.
+		 * 
 		 * @return Opposite direction.
 		 */
 		public Direction getOpposite() {
@@ -122,6 +125,7 @@ public abstract class Entity {
 	
 	/**
 	 * Get the current position of the entity.
+	 * 
 	 * @return Position.
 	 */
 	public Point getPosition() {
@@ -130,6 +134,7 @@ public abstract class Entity {
 	
 	/**
 	 * Get the current direction of the entity.
+	 * 
 	 * @return Position.
 	 */
 	public Direction getDirection() {
@@ -138,6 +143,7 @@ public abstract class Entity {
 	
 	/**
 	 * Set the board position and location.
+	 * 
 	 * @param x X coordinate.
 	 * @param y Y coordinate.
 	 */
@@ -148,6 +154,7 @@ public abstract class Entity {
 	
 	/**
 	 * Test if this entity is occupying the same cell as another.
+	 * 
 	 * @param other Other entity.
 	 * @return Whether or not they are occupying the same cell.
 	 */
@@ -162,6 +169,10 @@ public abstract class Entity {
      */
 	public void tick(final Game game) {
 		this.mTickCount += 1;
+		
+		//Promote next direction to current
+		this.mCurrentDirection = this.mNextDirection;
+		this.mNextDirection = null; //fallback to stopped
 		
 		//TODO: move this.mLocation based on this.mSpeed and this.mCurrentDirection
 		switch (this.mCurrentDirection) {
@@ -196,10 +207,6 @@ public abstract class Entity {
 		}
 		
 		if (moved) {
-			//Promote next direction to current
-			this.mCurrentDirection = this.mNextDirection;
-			this.mNextDirection = null; //fallback to stopped
-			
 			this.moved(game);
 		}
 		
@@ -217,12 +224,14 @@ public abstract class Entity {
 	
 	/**
 	 * Triggered when we have moved into a new cell.
+	 * 
 	 * @param game Game instance
 	 */
 	protected abstract void moved(final Game game);
 	
 	/**
 	 * Triggered to reset to initial game position.
+	 * 
 	 * @param game Game instance
 	 */
 	protected abstract void newLevel(final Game game);

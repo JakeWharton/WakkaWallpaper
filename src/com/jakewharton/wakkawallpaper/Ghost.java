@@ -231,6 +231,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 
 	/**
 	 * Get ghost state.
+	 * 
 	 * @return State
 	 */
 	public State getState() {
@@ -239,6 +240,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	
 	/**
 	 * Change ghost state. This will trigger the locating of a new next direction.
+	 * 
 	 * @param game Game instance
 	 * @param state Next ghost state
 	 */
@@ -259,11 +261,9 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		//Set initial ghost position
 		this.setPosition(this.getInitialPosition(game));
 		
-		//Get the next direction
-		this.determineNextDirection(game, false);
-		//Promote to initial direction
-		this.mCurrentDirection = this.mNextDirection;
-		//Get the real next direction
+		//Initial direction is stopped
+		this.mCurrentDirection = null;
+		//Begin TheMan-seeking logic
 		this.determineNextDirection(game, false);
 	}
 	
@@ -275,6 +275,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	
 	/**
 	 * Determine the next direction to travel in.
+	 * 
 	 * @param game Game instance
 	 * @param isStateChange Whether or not this change is the result of a state change
 	 */
@@ -300,6 +301,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	
 	/**
 	 * Determine next direction based on a simple random number generator.
+	 * 
 	 * @param game Game instance
 	 */
 	protected void determineNextFrightenedDirection(final Game game) {
@@ -328,7 +330,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	}
 	
 	/**
-	 * Use line-of-sight distance to a target point to determine the next direction
+	 * Use line-of-sight distance to a target point to determine the next direction.
 	 * 
 	 * @param game Game instance
 	 * @param target Target Point
@@ -344,7 +346,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			if (isStateChange || (this.mCurrentDirection == null) || (direction != this.mCurrentDirection.getOpposite())) {
 				nextPoint = Entity.move(this.mPosition, direction);
 				nextDistance = Math.sqrt(Math.pow(nextPoint.x - target.x, 2) + Math.pow(nextPoint.y - target.y, 2));
-				if (nextDistance < shortestDistance) {
+				if (game.isValidPosition(nextPoint) && (nextDistance < shortestDistance)) {
 					nextDirection = direction;
 					shortestDistance = nextDistance; 
 				}
@@ -355,14 +357,16 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	}
 	
 	/**
-	 * X coordinate of initial starting position
+	 * Initial starting position.
+	 * 
 	 * @param game Game instance
-	 * @return X coordinate
+	 * @return Point
 	 */
 	protected abstract Point getInitialPosition(final Game game);
 	
 	/**
-	 * Point off of the board of the initial starting corner
+	 * Point off of the board of the initial starting corner.
+	 * 
 	 * @param game Game instance
 	 * @return Point
 	 */
@@ -370,6 +374,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	
 	/**
 	 * Point to use when chasing down The Man.
+	 * 
 	 * @param game Game instance.
 	 * @return Point
 	 */

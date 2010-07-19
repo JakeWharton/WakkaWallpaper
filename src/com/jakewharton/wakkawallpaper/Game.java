@@ -123,7 +123,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		Log.v(Game.TAG, "< Game()");
     	}
     }
-    
+
+    /**
+     * Handle the changing of a preference.
+     */
 	public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
     	if (Wallpaper.LOG_VERBOSE) {
     		Log.v(Game.TAG, "> onSharedPreferenceChanged()");
@@ -358,8 +361,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     /**
      * Get the Cell value for a specific coordinate.
      * 
-     * @param x Horizontal coordinate.
-     * @param y Vertical coordinate.
+     * @param position Point
      * @return Cell value.
      */
     public Cell getCell(final Point position) {
@@ -368,6 +370,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Sets the cell value for a specific position.
+     * 
      * @param position Position to change.
      * @param newCell New cell value.
      */
@@ -377,6 +380,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Get the game's instance of The Man.
+     * 
      * @return The Man instance.
      */
     public TheMan getTheMan() {
@@ -396,6 +400,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Get the number of dots eaten this level.
+     * 
      * @return Number of dots eaten.
      */
     public int getDotsEaten() {
@@ -404,6 +409,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Get the current level number.
+     * 
      * @return Level number.
      */
     public int getLevel() {
@@ -412,6 +418,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Get the width of a cell in pixels.
+     * 
      * @return Cell width.
      */
     public float getCellWidth() {
@@ -420,6 +427,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Get the height of a cell in pixels.
+     * 
      * @return Cell height.
      */
     public float getCellHeight() {
@@ -428,6 +436,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Get the board's number of cells horizontally.
+     * 
      * @return Number of cells.
      */
     public int getCellsWide() {
@@ -436,6 +445,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Get the board's number of cells vertically.
+     * 
      * @return Number of cells.
      */
     public int getCellsTall() {
@@ -444,6 +454,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Get the board's number of cells between two columns.
+     * 
      * @return Number of cells.
      */
     public int getCellColumnSpacing() {
@@ -452,6 +463,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Get the board's number of cells between two rows.
+     * 
      * @return Number of cells.
      */
     public int getCellRowSpacing() {
@@ -460,6 +472,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Get the number of icon rows on the home screen.
+     * 
      * @return Number of icons.
      */
     public int getIconRows() {
@@ -468,6 +481,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Get the number of icon columns on the home screen.
+     * 
      * @return Number of icons.
      */
     public int getIconCols() {
@@ -488,6 +502,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Test if a Point is an intersection on the game board.
+     * 
      * @param position Point representing coordinate.
      * @return Boolean indicating whether or not the position is in an intersection.
      */
@@ -529,6 +544,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Add an amount to the player's score.
+     * 
      * @param amount Amount to add.
      */
     private void addToScore(final int amount) {
@@ -560,6 +576,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	} else if (this.getCell(this.mTheMan.getPosition()) == Cell.JUGGERDOT) {
     		this.addToScore(Game.POINTS_JUGGERDOT);
     		this.switchGhostsState(Ghost.State.FRIGHTENED);
+    		
+    		//Blank cell since we've eaten the dot
+    		this.setCell(this.mTheMan.getPosition(), Cell.BLANK);
     	}
     }
     
@@ -611,6 +630,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Switch the current state of the ghosts.
+     * 
      * @param state New state.
      */
     private void switchGhostsState(final State state) {

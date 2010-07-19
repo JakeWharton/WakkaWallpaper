@@ -110,12 +110,32 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 			current = queue.remove();
 			seen.add(game.hashPosition(current.getPosition()));
 			
+			if (Wallpaper.LOG_VERBOSE) {
+				Log.v(TheMan.TAG, "With Current: (" + current.getPosition().x + "," + current.getPosition().y + ") " + current.getDirection());
+			}
+			
 			for (Vector next : current.getPossibleMoves()) {
+				if (Wallpaper.LOG_VERBOSE) {
+					Log.v(TheMan.TAG, "- Checking: (" + next.getPosition().x + "," + next.getPosition().y + ") " + next.getDirection());
+				}
+				
 				if (game.isValidPosition(next.getPosition()) && !seen.contains(game.hashPosition(next.getPosition())) && !game.isGhostAtPosition(next.getPosition())) {
+					if (Wallpaper.LOG_VERBOSE) {
+						Log.v(TheMan.TAG, "-- Valid");
+					}
+					
 					if (game.getCell(next.getPosition()) == Cell.DOT) {
+						if (Wallpaper.LOG_VERBOSE) {
+							Log.v(TheMan.TAG, "-- Has Dot");
+						}
+						
 						this.mNextDirection = next.getInitialDirection();
 						return;
 					} else {
+						if (Wallpaper.LOG_VERBOSE) {
+							Log.v(TheMan.TAG, "-- Empty, Queued");
+						}
+						
 						queue.add(next);
 					}
 				}
@@ -154,10 +174,14 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		//Get initial position
 		this.setPosition(this.getInitialPosition(game));
 		
-		//Randomize the initial direction
-		this.mCurrentDirection = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
-		//Starting using path finding logic
-		this.determineNextDirection(game);
+		//Current direction is stopped
+		this.mCurrentDirection = null;
+		//Randomize next direction
+		boolean valid = false;
+		while (!valid) {
+			this.mNextDirection = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
+			valid = game.isValidPosition(Entity.move(this.mPosition, this.mNextDirection));
+		}
 		
 		if (Wallpaper.LOG_VERBOSE) {
 			Log.v(TheMan.TAG, "< newLevel()");

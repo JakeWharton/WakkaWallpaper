@@ -21,8 +21,8 @@ public class Wallpaper extends WallpaperService {
     public static Context CONTEXT;
     
     public static final boolean LOG_DEBUG = true;
-    public static final boolean LOG_VERBOSE = true;
-    private static final boolean AUTO_TICK = false;
+    public static final boolean LOG_VERBOSE = false;
+    private static final boolean AUTO_TICK = true;
     
     private final Handler mHandler = new Handler();
 
@@ -104,6 +104,10 @@ public class Wallpaper extends WallpaperService {
             this.mIsVisible = visible;
             if (visible) {
                 this.draw();
+                
+                if (Wallpaper.AUTO_TICK) {
+                	this.tick();
+                }
             } else {
                 Wallpaper.this.mHandler.removeCallbacks(this.mDrawWakka);
             }
@@ -159,9 +163,12 @@ public class Wallpaper extends WallpaperService {
             super.onSurfaceChanged(holder, format, width, height);
             
             this.mScreenCenterX = width / 2.0f;
-            Log.v(WakkaEngine.TAG, "Center X: " + this.mScreenCenterX);
             this.mScreenCenterY = height / 2.0f;
-            Log.v(WakkaEngine.TAG, "Center Y: " + this.mScreenCenterY);
+            
+            if (Wallpaper.LOG_DEBUG) {
+            	Log.d(WakkaEngine.TAG, "Center X: " + this.mScreenCenterX);
+            	Log.d(WakkaEngine.TAG, "Center Y: " + this.mScreenCenterY);
+            }
             
             //Trickle down
             this.mGame.performResize(width, height);
@@ -181,6 +188,9 @@ public class Wallpaper extends WallpaperService {
             Wallpaper.this.mHandler.removeCallbacks(this.mDrawWakka);
         }
         
+        /**
+         * Advance the game by one step.
+         */
         private void tick() {
         	this.mGame.tick();
 
