@@ -133,7 +133,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	}
 	
 	@Override
-	public void tick(Game game) {
+	public void tick(final Game game) {
 		if (this.mVisible) {
 			if ((System.currentTimeMillis() - this.mCreated) > this.mVisibleLength) {
 				this.newLevel(game);
@@ -150,7 +150,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	}
 
 	@Override
-	public void draw(Canvas c) {
+	public void draw(final Canvas c) {
 		if (this.mType != null) {
 			c.save();
 			c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
@@ -186,12 +186,12 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	}
 
 	@Override
-	protected void moved(Game game) {
+	protected void moved(final Game game) {
 		//We do not move
 	}
 
 	@Override
-	protected void newLevel(Game game) {
+	protected void newLevel(final Game game) {
 		this.hide();
 		this.mType = Fruit.getForLevel(game.getLevel());
 	}
@@ -203,7 +203,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	 * @param level The level you wish to get fruit for.
 	 * @return The Type of fruit for the level.
 	 */
-	private static Type getForLevel(int level) {
+	private static Type getForLevel(final int level) {
 		if (level <= 0) {
 			throw new IllegalArgumentException("Level number must be greater than zero.");
 		}

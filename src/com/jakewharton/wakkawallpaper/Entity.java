@@ -151,7 +151,7 @@ public abstract class Entity {
 	 * @param other Other entity.
 	 * @return Whether or not they are occupying the same cell.
 	 */
-	public boolean isCollidingWith(Entity other) {
+	public boolean isCollidingWith(final Entity other) {
 		return ((this.mPosition.x == other.getPosition().x) && (this.mPosition.y == other.getPosition().y));
 	}
 

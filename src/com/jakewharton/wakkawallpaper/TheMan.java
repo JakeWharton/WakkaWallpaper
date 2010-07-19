@@ -146,7 +146,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	}
 
 	@Override
-	protected void newLevel(Game game) {
+	protected void newLevel(final Game game) {
 		if (Wallpaper.LOG_VERBOSE) {
 			Log.v(TheMan.TAG, "> newLevel()");
 		}
@@ -170,7 +170,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	 * @param game Game instance.
 	 * @return Point
 	 */
-	public Point getInitialPosition(Game game) {
+	public Point getInitialPosition(final Game game) {
 		return new Point(game.getCellsWide() / 2, ((game.getIconRows() / 2) * (game.getCellRowSpacing() + 1)));
 	}
 }
