@@ -681,6 +681,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	//Kill screen is shown randomly one out of 256 levels as long as we are not on level one
     	if ((this.mLevel > 1) && (Game.RANDOM.nextInt(Game.KILL_SCREEN_LEVEL) == 0) && this.mIsKillScreenEnabled) {
     		this.mIsOnKillScreen = true;
+    		
+    		if (Wallpaper.LOG_DEBUG) {
+    			Log.d(Game.TAG, "Kill Screen Enabled");
+    		}
     	}
     	
     	//Initialize dots
@@ -819,15 +823,23 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         	}
         }
         
+        if (this.mIsOnKillScreen) {
+        	this.drawKillScreen(c);
+        }
+        
         //Draw the entities
         for (Entity entity : this.mEntities) {
         	entity.draw(c);
         }
         
-        if (this.mIsOnKillScreen) {
-        	//TODO: draw garbled text on right half of screen using dot, entity, and HUD colors
-        }
-        
         c.restore();
+    }
+    
+    private void drawKillScreen(final Canvas c) {
+    	c.save();
+    	
+    	//TODO: draw garbled text on right half of screen using dot, entity, and HUD colors
+    	
+    	c.restore();
     }
 }
