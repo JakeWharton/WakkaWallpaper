@@ -320,11 +320,11 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				final Point initialPosition = this.getInitialPosition(game);
 				if ((this.mPosition.x == initialPosition.x) && (this.mPosition.y == initialPosition.y)) {
 					this.mState = State.CHASE;
-					//fall through to next case
+					this.mDirectionNext = null; //pause for a tick
 				} else {
 					this.determineNextDirectionByLineOfSight(game, initialPosition, isStateChange);
-					break;
 				}
+				break;
 			
 			case CHASE:
 				this.determineNextDirectionByLineOfSight(game, this.getChasingPosition(game), isStateChange);				
@@ -350,7 +350,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			//Try a random direction
 			Direction nextDirection = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
 			
-			if (!game.isValidPosition(Entity.move(this.mPosition, nextDirection))) {
+			if (!game.isValidPosition(Entity.move(this.mPosition, nextDirection)) || (nextDirection == this.mDirectionCurrent.getOpposite())) {
 				//If the random direction was not valid, iterate over all possible directions looking for a valid one
 				for (Direction direction : Direction.values()) {
 					//See if the direction is a valid position and not the opposite of our current direction
