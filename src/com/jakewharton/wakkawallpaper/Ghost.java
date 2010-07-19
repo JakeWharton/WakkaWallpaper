@@ -278,14 +278,16 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * @param state Next ghost state
 	 */
 	public void setState(final Game game, final State state) {
-		this.mState = state;
-		
-		if (state == State.FRIGHTENED) {
-			//reverse direction immediately if frightened
-			this.mDirectionNext = this.mDirectionCurrent.getOpposite();
-		} else {
-			//otherwise get new next direction
-			this.determineNextDirection(game, true);
+		if (this.mState != State.EATEN) {
+			this.mState = state;
+			
+			if (state == State.FRIGHTENED) {
+				//reverse direction immediately if frightened
+				this.mDirectionNext = this.mDirectionCurrent.getOpposite();
+			} else {
+				//otherwise get new next direction
+				this.determineNextDirection(game, true);
+			}
 		}
 	}
 	
@@ -314,16 +316,22 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 */
 	protected void determineNextDirection(final Game game, final boolean isStateChange) {
 		switch (this.mState) {
+			case EATEN:
+				final Point initialPosition = this.getInitialPosition(game);
+				if ((this.mPosition.x == initialPosition.x) && (this.mPosition.y == initialPosition.y)) {
+					this.mState = State.CHASE;
+					//fall through to next case
+				} else {
+					this.determineNextDirectionByLineOfSight(game, initialPosition, isStateChange);
+					break;
+				}
+			
 			case CHASE:
 				this.determineNextDirectionByLineOfSight(game, this.getChasingPosition(game), isStateChange);				
 				break;
 				
 			case SCATTER:
 				this.determineNextDirectionByLineOfSight(game, this.getScatterPosition(game), isStateChange);
-				break;
-				
-			case EATEN:
-				this.determineNextDirectionByLineOfSight(game, this.getInitialPosition(game), isStateChange);
 				break;
 				
 			case FRIGHTENED:
