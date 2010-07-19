@@ -24,7 +24,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	private static final int CHOMP_ANGLE_COUNT = 4;
 	private static final int[] CHOMP_ANGLES = new int[] { 90, 45, 0, 45 };
 
-	private static final int DEFAULT_FOREGROUND_COLOR = 0xfffff000;
+	public static final int DEFAULT_FOREGROUND_COLOR = 0xfffff000;
 	
     private final Paint mForeground;
 	private Direction mWantsToGo;

@@ -86,6 +86,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private int mBonusLifeThreshold;
     private boolean mIsDisplayingHud;
     private final Paint mHudForeground;
+    private final Paint mTheManForeground;
     private float mDotGridPaddingTop;
     private float mDotGridPaddingLeft;
     private float mDotGridPaddingBottom;
@@ -110,6 +111,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         this.mHudForeground = new Paint();
         this.mHudForeground.setAntiAlias(true);
         this.mHudForeground.setTextSize(Game.HUD_TEXT_SIZE);
+        this.mTheManForeground = new Paint();
+        this.mTheManForeground.setAntiAlias(true);
         
         //Create "The Man" and fruit
     	this.mTheMan = new TheMan();
@@ -252,6 +255,15 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "HUD Background: " + Integer.toHexString(hudBgColor));
+			}
+		}
+		
+		final String foregroundColor = Wallpaper.CONTEXT.getString(R.string.settings_color_theman_key);
+		if (all || key.equals(foregroundColor)) {
+			this.mTheManForeground.setColor(Wallpaper.PREFERENCES.getInt(foregroundColor, TheMan.DEFAULT_FOREGROUND_COLOR));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "TheMan Color: " + Integer.toHexString(this.mTheManForeground.getColor()));
 			}
 		}
     	
@@ -790,13 +802,17 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
     	if (this.mIsDisplayingHud) {
 	        //Lives and score
-	        final float textY = this.mScreenHeight - this.mDotGridPaddingBottom + 15;
+    		//TODO: use constants for these values
+	        final float top = this.mScreenHeight - 5;
+	        for (int i = 0; i < this.mLives; i++) {
+	        	c.drawArc(new RectF((i * 23) + 2, top - 20, (i * 23) + 22, top), 202.5f, 315f, true, this.mTheManForeground);
+	        }
 	        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore));
-	        c.drawText(this.mLives + "UP", 10, textY, this.mHudForeground);
-	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - 10, textY, this.mHudForeground);
+	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - 10, top, this.mHudForeground);
     	}
         
         if (this.mIsLandscape) {
+        	//Perform counter-clockwise rotation
         	c.rotate(-90, this.mScreenWidth / 2.0f, this.mScreenWidth / 2.0f);
         	c.translate(0, this.mDotGridPaddingLeft);
         } else {
