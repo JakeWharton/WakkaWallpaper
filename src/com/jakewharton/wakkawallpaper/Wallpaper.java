@@ -21,7 +21,7 @@ public class Wallpaper extends WallpaperService {
     public static Context CONTEXT;
     
     public static final boolean LOG_DEBUG = true;
-    public static final boolean LOG_VERBOSE = false;
+    public static final boolean LOG_VERBOSE = true;
     private static final boolean AUTO_TICK = true;
     
     private final Handler mHandler = new Handler();

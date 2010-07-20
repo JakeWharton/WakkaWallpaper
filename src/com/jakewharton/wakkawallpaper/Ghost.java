@@ -320,11 +320,11 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				final Point initialPosition = this.getInitialPosition(game);
 				if ((this.mPosition.x == initialPosition.x) && (this.mPosition.y == initialPosition.y)) {
 					this.mState = State.CHASE;
-					this.mDirectionNext = null; //pause for a tick
+					//fall through to next case
 				} else {
 					this.determineNextDirectionByLineOfSight(game, initialPosition, isStateChange);
+					break;
 				}
-				break;
 			
 			case CHASE:
 				this.determineNextDirectionByLineOfSight(game, this.getChasingTarget(game), isStateChange);				
