@@ -588,11 +588,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		
     		//Blank cell since we've eaten the dot
     		this.setCell(this.mTheMan.getPosition(), Cell.BLANK);
-        	
-        	//Check for level complete
-        	if (this.mDotsRemaining <= 0) {
-        		this.newLevel();
-        	}
     	} else if (this.getCell(this.mTheMan.getPosition()) == Cell.JUGGERDOT) {
     		this.addToScore(Game.POINTS_JUGGERDOT);
     		this.switchGhostsState(Ghost.State.FRIGHTENED);
@@ -741,6 +736,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * Iterate all entities one step.
      */
     public void tick() {
+    	//Check for level complete
+    	if (this.mDotsRemaining <= 0) {
+    		this.newLevel();
+    	}
+    	
     	for (Entity entity : this.mEntities) {
     		entity.tick(this);
     	}

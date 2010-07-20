@@ -54,8 +54,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
      */
 	protected Ghost(final int backgroundColor) {
 		super();
-
-		this.mState = State.CHASE;
+		
 		this.mFleeLength = Ghost.DEFAULT_FLEE_LENGTH;
 		
 		this.mBodyBackground = new Paint();
@@ -298,6 +297,8 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		//Initial direction is stopped
 		this.mDirectionCurrent = null;
+		//Chasing state
+		this.mState = State.CHASE;
 		//Begin TheMan-seeking logic
 		this.determineNextDirection(game, false);
 	}

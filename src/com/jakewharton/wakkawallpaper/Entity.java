@@ -192,16 +192,16 @@ public abstract class Entity {
 		//TODO: move this.mLocation based on this.mSpeed and this.mDirectionCurrent
 		switch (this.mDirectionCurrent) {
 			case NORTH:
-				this.mLocation.set((this.mPosition.x * this.mCellWidth) + this.mCellWidthOverTwo, (this.mPosition.y - 1 * this.mCellHeight) + this.mCellHeightOverTwo);
+				this.mLocation.set((this.mPosition.x * this.mCellWidth) + this.mCellWidthOverTwo, ((this.mPosition.y - 1) * this.mCellHeight) + this.mCellHeightOverTwo);
 				break;
 			case SOUTH:
-				this.mLocation.set((this.mPosition.x * this.mCellWidth) + this.mCellWidthOverTwo, (this.mPosition.y + 1 * this.mCellHeight) + this.mCellHeightOverTwo);
+				this.mLocation.set((this.mPosition.x * this.mCellWidth) + this.mCellWidthOverTwo, ((this.mPosition.y + 1) * this.mCellHeight) + this.mCellHeightOverTwo);
 				break;
 			case EAST:
-				this.mLocation.set((this.mPosition.x + 1 * this.mCellWidth) + this.mCellWidthOverTwo, (this.mPosition.y * this.mCellHeight) + this.mCellHeightOverTwo);
+				this.mLocation.set(((this.mPosition.x + 1) * this.mCellWidth) + this.mCellWidthOverTwo, (this.mPosition.y * this.mCellHeight) + this.mCellHeightOverTwo);
 				break;
 			case WEST:
-				this.mLocation.set((this.mPosition.x - 1 * this.mCellWidth) + this.mCellWidthOverTwo, (this.mPosition.y * this.mCellHeight) + this.mCellHeightOverTwo);
+				this.mLocation.set(((this.mPosition.x - 1) * this.mCellWidth) + this.mCellWidthOverTwo, (this.mPosition.y * this.mCellHeight) + this.mCellHeightOverTwo);
 				break;
 		}
 		
