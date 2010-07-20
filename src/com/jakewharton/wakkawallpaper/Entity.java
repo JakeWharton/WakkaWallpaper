@@ -170,6 +170,17 @@ public abstract class Entity {
      */
 	public void tick(final Game game) {
 		this.mTickCount += 1;
+
+		if (Wallpaper.LOG_DEBUG) {
+			if (this.mDirectionNext == null) {
+				Log.w(Entity.TAG, this.getClass().getSimpleName() + "'s next direction is null. This will result in a fatal error.");
+				Log.w(Entity.TAG, "Position: (" + this.mPosition.x + ", " + this.mPosition.y + ")");
+				Log.w(Entity.TAG, "Location: (" + this.mLocation.x + ", " + this.mLocation.y + ")");
+				Log.w(Entity.TAG, "Direction Current: " + this.mDirectionCurrent);
+				Log.w(Entity.TAG, "Direction Last: " + this.mDirectionLast);
+				Log.w(Entity.TAG, "Speed: " + (this.mSpeed * 100) + "%");
+			}
+		}
 		
 		//Promote current direction to last
 		this.mDirectionLast = this.mDirectionCurrent;
@@ -178,19 +189,19 @@ public abstract class Entity {
 		//Next direction fallback. Will be set by implementing moved() method call.
 		this.mDirectionNext = null;
 		
-		//TODO: move this.mLocation based on this.mSpeed and this.mCurrentDirection
+		//TODO: move this.mLocation based on this.mSpeed and this.mDirectionCurrent
 		switch (this.mDirectionCurrent) {
 			case NORTH:
-				this.mLocation.y -= this.mCellHeight;
+				this.mLocation.set((this.mPosition.x * this.mCellWidth) + this.mCellWidthOverTwo, (this.mPosition.y - 1 * this.mCellHeight) + this.mCellHeightOverTwo);
 				break;
 			case SOUTH:
-				this.mLocation.y += this.mCellHeight;
+				this.mLocation.set((this.mPosition.x * this.mCellWidth) + this.mCellWidthOverTwo, (this.mPosition.y + 1 * this.mCellHeight) + this.mCellHeightOverTwo);
 				break;
 			case EAST:
-				this.mLocation.x += this.mCellWidth;
+				this.mLocation.set((this.mPosition.x + 1 * this.mCellWidth) + this.mCellWidthOverTwo, (this.mPosition.y * this.mCellHeight) + this.mCellHeightOverTwo);
 				break;
 			case WEST:
-				this.mLocation.x -= this.mCellHeight;
+				this.mLocation.set((this.mPosition.x - 1 * this.mCellWidth) + this.mCellWidthOverTwo, (this.mPosition.y * this.mCellHeight) + this.mCellHeightOverTwo);
 				break;
 		}
 		

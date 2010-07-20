@@ -141,10 +141,6 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 				}
 			}
 		}
-		
-		if (Wallpaper.LOG_DEBUG) {
-			Log.w(TheMan.TAG, "WARNING: No path found.");
-		}
 	}
 
     @Override
