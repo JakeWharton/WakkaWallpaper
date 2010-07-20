@@ -25,6 +25,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	public static final Random RANDOM = new Random();
 	private static final String TAG = "WakkaWallpaper.Game";
 	private static final NumberFormat SCORE_FORMAT = new DecimalFormat("000000");
+	private static final int SCORE_FLIPPING = 1000000;
 	private static final int POINTS_DOT = 10;
 	private static final int POINTS_JUGGERDOT = 50;
 	private static final int[] POINTS_FLEEING_GHOSTS = new int[] { 200, 400, 800, 1600 };
@@ -807,7 +808,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	        for (int i = 0; i < this.mLives; i++) {
 	        	c.drawArc(new RectF((i * 23) + 2, top - 20, (i * 23) + 22, top), 202.5f, 315f, true, this.mTheManForeground);
 	        }
-	        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore));
+	        //Don't display larger than 999,999
+	        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore % Game.SCORE_FLIPPING));
 	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - 10, top, this.mHudForeground);
     	}
         
