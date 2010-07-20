@@ -327,11 +327,11 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				break;
 			
 			case CHASE:
-				this.determineNextDirectionByLineOfSight(game, this.getChasingPosition(game), isStateChange);				
+				this.determineNextDirectionByLineOfSight(game, this.getChasingTarget(game), isStateChange);				
 				break;
 				
 			case SCATTER:
-				this.determineNextDirectionByLineOfSight(game, this.getScatterPosition(game), isStateChange);
+				this.determineNextDirectionByLineOfSight(game, this.getScatterTarget(game), isStateChange);
 				break;
 				
 			case FRIGHTENED:
@@ -412,7 +412,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * @param game Game instance
 	 * @return Point
 	 */
-	protected abstract Point getScatterPosition(final Game game);
+	protected abstract Point getScatterTarget(final Game game);
 	
 	/**
 	 * Point to use when chasing down The Man.
@@ -420,7 +420,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * @param game Game instance.
 	 * @return Point
 	 */
-	protected abstract Point getChasingPosition(final Game game);
+	protected abstract Point getChasingTarget(final Game game);
 
 	
 	
@@ -446,13 +446,13 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 
 		@Override
-		protected Point getScatterPosition(final Game game) {
+		protected Point getScatterTarget(final Game game) {
 			//upper right
 			return new Point(game.getCellsWide(), -1);
 		}
 
 		@Override
-		protected Point getChasingPosition(final Game game) {
+		protected Point getChasingTarget(final Game game) {
 			//use The Man's position as a target
 			return new Point(game.getTheMan().getPosition());
 		}
@@ -481,13 +481,13 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 
 		@Override
-		protected Point getScatterPosition(final Game game) {
+		protected Point getScatterTarget(final Game game) {
 			//upper left
 			return new Point(-1, -1);
 		}
 
 		@Override
-		protected Point getChasingPosition(final Game game) {
+		protected Point getChasingTarget(final Game game) {
 			//the target is 4 tiles in front of The Man, unless he is going upward, then it is up 4 and left 4
 			Point position = Entity.move(game.getTheMan().getPosition(), game.getTheMan().getDirection(), Pinky.LEADING_FACTOR);
 			if (game.getTheMan().getDirection() == Direction.NORTH) {
@@ -521,13 +521,13 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 
 		@Override
-		protected Point getScatterPosition(final Game game) {
+		protected Point getScatterTarget(final Game game) {
 			//lower right
 			return new Point(game.getCellsWide(), game.getCellsTall());
 		}
 
 		@Override
-		protected Point getChasingPosition(final Game game) {
+		protected Point getChasingTarget(final Game game) {
 			//the leading position is 2 tiles in front of The Man, unless he is going upward, then it is up 2 and left 2
 			Point position = Entity.move(game.getTheMan().getPosition(), game.getTheMan().getDirection(), Inky.LEADING_FACTOR);
 			if (game.getTheMan().getDirection() == Direction.NORTH) {
@@ -563,20 +563,20 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 
 		@Override
-		protected Point getScatterPosition(final Game game) {
+		protected Point getScatterTarget(final Game game) {
 			//lower left
 			return new Point(-1, game.getCellsTall());
 		}
 
 		@Override
-		protected Point getChasingPosition(final Game game) {
+		protected Point getChasingTarget(final Game game) {
 			double distance = Math.sqrt(Math.pow(this.mPosition.x - game.getTheMan().getPosition().x, 2) + Math.pow(this.mPosition.y - game.getTheMan().getPosition().y, 2));
 			if (distance > Clyde.PROXIMITY_THRESHOLD) {
 				//outside proximity zone, The Man's position is the target
 				return new Point(game.getTheMan().getPosition());
 			} else {
 				//inside proximity zone, scatter position is the target
-				return this.getScatterPosition(game);
+				return this.getScatterTarget(game);
 			}
 		}
 	}
