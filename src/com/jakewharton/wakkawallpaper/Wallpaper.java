@@ -41,6 +41,8 @@ public class Wallpaper extends WallpaperService {
     private class WakkaEngine extends Engine implements SharedPreferences.OnSharedPreferenceChangeListener {
     	private static final String TAG = "WakkaWallpaper.WakkaEngine";
     	private static final int MILLISECONDS_IN_SECOND = 1000;
+    	private static final long RESET_THRESHOLD = 500;
+    	
     	private static final int DEFAULT_FPS = 10;
     	
     	private Game mGame;
@@ -48,6 +50,7 @@ public class Wallpaper extends WallpaperService {
         private int mFPS;
         private float mScreenCenterX;
         private float mScreenCenterY;
+        private long mLastTouch;
 
         private final Runnable mDrawWakka = new Runnable() {
             public void run() {
@@ -65,6 +68,7 @@ public class Wallpaper extends WallpaperService {
         	}
         	
             this.mGame = new Game();
+            this.mLastTouch = 0;
 
             //Load all preferences or their defaults
             Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
@@ -130,21 +134,29 @@ public class Wallpaper extends WallpaperService {
         @Override
         public void onTouchEvent(final MotionEvent event) {
         	if (event.getAction() == MotionEvent.ACTION_DOWN) {
-        		final float deltaX = this.mScreenCenterX - event.getX();
-        		final float deltaY = this.mScreenCenterY - event.getY();
-        		
-        		if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        			if (deltaX > 0) {
-        				this.mGame.getTheMan().setWantsToGo(Direction.WEST);
-        			} else {
-        				this.mGame.getTheMan().setWantsToGo(Direction.EAST);
-        			}
+        		final long touch = System.currentTimeMillis();
+        		if (touch - this.mLastTouch < WakkaEngine.RESET_THRESHOLD) {
+        			this.mGame.newGame();
+        			this.mLastTouch = 0;
         		} else {
-        			if (deltaY > 0) {
-        				this.mGame.getTheMan().setWantsToGo(Direction.NORTH);
-        			} else {
-        				this.mGame.getTheMan().setWantsToGo(Direction.SOUTH);
-        			}
+	        		this.mLastTouch = touch;
+	        		
+	        		final float deltaX = this.mScreenCenterX - event.getX();
+	        		final float deltaY = this.mScreenCenterY - event.getY();
+	        		
+	        		if (Math.abs(deltaX) > Math.abs(deltaY)) {
+	        			if (deltaX > 0) {
+	        				this.mGame.getTheMan().setWantsToGo(Direction.WEST);
+	        			} else {
+	        				this.mGame.getTheMan().setWantsToGo(Direction.EAST);
+	        			}
+	        		} else {
+	        			if (deltaY > 0) {
+	        				this.mGame.getTheMan().setWantsToGo(Direction.NORTH);
+	        			} else {
+	        				this.mGame.getTheMan().setWantsToGo(Direction.SOUTH);
+	        			}
+	        		}
         		}
         		
         		if (!Wallpaper.AUTO_TICK) {
