@@ -19,15 +19,15 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 
 	private static final String TAG = "WakkaWallpaper.Ghost";
 	private static final int FLEE_BLINK_INTERVAL = 200;
+	private static final int FLEE_LENGTH_BLINK = 5000;
+	private static final int FLEE_LENGTH = 7000;
 	
-	private static final int DEFAULT_FLEE_LENGTH = 7000;
-	private static final int DEFAULT_FLEE_BLINK_THRESHOLD = 2000;
 	private static final int DEFAULT_EYE_BACKGROUND = 0xffffffff;
 	private static final int DEFAULT_EYE_FOREGROUND = 0xff000000;
 	private static final int DEFAULT_SCARED_BACKGROUND = 0xff0033ff;
 	private static final int DEFAULT_SCARED_FOREGROUND = 0xffffcc33;
-	private static final int DEFAULT_SCARED_BLINK_BACKGROUND = 0xffff0000;
-	private static final int DEFAULT_SCARED_BLINK_FOREGROUND = 0xfffafafa;
+	private static final int DEFAULT_SCARED_BLINK_BACKGROUND = 0xfffafafa;
+	private static final int DEFAULT_SCARED_BLINK_FOREGROUND = 0xffff0000;
 	
 	protected State mState;
 	private final Paint mBodyBackground;
@@ -45,7 +45,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	private float mCellHeightOverThree;
 	private float mCellWidthOverSeven;
 	private float mCellWidthOverFourteen;
-	private int mFleeLength;
+	private long mStateChanged;
 	
     /**
      * Create a new ghost.
@@ -54,8 +54,6 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
      */
 	protected Ghost(final int backgroundColor) {
 		super();
-		
-		this.mFleeLength = Ghost.DEFAULT_FLEE_LENGTH;
 		
 		this.mBodyBackground = new Paint();
 		this.mBodyBackground.setAntiAlias(true);
@@ -216,7 +214,16 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		this.mCellWidthOverFourteen = this.mCellWidthOverSeven / 2.0f;
 	}
 
-    /**
+    @Override
+	public void tick(Game game) {
+    	if ((this.mState == State.FRIGHTENED) && ((System.currentTimeMillis() - this.mStateChanged) > Ghost.FLEE_LENGTH)) {
+    		this.mState = State.CHASE;
+    	}
+    	
+		super.tick(game);
+	}
+
+	/**
      * Render the entity on the Canvas.
      * 
      * @param c Canvas to draw on.
@@ -242,18 +249,19 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				break;
 				
 			case FRIGHTENED:
-				if ((this.mFleeLength <= Ghost.DEFAULT_FLEE_BLINK_THRESHOLD) && ((this.mFleeLength / Ghost.FLEE_BLINK_INTERVAL) % 2 == 0)) {
-					//draw scared blink
-					c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mScaredBlinkBackground);
-					c.drawPath(this.mScaredMouth, this.mScaredBlinkMouthForeground);
-					c.drawCircle(this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverFourteen, this.mScaredBlinkEyeForeground);
-					c.drawCircle(2.0f * this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverFourteen, this.mScaredBlinkEyeForeground);
-				} else {
+				final long timeDiff = System.currentTimeMillis() - this.mStateChanged;
+				if (((timeDiff) < Ghost.FLEE_LENGTH_BLINK) || ((timeDiff / Ghost.FLEE_BLINK_INTERVAL) % 2 == 0)) {
 					//draw normal scared
 					c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mScaredBackground);
 					c.drawPath(this.mScaredMouth, this.mScaredMouthForeground);
 					c.drawCircle(this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverFourteen, this.mScaredEyeForeground);
 					c.drawCircle(2.0f * this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverFourteen, this.mScaredEyeForeground);
+				} else {
+					//draw scared blink
+					c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mScaredBlinkBackground);
+					c.drawPath(this.mScaredMouth, this.mScaredBlinkMouthForeground);
+					c.drawCircle(this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverFourteen, this.mScaredBlinkEyeForeground);
+					c.drawCircle(2.0f * this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverFourteen, this.mScaredBlinkEyeForeground);
 				}
 				break;
 		}
@@ -288,6 +296,9 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				this.determineNextDirection(game, true);
 			}
 		}
+		
+		//Set the timestamp for timed states
+		this.mStateChanged = System.currentTimeMillis();
 	}
 	
 	@Override

@@ -545,7 +545,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      */
     public boolean isGhostAtPosition(final Point position) {
     	for (Ghost ghost : this.mGhosts) {
-    		if ((ghost.getPosition().x == position.x) && (ghost.getPosition().y == position.y)) {
+    		if ((ghost.getPosition().x == position.x) && (ghost.getPosition().y == position.y) && ((ghost.getState() == State.CHASE) || (ghost.getState() == State.SCATTER))) {
     			return true;
     		}
     	}
