@@ -18,7 +18,6 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	enum State { CHASE, SCATTER, FRIGHTENED, EATEN }
 
 	private static final String TAG = "WakkaWallpaper.Ghost";
-	private static final int FLEE_BLINK_INTERVAL = 200;
 	private static final int FLEE_LENGTH_BLINK = 5000;
 	private static final int FLEE_LENGTH = 7000;
 	
@@ -250,7 +249,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				
 			case FRIGHTENED:
 				final long timeDiff = System.currentTimeMillis() - this.mStateChanged;
-				if (((timeDiff) < Ghost.FLEE_LENGTH_BLINK) || ((timeDiff / Ghost.FLEE_BLINK_INTERVAL) % 2 == 0)) {
+				if (((timeDiff) < Ghost.FLEE_LENGTH_BLINK) || (this.mTickCount % 2 == 0)) {
 					//draw normal scared
 					c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mScaredBackground);
 					c.drawPath(this.mScaredMouth, this.mScaredMouthForeground);
