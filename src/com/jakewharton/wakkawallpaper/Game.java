@@ -30,7 +30,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	private static final int POINTS_JUGGERDOT = 50;
 	private static final int[] POINTS_FLEEING_GHOSTS = new int[] { 200, 400, 800, 1600 };
 	private static final int POINTS_ALL_FLEEING_GHOSTS = 12000;
-	private static final float HUD_TEXT_SIZE = 20;
+	private static final float HUD_SIZE = 20;
+	private static final float HUD_OFFSET = 5;
+	private static final float HUD_PADDING = 3;
+	private static final float HUD_THEMAN_ANGLE = 202.5f;
+	private static final float HUD_THEMAN_ARC = 315;
 	private static final int NUMBER_OF_JUGGERDOTS = 4;
 	private static final int KILL_SCREEN_LEVEL = 256;
 
@@ -111,7 +115,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         this.mDotForeground.setAntiAlias(true);
         this.mHudForeground = new Paint();
         this.mHudForeground.setAntiAlias(true);
-        this.mHudForeground.setTextSize(Game.HUD_TEXT_SIZE);
+        this.mHudForeground.setTextSize(Game.HUD_SIZE);
         this.mTheManForeground = new Paint();
         this.mTheManForeground.setAntiAlias(true);
         
@@ -803,10 +807,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
     	if (this.mIsDisplayingHud) {
 	        //Lives and score
-    		//TODO: use constants for these values
-	        final float top = this.mScreenHeight - 5;
+	        final float top = this.mScreenHeight - Game.HUD_OFFSET;
 	        for (int i = 0; i < this.mLives; i++) {
-	        	c.drawArc(new RectF((i * 23) + 2, top - 20, (i * 23) + 22, top), 202.5f, 315f, true, this.mTheManForeground);
+	        	c.drawArc(new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top), Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
 	        }
 	        //Don't display larger than 999,999
 	        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore % Game.SCORE_FLIPPING));
