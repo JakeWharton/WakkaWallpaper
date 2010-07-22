@@ -142,10 +142,13 @@
     <string name="information_contact_email">E-Mail</string>
     <string name="information_contact_email_key">information_contact_email</string>
     <string name="information_contact_email_summary">JakeWharton@GMail.com</string>
+    <string name="information_contact_email_data">jakewharton@gmail.com</string>
     <string name="information_contact_twitter">Twitter</string>
     <string name="information_contact_twitter_key">information_contact_twitter</string>
     <string name="information_contact_twitter_summary">\@JakeWharton</string>
+    <string name="information_contact_twitter_data">http://twitter.com/JakeWharton</string>
     <string name="information_contact_website">Website</string>
     <string name="information_contact_website_key">information_contact_website</string>
     <string name="information_contact_website_summary">http://jakewharton.com</string>
+    <string name="information_contact_website_data">http://jakewharton.com</string>
 </resources>
