@@ -353,6 +353,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	    	
 	    	//Create playing board
 	        this.mBoard = new Cell[this.mCellsTall][this.mCellsWide];
+	        
+	        //Resize everything to fit
+	        this.performResize(this.mScreenWidth, this.mScreenHeight);
 		}
 		
 		
