@@ -1,153 +1,103 @@
 package com.jakewharton.utilities;
 
+import com.jakewharton.wakkawallpaper.R;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.preference.DialogPreference;
-import android.preference.EditTextPreference;
 import android.util.AttributeSet;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
-/**
- * A {@link Preference} that allows for string
- * input.
- * <p>
- * It is a subclass of {@link DialogPreference} and shows the {@link EditText}
- * in a dialog. This {@link EditText} can be modified either programmatically
- * via {@link #getEditText()}, or through XML by setting any EditText
- * attributes on the EditTextPreference.
- * <p>
- * This preference will store a string into the SharedPreferences.
- * <p>
- * See {@link android.R.styleable#EditText EditText Attributes}.
- */
-public class EditNumberPreference extends EditTextPreference {
-    private int mValue;
-    
-    public EditNumberPreference(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-    }
-    public EditNumberPreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-    public EditNumberPreference(Context context) {
-        super(context, null);
-    }
-    
-    /**
-     * Saves the text to the {@link SharedPreferences}.
-     * 
-     * @param valueString The text to save
-     */
-    public void setText(String valueString) {
-        final boolean wasBlocking = this.shouldDisableDependents();
-        
-        this.mValue = Integer.parseInt(valueString);
-        this.persistInt(this.mValue);
-        
-        final boolean isBlocking = this.shouldDisableDependents(); 
-        if (isBlocking != wasBlocking) {
-            this.notifyDependencyChange(isBlocking);
-        }
-    }
+public class EditNumberPreference extends DialogPreference implements SeekBar.OnSeekBarChangeListener {
+	private SeekBar mSeekBar;
+	private TextView mValueText;
+	private String mSuffix;
+	private int mMax;
+	private int mMin;
+	private int mValue = 0;
 
-    /**
-     * Saves the value to the {@link SharedPreferences}.
-     * 
-     * @param value The value to save
-     */
-    public void setNumber(int value) {
-        final boolean wasBlocking = this.shouldDisableDependents();
-        
-        this.persistInt(value);
-        
-        final boolean isBlocking = this.shouldDisableDependents(); 
-        if (isBlocking != wasBlocking) {
-            this.notifyDependencyChange(isBlocking);
-        }
-    }
-    
-    /**
-     * Gets the text from the {@link SharedPreferences}.
-     * 
-     * @return The current preference value.
-     */
-    public String getText() {
-        return Integer.toString(this.mValue);
-    }
-    
+	public EditNumberPreference(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		this.setPersistent(true);
 
-    @Override
-    protected Object onGetDefaultValue(TypedArray a, int index) {
-        return a.getString(index);
-    }
+		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.EditNumberPreference, 0, 0);
+		this.mSuffix = a.getString(R.styleable.EditNumberPreference_suffix);
+		this.mMin = a.getInt(R.styleable.EditNumberPreference_min, 0);
+		this.mMax = a.getInt(R.styleable.EditNumberPreference_max, 100);
 
-    @Override
-    protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-        this.setNumber(restoreValue ? this.getPersistedInt(this.mValue) : (Integer)defaultValue);
-    }
+		this.setDialogLayoutResource(R.layout.edit_number_preference);
+	}
 
-    @Override
-    public boolean shouldDisableDependents() {
-        return false;
-    }
+	@Override
+	protected void onBindDialogView(View v) {
+		super.onBindDialogView(v);
+		
+		TextView dialogMessage = (TextView)v.findViewById(R.id.dialogMessage);
+		dialogMessage.setText(this.getDialogMessage());
 
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        final Parcelable superState = super.onSaveInstanceState();
-        if (isPersistent()) {
-            // No need to save instance state since it's persistent
-            return superState;
-        }
-        
-        final SavedState myState = new SavedState(superState);
-        myState.value = this.mValue;
-        return myState;
-    }
+		this.mValueText = (TextView)v.findViewById(R.id.actualValue);
 
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (state == null || !state.getClass().equals(SavedState.class)) {
-            // Didn't save state for us in onSaveInstanceState
-            super.onRestoreInstanceState(state);
-            return;
-        }
-         
-        final SavedState myState = (SavedState)state;
-        super.onRestoreInstanceState(myState.getSuperState());
-        this.setNumber(myState.value);
-    }
-    
-    private static class SavedState extends BaseSavedState {
-        int value;
-        
-        public SavedState(Parcel source) {
-            super(source);
-            value = source.readInt();
-        }
+		this.mSeekBar = (SeekBar)v.findViewById(R.id.myBar);
+		this.mSeekBar.setOnSeekBarChangeListener(this);
+		this.mSeekBar.setMax(this.mMax - this.mMin);
+		this.mSeekBar.setProgress(this.mValue - this.mMin);
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeInt(value);
-        }
+		String t = String.valueOf(this.mValue);
+		this.mValueText.setText(this.mSuffix == null ? t : t.concat(this.mSuffix));
+	}
 
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
+	@Override
+	protected Object onGetDefaultValue(TypedArray a, int index) {
+		return a.getInt(index, 0);
+	}
 
-        @SuppressWarnings("unused")
-		public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
+	@Override
+	protected void onSetInitialValue(boolean restore, Object defaultValue) {
+		mValue = this.getPersistedInt(defaultValue == null ? 0 : (Integer)defaultValue);
+	}
 
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
-    }
-    
+	@Override
+	protected void onDialogClosed(boolean positiveResult) {
+		super.onDialogClosed(positiveResult);
+
+		if (positiveResult) {
+			int value = this.mSeekBar.getProgress() + this.mMin;
+			if (this.callChangeListener(value)) {
+				this.setValue(value);
+			}
+		}
+	}
+
+	public void setValue(int value) {
+		if (value > this.mMax) {
+			value = this.mMax;
+		} else if (value < this.mMin) {
+			value = this.mMin;
+		}
+		this.mValue = value;
+		this.persistInt(value);
+	}
+
+	public void setMax(int max) {
+		this.mMax = max;
+		if (this.mValue > this.mMax) {
+			this.setValue(this.mMax);
+		}
+	}
+
+	public void setMin(int min) {
+		if (min < this.mMax) {
+			this.mMin = min;
+		}
+	}
+
+	public void onProgressChanged(SeekBar seek, int value, boolean fromTouch) {
+		String t = String.valueOf(value + this.mMin);
+		this.mValueText.setText(this.mSuffix == null ? t : t.concat(this.mSuffix));
+	}
+
+	public void onStartTrackingTouch(SeekBar seek) {}
+
+	public void onStopTrackingTouch(SeekBar seek) {}
 }

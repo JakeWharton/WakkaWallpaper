@@ -15,6 +15,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     @Override
     protected void onCreate(final Bundle icicle) {
         super.onCreate(icicle);
+        
         this.getPreferenceManager().setSharedPreferencesName(Preferences.SHARED_NAME);
         this.addPreferencesFromResource(R.xml.preferences);
         this.getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);

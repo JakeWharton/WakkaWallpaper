@@ -1,6 +1,7 @@
 package com.jakewharton.wakkawallpaper;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.util.Log;
 
@@ -21,11 +22,6 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	}
 	
 	private static final String TAG = "WakkaWallpaper.Fruit";
-	
-    private static final int DEFAULT_THRESHOLD_FIRST = 70;
-    private static final int DEFAULT_THRESHOLD_SECOND = 170;
-    private static final int DEFAULT_VISIBLE_LOWER = 9000;
-    private static final int DEFAULT_VISIBLE_UPPER = 10000;
 	
 	private Type mType;
 	private long mCreated;
@@ -61,12 +57,13 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		}
 		
 		final boolean all = (key == null);
+		final Resources resources = Wallpaper.CONTEXT.getResources();
 		
 		boolean changed = false;
 		
 		final String thresholdFirst = Wallpaper.CONTEXT.getString(R.string.settings_game_fruitonethreshold_key);
 		if (all || key.equals(thresholdFirst)) {
-			this.mThresholdFirst = Wallpaper.PREFERENCES.getInt(key, Fruit.DEFAULT_THRESHOLD_FIRST);
+			this.mThresholdFirst = Wallpaper.PREFERENCES.getInt(key, resources.getInteger(R.integer.game_fruitonethreshold_default));
 			changed = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -76,7 +73,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 
 		final String thresholdSecond = Wallpaper.CONTEXT.getString(R.string.settings_game_fruittwothreshold_key);
 		if (all || key.equals(thresholdSecond)) {
-			this.mThresholdSecond = Wallpaper.PREFERENCES.getInt(key, Fruit.DEFAULT_THRESHOLD_SECOND);
+			this.mThresholdSecond = Wallpaper.PREFERENCES.getInt(key, resources.getInteger(R.integer.game_fruittwothreshold_default));
 			changed = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -86,7 +83,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		
 		final String visibleLower = Wallpaper.CONTEXT.getString(R.string.settings_game_fruitvisiblelower_key);
 		if (all || key.equals(visibleLower)) {
-			this.mVisibleLower = Wallpaper.PREFERENCES.getInt(key, Fruit.DEFAULT_VISIBLE_LOWER);
+			this.mVisibleLower = Wallpaper.PREFERENCES.getInt(key, resources.getInteger(R.integer.game_fruitvisiblelower_default));
 			changed = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -96,7 +93,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		
 		final String visibleUpper = Wallpaper.CONTEXT.getString(R.string.settings_game_fruitvisibleupper_key);
 		if (all || key.equals(visibleUpper)) {
-			this.mVisibleUpper = Wallpaper.PREFERENCES.getInt(key, Fruit.DEFAULT_VISIBLE_UPPER);
+			this.mVisibleUpper = Wallpaper.PREFERENCES.getInt(key, resources.getInteger(R.integer.game_fruitvisibleupper_default));
 			changed = true;
 			
 			if (Wallpaper.LOG_DEBUG) {

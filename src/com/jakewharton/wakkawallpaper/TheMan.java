@@ -7,6 +7,7 @@ import java.util.Queue;
 import com.jakewharton.wakkawallpaper.Game.Cell;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -23,8 +24,6 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	private static final String TAG = "WakkaWallpaper.TheMan";
 	private static final int CHOMP_ANGLE_COUNT = 4;
 	private static final int[] CHOMP_ANGLES = new int[] { 90, 45, 0, 45 };
-
-	public static final int DEFAULT_FOREGROUND_COLOR = 0xfffff000;
 	
     private final Paint mForeground;
 	private Direction mWantsToGo;
@@ -55,13 +54,14 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		}
 		
 		final boolean all = (key == null);
+		final Resources resources = Wallpaper.CONTEXT.getResources();
 		
 		final String foregroundColor = Wallpaper.CONTEXT.getString(R.string.settings_color_theman_key);
 		if (all || key.equals(foregroundColor)) {
-			this.mForeground.setColor(Wallpaper.PREFERENCES.getInt(foregroundColor, TheMan.DEFAULT_FOREGROUND_COLOR));
+			this.mForeground.setColor(Wallpaper.PREFERENCES.getInt(foregroundColor, resources.getInteger(R.integer.color_theman_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(TheMan.TAG, "Foreground Color: " + Integer.toHexString(this.mForeground.getColor()));
+				Log.d(TheMan.TAG, "Foreground Color: #" + Integer.toHexString(this.mForeground.getColor()));
 			}
 		}
 

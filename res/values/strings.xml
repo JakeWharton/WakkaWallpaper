@@ -4,7 +4,7 @@
     <string name="title">Wakka Wallpaper</string>
     <string name="author">Jake Wharton</string>
     <string name="description">Creates a grid of dots that border your icons for some om nom nom.</string>
-    <string name="version_name">1.0.0</string>
+    <string name="version_name">1.0.0 alpha 2</string>
     
     <string name="settings_key">settings</string>
     <string name="settings_header">Settings</string>
@@ -53,21 +53,30 @@
     <string name="settings_display_padding_right_key">display_padding_right</string>
     <string name="settings_display_padding_right_summary"></string>
     
+    <string name="settings_game_killscreen">Display Kill Screen</string>
+    <string name="settings_game_killscreen_key">game_killscreen</string>
+    <string name="settings_game_killscreen_summary">Randomly display the infamous kill screen</string>
+    <string name="settings_game_ghosts">Ghosts</string>
+    <string name="settings_game_ghosts_key">game_ghosts</string>
     <string name="settings_game_deadlyghosts">Ghosts Are Deadly</string>
     <string name="settings_game_deadlyghosts_key">game_deadlyghosts</string>
     <string name="settings_game_deadlyghosts_summary">Whether or not colliding with ghost will kill you</string>
     <string name="settings_game_ghostcount">Number of Ghosts</string>
     <string name="settings_game_ghostcount_key">game_ghostcount</string>
     <string name="settings_game_ghostcount_summary">How many ghosts appear on screen</string>
-    <string name="settings_game_killscreen">Display Kill Screen</string>
-    <string name="settings_game_killscreen_key">game_killscreen</string>
-    <string name="settings_game_killscreen_summary">Randomly display the infamous kill screen</string>
+    <string name="settings_game_bonus">Bonus</string>
+    <string name="settings_game_bonus_key">game_bonus</string>
     <string name="settings_game_bonuslife">Bonus Life Allowed</string>
     <string name="settings_game_bonuslife_key">game_bonuslife</string>
     <string name="settings_game_bonuslife_summary">If a bonus life is awarded at the defined threshold</string>
     <string name="settings_game_bonuslifethreshold">Bonus Life Threshold</string>
     <string name="settings_game_bonuslifethreshold_key">game_bonuslifethreshold</string>
     <string name="settings_game_bonuslifethreshold_summary">Points at which to award bonus life</string>
+    <string name="settings_game_fruit">Fruit</string>
+    <string name="settings_game_fruit_key">game_fruit</string>
+    <string name="settings_game_fruitenabled">Fruit Enabled</string>
+    <string name="settings_game_fruitenabled_key">game_fruitenabled</string>
+    <string name="settings_game_fruitenabled_summary">Whether bonus fruits appear during play</string>
     <string name="settings_game_fruitonethreshold">Fruit One Threshold</string>
     <string name="settings_game_fruitonethreshold_key">game_fruitonethreshold</string>
     <string name="settings_game_fruitonethreshold_summary">Number of dots before first fruit appears</string>

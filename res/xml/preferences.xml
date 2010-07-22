@@ -2,6 +2,7 @@
 
 <PreferenceScreen
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res/com.jakewharton.wakkawallpaper"
 	android:title="@string/title"
 	android:key="WakkaWallpaper_Settings">
 	
@@ -14,27 +15,43 @@
 			<com.jakewharton.utilities.EditNumberPreference
 				android:key="@string/settings_display_fps_key"
 				android:title="@string/settings_display_fps"
-				android:summary="@string/settings_display_fps_summary"/>
+				android:summary="@string/settings_display_fps_summary"
+				android:defaultValue="@integer/display_fps_default"
+				app:min="@integer/display_fps_min"
+				app:max="@integer/display_fps_max"/>
 			<CheckBoxPreference
 				android:key="@string/settings_display_showhud_key"
 				android:title="@string/settings_display_showhud"
-				android:summary="@string/settings_display_showhud_summary"/>
+				android:summary="@string/settings_display_showhud_summary"
+				android:defaultValue="@bool/display_showhud_default"/>
 			<com.jakewharton.utilities.EditNumberPreference
 				android:key="@string/settings_display_iconrows_key"
 				android:title="@string/settings_display_iconrows"
-				android:summary="@string/settings_display_iconrows_summary"/>
+				android:summary="@string/settings_display_iconrows_summary"
+				android:defaultValue="@integer/display_iconrows_default"
+				app:min="@integer/display_iconrows_min"
+				app:max="@integer/display_iconrows_max"/>
 			<com.jakewharton.utilities.EditNumberPreference
 				android:key="@string/settings_display_iconcols_key"
 				android:title="@string/settings_display_iconcols"
-				android:summary="@string/settings_display_iconcols_summary"/>
+				android:summary="@string/settings_display_iconcols_summary"
+				android:defaultValue="@integer/display_iconcols_default"
+				app:min="@integer/display_iconcols_min"
+				app:max="@integer/display_iconcols_max"/>
 			<com.jakewharton.utilities.EditNumberPreference
 				android:key="@string/settings_display_rowspacing_key"
 				android:title="@string/settings_display_rowspacing"
-				android:summary="@string/settings_display_rowspacing_summary"/>
+				android:summary="@string/settings_display_rowspacing_summary"
+				android:defaultValue="@integer/display_rowspacing_default"
+				app:min="@integer/display_rowspacing_min"
+				app:max="@integer/display_rowspacing_max"/>
 			<com.jakewharton.utilities.EditNumberPreference
 				android:key="@string/settings_display_colspacing_key"
 				android:title="@string/settings_display_colspacing"
-				android:summary="@string/settings_display_colspacing_summary"/>
+				android:summary="@string/settings_display_colspacing_summary"
+				android:defaultValue="@integer/display_colspacing_default"
+				app:min="@integer/display_colspacing_min"
+				app:max="@integer/display_colspacing_max"/>
 			<PreferenceScreen
 				android:key="@string/settings_display_padding_key"
 				android:title="@string/settings_display_padding"
@@ -42,19 +59,31 @@
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_display_padding_top_key"
 					android:title="@string/settings_display_padding_top"
-					android:summary="@string/settings_display_padding_top_summary"/>
+					android:summary="@string/settings_display_padding_top_summary"
+					android:defaultValue="@integer/display_padding_top_default"
+					app:min="@integer/display_padding_top_min"
+					app:max="@integer/display_padding_top_max"/>
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_display_padding_bottom_key"
 					android:title="@string/settings_display_padding_bottom"
-					android:summary="@string/settings_display_padding_bottom_summary"/>
+					android:summary="@string/settings_display_padding_bottom_summary"
+					android:defaultValue="@integer/display_padding_bottom_default"
+					app:min="@integer/display_padding_bottom_min"
+					app:max="@integer/display_padding_bottom_max"/>
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_display_padding_left_key"
 					android:title="@string/settings_display_padding_left"
-					android:summary="@string/settings_display_padding_left_summary"/>
+					android:summary="@string/settings_display_padding_left_summary"
+					android:defaultValue="@integer/display_padding_left_default"
+					app:min="@integer/display_padding_left_min"
+					app:max="@integer/display_padding_left_max"/>
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_display_padding_right_key"
 					android:title="@string/settings_display_padding_right"
-					android:summary="@string/settings_display_padding_right_summary"/>
+					android:summary="@string/settings_display_padding_right_summary"
+					android:defaultValue="@integer/display_padding_right_default"
+					app:min="@integer/display_padding_right_min"
+					app:max="@integer/display_padding_right_max"/>
 			</PreferenceScreen>
 		</PreferenceScreen>
 		<PreferenceScreen
@@ -62,41 +91,84 @@
 			android:title="@string/settings_game"
 			android:summary="@string/settings_game_summary">
 			<CheckBoxPreference
-				android:key="@string/settings_game_deadlyghosts_key"
-				android:title="@string/settings_game_deadlyghosts"
-				android:summary="@string/settings_game_deadlyghosts_summary"/>
-			<com.jakewharton.utilities.EditNumberPreference
-				android:key="@string/settings_game_ghostcount_key"
-				android:title="@string/settings_game_ghostcount"
-				android:summary="@string/settings_game_ghostcount_summary"/>
-			<CheckBoxPreference
 				android:key="@string/settings_game_killscreen_key"
 				android:title="@string/settings_game_killscreen"
-				android:summary="@string/settings_game_killscreen_summary"/>
-			<CheckBoxPreference
-				android:key="@string/settings_game_bonuslife_key"
-				android:title="@string/settings_game_bonuslife"
-				android:summary="@string/settings_game_bonuslife_summary"/>
-			<com.jakewharton.utilities.EditNumberPreference
-				android:key="@string/settings_game_bonuslifethreshold_key"
-				android:title="@string/settings_game_bonuslifethreshold"
-				android:summary="@string/settings_game_bonuslifethreshold_summary"/>
-			<com.jakewharton.utilities.EditNumberPreference
-				android:key="@string/settings_game_fruitonethreshold_key"
-				android:title="@string/settings_game_fruitonethreshold"
-				android:summary="@string/settings_game_fruitonethreshold_summary"/>
-			<com.jakewharton.utilities.EditNumberPreference
-				android:key="@string/settings_game_fruittwothreshold_key"
-				android:title="@string/settings_game_fruittwothreshold"
-				android:summary="@string/settings_game_fruittwothreshold_summary"/>
-			<com.jakewharton.utilities.EditNumberPreference
-				android:key="@string/settings_game_fruitvisiblelower_key"
-				android:title="@string/settings_game_fruitvisiblelower"
-				android:summary="@string/settings_game_fruitvisiblelower_summary"/>
-			<com.jakewharton.utilities.EditNumberPreference
-				android:key="@string/settings_game_fruitvisibleupper_key"
-				android:title="@string/settings_game_fruitvisibleupper"
-				android:summary="@string/settings_game_fruitvisibleupper_summary"/>
+				android:summary="@string/settings_game_killscreen_summary"
+				android:defaultValue="@bool/game_killscreen_default"/>
+			<PreferenceCategory
+				android:key="@string/settings_game_ghosts_key"
+				android:title="@string/settings_game_ghosts">
+				<CheckBoxPreference
+					android:key="@string/settings_game_deadlyghosts_key"
+					android:title="@string/settings_game_deadlyghosts"
+					android:summary="@string/settings_game_deadlyghosts_summary"
+					android:defaultValue="@bool/game_deadlyghosts_default"/>
+				<com.jakewharton.utilities.IntegerListPreference
+					android:key="@string/settings_game_ghostcount_key"
+					android:title="@string/settings_game_ghostcount"
+					android:summary="@string/settings_game_ghostcount_summary"
+					android:entries="@array/game_ghostcount"
+					android:entryValues="@array/game_ghostcount_values"
+					android:defaultValue="@integer/game_ghostcount_default"/>
+			</PreferenceCategory>
+			<PreferenceCategory
+				android:key="@string/settings_game_bonus_key"
+				android:title="@string/settings_game_bonus">
+				<CheckBoxPreference
+					android:key="@string/settings_game_bonuslife_key"
+					android:title="@string/settings_game_bonuslife"
+					android:summary="@string/settings_game_bonuslife_summary"
+					android:defaultValue="@bool/game_bonuslife_default"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_game_bonuslifethreshold_key"
+					android:title="@string/settings_game_bonuslifethreshold"
+					android:summary="@string/settings_game_bonuslifethreshold_summary"
+					android:dependency="@string/settings_game_bonuslife_key"
+					android:defaultValue="@integer/game_bonuslifethreshold_default"
+					app:min="@integer/game_bonuslifethreshold_min"
+					app:max="@integer/game_bonuslifethreshold_max"/>
+			</PreferenceCategory>
+			<PreferenceCategory
+				android:key="@string/settings_game_fruit_key"
+				android:title="@string/settings_game_fruit">
+				<CheckBoxPreference
+					android:key="@string/settings_game_fruitenabled_key"
+					android:title="@string/settings_game_fruitenabled"
+					android:summary="@string/settings_game_fruitenabled_summary"
+					android:defaultValue="@bool/game_fruitenabled_default"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_game_fruitonethreshold_key"
+					android:title="@string/settings_game_fruitonethreshold"
+					android:summary="@string/settings_game_fruitonethreshold_summary"
+					android:dependency="@string/settings_game_fruitenabled_key"
+					android:defaultValue="@integer/game_fruitonethreshold_default"
+					app:min="@integer/game_fruitonethreshold_min"
+					app:max="@integer/game_fruitonethreshold_max"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_game_fruittwothreshold_key"
+					android:title="@string/settings_game_fruittwothreshold"
+					android:summary="@string/settings_game_fruittwothreshold_summary"
+					android:dependency="@string/settings_game_fruitenabled_key"
+					android:defaultValue="@integer/game_fruittwothreshold_default"
+					app:min="@integer/game_fruittwothreshold_min"
+					app:max="@integer/game_fruittwothreshold_max"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_game_fruitvisiblelower_key"
+					android:title="@string/settings_game_fruitvisiblelower"
+					android:summary="@string/settings_game_fruitvisiblelower_summary"
+					android:dependency="@string/settings_game_fruitenabled_key"
+					android:defaultValue="@integer/game_fruitvisiblelower_default"
+					app:min="@integer/game_fruitvisiblelower_min"
+					app:max="@integer/game_fruitvisiblelower_max"/>
+				<com.jakewharton.utilities.EditNumberPreference
+					android:key="@string/settings_game_fruitvisibleupper_key"
+					android:title="@string/settings_game_fruitvisibleupper"
+					android:summary="@string/settings_game_fruitvisibleupper_summary"
+					android:dependency="@string/settings_game_fruitenabled_key"
+					android:defaultValue="@integer/game_fruitvisibleupper_default"
+					app:min="@integer/game_fruitvisibleupper_min"
+					app:max="@integer/game_fruitvisibleupper_max"/>
+			</PreferenceCategory>
 		</PreferenceScreen>
 		<PreferenceScreen
 			android:key="@string/settings_color_key"
@@ -109,24 +181,29 @@
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_color_game_background_key"
 					android:title="@string/settings_color_game_background"
-					android:summary="@string/settings_color_game_background_summary"/>
+					android:summary="@string/settings_color_game_background_summary"
+					android:defaultValue="@integer/color_game_background_default"/>
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_color_game_dot_key"
 					android:title="@string/settings_color_game_dot"
-					android:summary="@string/settings_color_game_dot_summary"/>
+					android:summary="@string/settings_color_game_dot_summary"
+					android:defaultValue="@integer/color_game_dot_default"/>
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_color_game_hudfg_key"
 					android:title="@string/settings_color_game_hudfg"
-					android:summary="@string/settings_color_game_hudfg_summary"/>
+					android:summary="@string/settings_color_game_hudfg_summary"
+					android:defaultValue="@integer/color_game_hudfg_default"/>
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_color_game_hudbg_key"
 					android:title="@string/settings_color_game_hudbg"
-					android:summary="@string/settings_color_game_hudbg_summary"/>
+					android:summary="@string/settings_color_game_hudbg_summary"
+					android:defaultValue="@integer/color_game_hudbg_default"/>
 			</PreferenceScreen>
 			<com.jakewharton.utilities.EditNumberPreference
 				android:key="@string/settings_color_theman_key"
 				android:title="@string/settings_color_theman"
-				android:summary="@string/settings_color_theman_summary"/>
+				android:summary="@string/settings_color_theman_summary"
+				android:defaultValue="@integer/color_theman_default"/>
 			<PreferenceScreen
 				android:key="@string/settings_color_ghost_key"
 				android:title="@string/settings_color_ghost"
@@ -134,27 +211,33 @@
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_color_ghost_eyebg_key"
 					android:title="@string/settings_color_ghost_eyebg"
-					android:summary="@string/settings_color_ghost_eyebg_summary"/>
+					android:summary="@string/settings_color_ghost_eyebg_summary"
+					android:defaultValue="@integer/color_ghost_eyebg_default"/>
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_color_ghost_eyefg_key"
 					android:title="@string/settings_color_ghost_eyefg"
-					android:summary="@string/settings_color_ghost_eyefg_summary"/>
+					android:summary="@string/settings_color_ghost_eyefg_summary"
+					android:defaultValue="@integer/color_ghost_eyefg_default"/>
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_color_ghost_scaredbg_key"
 					android:title="@string/settings_color_ghost_scaredbg"
-					android:summary="@string/settings_color_ghost_scaredbg_summary"/>
+					android:summary="@string/settings_color_ghost_scaredbg_summary"
+					android:defaultValue="@integer/color_ghost_scaredbg_default"/>
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_color_ghost_scaredfg_key"
 					android:title="@string/settings_color_ghost_scaredfg"
-					android:summary="@string/settings_color_ghost_scaredfg_summary"/>
+					android:summary="@string/settings_color_ghost_scaredfg_summary"
+					android:defaultValue="@integer/color_ghost_scaredfg_default"/>
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_color_ghost_scaredblinkbg_key"
 					android:title="@string/settings_color_ghost_scaredblinkbg"
-					android:summary="@string/settings_color_ghost_scaredblinkbg_summary"/>
+					android:summary="@string/settings_color_ghost_scaredblinkbg_summary"
+					android:defaultValue="@integer/color_ghost_scaredblinkbg_default"/>
 				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_color_ghost_scaredblinkfg_key"
 					android:title="@string/settings_color_ghost_scaredblinkfg"
-					android:summary="@string/settings_color_ghost_scaredblinkfg_summary"/>
+					android:summary="@string/settings_color_ghost_scaredblinkfg_summary"
+					android:defaultValue="@integer/color_ghost_scaredblinkfg_default"/>
 			</PreferenceScreen>
 		</PreferenceScreen>
 	</PreferenceCategory>

@@ -1,6 +1,7 @@
 package com.jakewharton.wakkawallpaper;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -20,13 +21,6 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	private static final String TAG = "WakkaWallpaper.Ghost";
 	private static final int FLEE_LENGTH_BLINK = 5000;
 	private static final int FLEE_LENGTH = 7000;
-	
-	private static final int DEFAULT_EYE_BACKGROUND = 0xffffffff;
-	private static final int DEFAULT_EYE_FOREGROUND = 0xff000000;
-	private static final int DEFAULT_SCARED_BACKGROUND = 0xff0033ff;
-	private static final int DEFAULT_SCARED_FOREGROUND = 0xffffcc33;
-	private static final int DEFAULT_SCARED_BLINK_BACKGROUND = 0xfffafafa;
-	private static final int DEFAULT_SCARED_BLINK_FOREGROUND = 0xffff0000;
 	
 	protected State mState;
 	private final Paint mBodyBackground;
@@ -94,62 +88,63 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
     	}
     	
 		final boolean all = (key == null);
+		final Resources resources = Wallpaper.CONTEXT.getResources();
 		
 		final String eyeBg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_eyebg_key);
 		if (all || key.equals(eyeBg)) {
-			this.mEyeBackground.setColor(Wallpaper.PREFERENCES.getInt(eyeBg, Ghost.DEFAULT_EYE_BACKGROUND));
+			this.mEyeBackground.setColor(Wallpaper.PREFERENCES.getInt(eyeBg, resources.getInteger(R.integer.color_ghost_eyebg_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Ghost.TAG, "Eye Background: " + Integer.toHexString(this.mEyeBackground.getColor()));
+				Log.d(Ghost.TAG, "Eye Background: #" + Integer.toHexString(this.mEyeBackground.getColor()));
 			}
 		}
 		
 		final String eyeFg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_eyefg_key);
 		if (all || key.equals(eyeFg)) {
-			this.mEyeForeground.setColor(Wallpaper.PREFERENCES.getInt(eyeFg, Ghost.DEFAULT_EYE_FOREGROUND));
+			this.mEyeForeground.setColor(Wallpaper.PREFERENCES.getInt(eyeFg, resources.getInteger(R.integer.color_ghost_eyefg_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Ghost.TAG, "Eye Foreground: " + Integer.toHexString(this.mEyeForeground.getColor()));
+				Log.d(Ghost.TAG, "Eye Foreground: #" + Integer.toHexString(this.mEyeForeground.getColor()));
 			}
 		}
 		
 		final String scaredBg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredbg_key);
 		if (all || key.equals(scaredBg)) {
-			this.mScaredBackground.setColor(Wallpaper.PREFERENCES.getInt(scaredBg, Ghost.DEFAULT_SCARED_BACKGROUND));
+			this.mScaredBackground.setColor(Wallpaper.PREFERENCES.getInt(scaredBg, resources.getInteger(R.integer.color_ghost_scaredbg_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Ghost.TAG, "Scared Background: " + Integer.toHexString(this.mScaredBackground.getColor()));
+				Log.d(Ghost.TAG, "Scared Background: #" + Integer.toHexString(this.mScaredBackground.getColor()));
 			}
 		}
 		
 		final String scaredFg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredfg_key);
 		if (all || key.equals(scaredFg)) {
-			final int color = Wallpaper.PREFERENCES.getInt(scaredFg, Ghost.DEFAULT_SCARED_FOREGROUND);
+			final int color = Wallpaper.PREFERENCES.getInt(scaredFg, resources.getInteger(R.integer.color_ghost_scaredfg_default));
 			this.mScaredMouthForeground.setColor(color);
 			this.mScaredEyeForeground.setColor(color);
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Ghost.TAG, "Scared Foreground: " + Integer.toHexString(color));
+				Log.d(Ghost.TAG, "Scared Foreground: #" + Integer.toHexString(color));
 			}
 		}
 		
 		final String scaredBlinkBg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredblinkbg_key);
 		if (all || key.equals(scaredBlinkBg)) {
-			this.mScaredBlinkBackground.setColor(Wallpaper.PREFERENCES.getInt(scaredBlinkBg, Ghost.DEFAULT_SCARED_BLINK_BACKGROUND));
+			this.mScaredBlinkBackground.setColor(Wallpaper.PREFERENCES.getInt(scaredBlinkBg, resources.getInteger(R.integer.color_ghost_scaredblinkbg_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Ghost.TAG, "Scared Blink Background: " + Integer.toHexString(this.mScaredBlinkBackground.getColor()));
+				Log.d(Ghost.TAG, "Scared Blink Background: #" + Integer.toHexString(this.mScaredBlinkBackground.getColor()));
 			}
 		}
 		
 		final String scaredBlinkFg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredblinkfg_key);
 		if (all || key.equals(scaredBlinkFg)) {
-			final int color = Wallpaper.PREFERENCES.getInt(scaredBlinkFg, Ghost.DEFAULT_SCARED_BLINK_FOREGROUND);
+			final int color = Wallpaper.PREFERENCES.getInt(scaredBlinkFg, resources.getInteger(R.integer.color_ghost_scaredblinkfg_default));
 			this.mScaredBlinkMouthForeground.setColor(color);
 			this.mScaredBlinkEyeForeground.setColor(color);
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Ghost.TAG, "Scared Blink Foreground: " + Integer.toHexString(color));
+				Log.d(Ghost.TAG, "Scared Blink Foreground: #" + Integer.toHexString(color));
 			}
 		}
 		

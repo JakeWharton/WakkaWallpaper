@@ -8,6 +8,7 @@ import com.jakewharton.wakkawallpaper.Entity.Direction;
 import com.jakewharton.wakkawallpaper.Ghost.State;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -37,25 +38,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	private static final float HUD_THEMAN_ARC = 315;
 	private static final int NUMBER_OF_JUGGERDOTS = 4;
 	private static final int KILL_SCREEN_LEVEL = 256;
-
-	private static final boolean DEFAULT_BONUS_ALLOWED = true;
-	private static final int DEFAULT_BONUS_THRESHOLD = 10000;
-	private static final int DEFAULT_DOT_FOREGROUND = 0xff6161a1;
-	private static final int DEFAULT_GAME_BACKGROUND = 0xff000040;
-    private static final int DEFAULT_HUD_FOREGROUND = 0xff8181c1;
-    private static final int DEFAULT_HUD_BACKGROUND = 0xff000000;
-    private static final int DEFAULT_GRID_PADDING_LEFT = -5;
-    private static final int DEFAULT_GRID_PADDING_RIGHT = -5;
-    private static final int DEFAULT_GRID_PADDING_TOP = 35;
-    private static final int DEFAULT_GRID_PADDING_BOTTOM = 75;
-    private static final boolean DEFAULT_DISPLAY_HUD = true;
-    private static final boolean DEFAULT_KILL_SCREEN_ENABLED = true;
-    private static final int DEFAULT_ICON_ROWS = 4;
-    private static final int DEFAULT_ICON_COLS = 4;
-    private static final int DEFAULT_CELL_SPACING_ROWS = 6;
-    private static final int DEFAULT_CELL_SPACING_COLUMNS = 4;
-    private static final int DEFAULT_GHOST_COUNT = 4;
-    private static final boolean DEFAULT_GHOST_DEADLY = true;
 	
 	private int mCellsWide;
 	private int mCellsTall;
@@ -71,12 +53,12 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private boolean mIsOnKillScreen;
     private boolean mIsKillScreenEnabled;
 	private Cell[][] mBoard;
-	private Entity[] mEntities;
 	private TheMan mTheMan;
 	private Fruit mFruit;
 	private Ghost[] mGhosts;
 	private int mGhostCount;
 	private boolean mIsGhostDeadly;
+	private boolean mIsFruitEnabled;
 	private int mFleeingGhostsEaten;
 	private int mAllFleeingGhostsEaten;
 	private int mDotsRemaining;
@@ -141,6 +123,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     	
 		final boolean all = (key == null);
+		final Resources resources = Wallpaper.CONTEXT.getResources();
 
 		boolean hasBonusChanged = false;
         boolean hasGhostCountChanged = false;
@@ -149,9 +132,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		
 		// GENERAL //
 		
-		final String bonusAllowed = Wallpaper.CONTEXT.getString(R.string.settings_game_bonuslife_key);
+		final String bonusAllowed = resources.getString(R.string.settings_game_bonuslife_key);
 		if (all || key.equals(bonusAllowed)) {
-			this.mIsBonusLifeAllowed = Wallpaper.PREFERENCES.getBoolean(bonusAllowed, Game.DEFAULT_BONUS_ALLOWED);
+			this.mIsBonusLifeAllowed = Wallpaper.PREFERENCES.getBoolean(bonusAllowed, resources.getBoolean(R.bool.game_bonuslife_default));
 			hasBonusChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -159,37 +142,46 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			}
 		}
         
-		final String bonusThreshold = Wallpaper.CONTEXT.getString(R.string.settings_game_bonuslifethreshold_key);
+		final String bonusThreshold = resources.getString(R.string.settings_game_bonuslifethreshold_key);
 		if (all || key.equals(bonusThreshold)) {
-			this.mBonusLifeThreshold = Wallpaper.PREFERENCES.getInt(key, Game.DEFAULT_BONUS_THRESHOLD);
+			this.mBonusLifeThreshold = Wallpaper.PREFERENCES.getInt(key, resources.getInteger(R.integer.game_bonuslifethreshold_default));
 			hasBonusChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Bonus Threshold: " + this.mBonusLifeThreshold);
 			}
 		}
+		
+		final String fruitEnabled = resources.getString(R.string.settings_game_fruitenabled_key);
+		if (all || key.equals(fruitEnabled)) {
+			this.mIsFruitEnabled = Wallpaper.PREFERENCES.getBoolean(fruitEnabled, resources.getBoolean(R.bool.game_fruitenabled_default));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Is Fruit Enabled: " + this.mIsFruitEnabled);
+			}
+		}
         
-        final String killScreen = Wallpaper.CONTEXT.getString(R.string.settings_game_killscreen_key);
+        final String killScreen = resources.getString(R.string.settings_game_killscreen_key);
         if (all || key.equals(killScreen)) {
-        	this.mIsKillScreenEnabled = Wallpaper.PREFERENCES.getBoolean(killScreen, Game.DEFAULT_KILL_SCREEN_ENABLED);
+        	this.mIsKillScreenEnabled = Wallpaper.PREFERENCES.getBoolean(killScreen, resources.getBoolean(R.bool.game_killscreen_default));
         	
         	if (Wallpaper.LOG_DEBUG) {
         		Log.d(Game.TAG, "Is Kill Screen Enabled: " + this.mIsKillScreenEnabled);
         	}
         }
         
-        final String ghostsDeadly = Wallpaper.CONTEXT.getString(R.string.settings_game_deadlyghosts_key);
+        final String ghostsDeadly = resources.getString(R.string.settings_game_deadlyghosts_key);
         if (all || key.equals(ghostsDeadly)) {
-        	this.mIsGhostDeadly = Wallpaper.PREFERENCES.getBoolean(ghostsDeadly, Game.DEFAULT_GHOST_DEADLY);
+        	this.mIsGhostDeadly = Wallpaper.PREFERENCES.getBoolean(ghostsDeadly, resources.getBoolean(R.bool.game_deadlyghosts_default));
         	
         	if (Wallpaper.LOG_DEBUG) {
         		Log.d(Game.TAG, "Is Ghost Deadly: " + this.mIsGhostDeadly);
         	}
         }
         
-        final String ghostCount = Wallpaper.CONTEXT.getString(R.string.settings_game_ghostcount_key);
+        final String ghostCount = resources.getString(R.string.settings_game_ghostcount_key);
         if (all || key.equals(ghostCount)) {
-        	this.mGhostCount = Wallpaper.PREFERENCES.getInt(ghostCount, Game.DEFAULT_GHOST_COUNT);
+        	this.mGhostCount = Wallpaper.PREFERENCES.getInt(ghostCount, resources.getInteger(R.integer.game_ghostcount_default));
         	hasGhostCountChanged = true;
         	
         	if (Wallpaper.LOG_DEBUG) {
@@ -204,19 +196,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Pinky(); }
 	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Inky(); }
 	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Clyde(); }
-	    	
-	    	i = 0;
-	    	this.mEntities = new Entity[2 + this.mGhostCount]; //The Man, Fruit, and Ghosts
-	    	this.mEntities[i++] = this.mTheMan;
-	    	this.mEntities[i++] = this.mFruit;
-	    	for (Ghost ghost : this.mGhosts) {
-	    		this.mEntities[i++] = ghost;
-	    	}
     	}
 		
 		final String displayHud = Wallpaper.CONTEXT.getString(R.string.settings_display_showhud_key);
 		if (all || key.equals(displayHud)) {
-			this.mIsDisplayingHud = Wallpaper.PREFERENCES.getBoolean(key, Game.DEFAULT_DISPLAY_HUD);
+			this.mIsDisplayingHud = Wallpaper.PREFERENCES.getBoolean(key, Wallpaper.CONTEXT.getResources().getBoolean(R.bool.display_showhud));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Is Displaying HUD: " + this.mIsDisplayingHud);
@@ -226,85 +210,85 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		
 		// COLORS //
         
-		final String gameBackground = Wallpaper.CONTEXT.getString(R.string.settings_color_game_background_key);
+		final String gameBackground = resources.getString(R.string.settings_color_game_background_key);
 		if (all || key.equals(gameBackground)) {
-			this.mGameBackground = Wallpaper.PREFERENCES.getInt(gameBackground, Game.DEFAULT_GAME_BACKGROUND);
+			this.mGameBackground = Wallpaper.PREFERENCES.getInt(gameBackground, resources.getInteger(R.integer.color_game_background_default));
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Game.TAG, "Game Background: " + Integer.toHexString(this.mGameBackground));
+				Log.d(Game.TAG, "Game Background: #" + Integer.toHexString(this.mGameBackground));
 			}
 		}
         
-		final String dot = Wallpaper.CONTEXT.getString(R.string.settings_color_game_dot_key);
+		final String dot = resources.getString(R.string.settings_color_game_dot_key);
 		if (all || key.equals(dot)) {
-			this.mDotForeground.setColor(Wallpaper.PREFERENCES.getInt(dot, Game.DEFAULT_DOT_FOREGROUND));
+			this.mDotForeground.setColor(Wallpaper.PREFERENCES.getInt(dot, resources.getInteger(R.integer.color_game_dot_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Game.TAG, "Dot Foreground: " + Integer.toHexString(this.mDotForeground.getColor()));
+				Log.d(Game.TAG, "Dot Foreground: #" + Integer.toHexString(this.mDotForeground.getColor()));
 			}
 		}
 		
-		final String hudFg = Wallpaper.CONTEXT.getString(R.string.settings_color_game_hudfg_key);
+		final String hudFg = resources.getString(R.string.settings_color_game_hudfg_key);
 		if (all || key.equals(hudFg)) {
-			this.mHudForeground.setColor(Wallpaper.PREFERENCES.getInt(key, Game.DEFAULT_HUD_FOREGROUND));
+			this.mHudForeground.setColor(Wallpaper.PREFERENCES.getInt(key, resources.getInteger(R.integer.color_game_hudfg_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Game.TAG, "HUD Foreground: " + Integer.toHexString(this.mHudForeground.getColor()));
+				Log.d(Game.TAG, "HUD Foreground: #" + Integer.toHexString(this.mHudForeground.getColor()));
 			}
 		}
         
-		final String hudBg = Wallpaper.CONTEXT.getString(R.string.settings_color_game_hudbg_key);
+		final String hudBg = resources.getString(R.string.settings_color_game_hudbg_key);
 		if (all || key.equals(hudBg)) {
-			final int hudBgColor = Wallpaper.PREFERENCES.getInt(key, Game.DEFAULT_HUD_BACKGROUND);
+			final int hudBgColor = Wallpaper.PREFERENCES.getInt(key, resources.getInteger(R.integer.color_game_hudbg_default));
 			this.mHudForeground.setShadowLayer(1, -1, 1, hudBgColor);
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Game.TAG, "HUD Background: " + Integer.toHexString(hudBgColor));
+				Log.d(Game.TAG, "HUD Background: #" + Integer.toHexString(hudBgColor));
 			}
 		}
 		
-		final String foregroundColor = Wallpaper.CONTEXT.getString(R.string.settings_color_theman_key);
+		final String foregroundColor = resources.getString(R.string.settings_color_theman_key);
 		if (all || key.equals(foregroundColor)) {
-			this.mTheManForeground.setColor(Wallpaper.PREFERENCES.getInt(foregroundColor, TheMan.DEFAULT_FOREGROUND_COLOR));
+			this.mTheManForeground.setColor(Wallpaper.PREFERENCES.getInt(foregroundColor, resources.getInteger(R.integer.color_theman_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Game.TAG, "TheMan Color: " + Integer.toHexString(this.mTheManForeground.getColor()));
+				Log.d(Game.TAG, "TheMan Color: #" + Integer.toHexString(this.mTheManForeground.getColor()));
 			}
 		}
     	
         
 		// GRID //
 		
-		final String dotGridPaddingLeft = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_left_key);
+		final String dotGridPaddingLeft = resources.getString(R.string.settings_display_padding_left_key);
 		if (all || key.equals(dotGridPaddingLeft)) {
-			this.mDotGridPaddingLeft = Wallpaper.PREFERENCES.getInt(dotGridPaddingLeft, Game.DEFAULT_GRID_PADDING_LEFT);
+			this.mDotGridPaddingLeft = Wallpaper.PREFERENCES.getInt(dotGridPaddingLeft, resources.getInteger(R.integer.display_padding_left_default));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Left: " + this.mDotGridPaddingLeft);
 			}
 		}
 
-		final String dotGridPaddingRight = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_right_key);
+		final String dotGridPaddingRight = resources.getString(R.string.settings_display_padding_right_key);
 		if (all || key.equals(dotGridPaddingRight)) {
-			this.mDotGridPaddingRight = Wallpaper.PREFERENCES.getInt(dotGridPaddingRight, Game.DEFAULT_GRID_PADDING_RIGHT);
+			this.mDotGridPaddingRight = Wallpaper.PREFERENCES.getInt(dotGridPaddingRight, resources.getInteger(R.integer.display_padding_right_default));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Right: " + this.mDotGridPaddingRight);
 			}
 		}
 
-		final String dotGridPaddingTop = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_top_key);
+		final String dotGridPaddingTop = resources.getString(R.string.settings_display_padding_top_key);
 		if (all || key.equals(dotGridPaddingTop)) {
-			this.mDotGridPaddingTop = Wallpaper.PREFERENCES.getInt(dotGridPaddingTop, Game.DEFAULT_GRID_PADDING_TOP);
+			this.mDotGridPaddingTop = Wallpaper.PREFERENCES.getInt(dotGridPaddingTop, resources.getInteger(R.integer.display_padding_top_default));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Top: " + this.mDotGridPaddingTop);
 			}
 		}
 
-		final String dotGridPaddingBottom = Wallpaper.CONTEXT.getString(R.string.settings_display_padding_bottom_key);
+		final String dotGridPaddingBottom = resources.getString(R.string.settings_display_padding_bottom_key);
 		if (all || key.equals(dotGridPaddingBottom)) {
-			this.mDotGridPaddingBottom = Wallpaper.PREFERENCES.getInt(dotGridPaddingBottom, Game.DEFAULT_GRID_PADDING_BOTTOM);
+			this.mDotGridPaddingBottom = Wallpaper.PREFERENCES.getInt(dotGridPaddingBottom, resources.getInteger(R.integer.display_padding_bottom_default));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Bottom: " + this.mDotGridPaddingBottom);
@@ -314,9 +298,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		
 		// CELLS //
 		
-		final String iconRows = Wallpaper.CONTEXT.getString(R.string.settings_display_iconrows_key);
+		final String iconRows = resources.getString(R.string.settings_display_iconrows_key);
 		if (all || key.equals(iconRows)) {
-			this.mIconRows = Wallpaper.PREFERENCES.getInt(iconRows, Game.DEFAULT_ICON_ROWS);
+			this.mIconRows = Wallpaper.PREFERENCES.getInt(iconRows, resources.getInteger(R.integer.display_iconrows_default));
 			hasLayoutChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -324,9 +308,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			}
 		}
 		
-		final String iconCols = Wallpaper.CONTEXT.getString(R.string.settings_display_iconcols_key);
+		final String iconCols = resources.getString(R.string.settings_display_iconcols_key);
 		if (all || key.equals(iconCols)) {
-			this.mIconCols = Wallpaper.PREFERENCES.getInt(iconCols, Game.DEFAULT_ICON_COLS);
+			this.mIconCols = Wallpaper.PREFERENCES.getInt(iconCols, resources.getInteger(R.integer.display_iconcols_default));
 			hasLayoutChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -334,9 +318,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			}
 		}
 		
-		final String cellSpacingRow = Wallpaper.CONTEXT.getString(R.string.settings_display_rowspacing_key);
+		final String cellSpacingRow = resources.getString(R.string.settings_display_rowspacing_key);
 		if (all || key.equals(cellSpacingRow)) {
-			this.mCellRowSpacing = Wallpaper.PREFERENCES.getInt(cellSpacingRow, Game.DEFAULT_CELL_SPACING_ROWS);
+			this.mCellRowSpacing = Wallpaper.PREFERENCES.getInt(cellSpacingRow, resources.getInteger(R.integer.display_rowspacing_default));
 			hasLayoutChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -344,9 +328,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			}
 		}
 		
-		final String cellSpacingCol = Wallpaper.CONTEXT.getString(R.string.settings_display_colspacing_key);
+		final String cellSpacingCol = resources.getString(R.string.settings_display_colspacing_key);
 		if (all || key.equals(cellSpacingCol)) {
-			this.mCellColumnSpacing = Wallpaper.PREFERENCES.getInt(cellSpacingCol, Game.DEFAULT_CELL_SPACING_COLUMNS);
+			this.mCellColumnSpacing = Wallpaper.PREFERENCES.getInt(cellSpacingCol, resources.getInteger(R.integer.display_colspacing_default));
 			hasLayoutChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -723,8 +707,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	this.mDotsRemaining -= Game.NUMBER_OF_JUGGERDOTS;
     	
     	//Initialize entities
-    	for (Entity entity : this.mEntities) {
-    		entity.newLevel(this);
+    	this.mTheMan.newLevel(this);
+    	this.mFruit.newLevel(this);
+    	for (Ghost ghost : this.mGhosts) {
+    		ghost.newLevel(this);
     	}
     	
     	if (Wallpaper.LOG_VERBOSE) {
@@ -740,9 +726,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	if (this.mDotsRemaining <= 0) {
     		this.newLevel();
     	}
-    	
-    	for (Entity entity : this.mEntities) {
-    		entity.tick(this);
+
+    	this.mFruit.tick(this);
+    	this.mTheMan.tick(this);
+    	for (Ghost ghost : this.mGhosts) {
+    		ghost.tick(this);
     	}
     }
 
@@ -785,8 +773,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		Log.d(Game.TAG, "Cell Height: " + this.mCellHeight);
     	}
     	
-    	for (Entity entity : this.mEntities) {
-    		entity.performResize(this);
+
+    	this.mFruit.performResize(this);
+    	this.mTheMan.performResize(this);
+    	for (Ghost ghost : this.mGhosts) {
+    		ghost.performResize(this);
     	}
 
     	if (Wallpaper.LOG_VERBOSE) {
@@ -849,9 +840,13 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         }
         
         //Draw the entities
-        for (Entity entity : this.mEntities) {
-        	entity.draw(c);
-        }
+    	if (this.mIsFruitEnabled) {
+        	this.mFruit.draw(c);
+    	}
+    	this.mTheMan.draw(c);
+    	for (Ghost ghost : this.mGhosts) {
+    		ghost.draw(c);
+    	}
         
         c.restore();
     }

@@ -4,6 +4,7 @@ import com.jakewharton.wakkawallpaper.Entity.Direction;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
@@ -28,7 +29,7 @@ public class Wallpaper extends WallpaperService {
 
     @Override
     public Engine onCreateEngine() {
-    	Wallpaper.PREFERENCES = this.getSharedPreferences(Preferences.SHARED_NAME, 0);
+    	Wallpaper.PREFERENCES = this.getSharedPreferences(Preferences.SHARED_NAME, Context.MODE_PRIVATE);
     	Wallpaper.CONTEXT = this;
         return new WakkaEngine();
     }
@@ -42,8 +43,6 @@ public class Wallpaper extends WallpaperService {
     	private static final String TAG = "WakkaWallpaper.WakkaEngine";
     	private static final int MILLISECONDS_IN_SECOND = 1000;
     	private static final long RESET_THRESHOLD = 500;
-    	
-    	private static final int DEFAULT_FPS = 10;
     	
     	private Game mGame;
         private boolean mIsVisible;
@@ -88,10 +87,11 @@ public class Wallpaper extends WallpaperService {
         	}
         	
 			final boolean all = (key == null);
+			final Resources resources = Wallpaper.CONTEXT.getResources();
 			
 			final String fps = Wallpaper.this.getString(R.string.settings_display_fps_key);
 			if (all || key.equals(fps)) {
-				this.mFPS = preferences.getInt(fps, WakkaEngine.DEFAULT_FPS);
+				this.mFPS = preferences.getInt(fps, resources.getInteger(R.integer.display_fps_default));
 				
 				if (Wallpaper.LOG_DEBUG) {
 					Log.d(WakkaEngine.TAG, "FPS = " + this.mFPS);
