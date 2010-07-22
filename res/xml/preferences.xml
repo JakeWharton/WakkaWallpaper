@@ -85,6 +85,14 @@
 					app:min="@integer/display_padding_right_min"
 					app:max="@integer/display_padding_right_max"/>
 			</PreferenceScreen>
+			<PreferenceCategory
+				android:key="@string/settings_reset_key"
+				android:title="@string/settings_reset">
+				<Preference
+					android:key="@string/settings_display_reset_key"
+					android:title="@string/settings_display_reset"
+					android:summary="@string/settings_display_reset_summary"/>
+			</PreferenceCategory>
 		</PreferenceScreen>
 		<PreferenceScreen
 			android:key="@string/settings_game_key"
@@ -169,6 +177,14 @@
 					app:min="@integer/game_fruitvisibleupper_min"
 					app:max="@integer/game_fruitvisibleupper_max"/>
 			</PreferenceCategory>
+			<PreferenceCategory
+				android:key="@string/settings_reset_key"
+				android:title="@string/settings_reset">
+				<Preference
+					android:key="@string/settings_game_reset_key"
+					android:title="@string/settings_game_reset"
+					android:summary="@string/settings_game_reset_summary"/>
+			</PreferenceCategory>
 		</PreferenceScreen>
 		<PreferenceScreen
 			android:key="@string/settings_color_key"
@@ -239,6 +255,14 @@
 					android:summary="@string/settings_color_ghost_scaredblinkfg_summary"
 					android:defaultValue="@integer/color_ghost_scaredblinkfg_default"/>
 			</PreferenceScreen>
+			<PreferenceCategory
+				android:key="@string/settings_reset_key"
+				android:title="@string/settings_reset">
+				<Preference
+					android:key="@string/settings_color_reset_key"
+					android:title="@string/settings_color_reset"
+					android:summary="@string/settings_color_reset_summary"/>
+			</PreferenceCategory>
 		</PreferenceScreen>
 	</PreferenceCategory>
 	

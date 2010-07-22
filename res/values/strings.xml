@@ -17,6 +17,8 @@
     <string name="settings_color">Colors</string>
     <string name="settings_color_key">settings_colors</string>
     <string name="settings_color_summary">Dots, ghosts, background...</string>
+    <string name="settings_reset">Reset</string>
+    <string name="settings_reset_key">reset</string>
     
     <string name="settings_display_fps">FPS</string>
     <string name="settings_display_fps_key">display_fps</string>
@@ -36,6 +38,9 @@
     <string name="settings_display_colspacing">Icon Column Cell Spacing</string>
     <string name="settings_display_colspacing_key">display_colspacing</string>
     <string name="settings_display_colspacing_summary">Number of cells in an icon column</string>
+    <string name="settings_display_reset">Reset Display</string>
+    <string name="settings_display_reset_key">display_reset</string>
+    <string name="settings_display_reset_summary">All display settings back to default</string>
     
     <string name="settings_display_padding">Grid Padding</string>
     <string name="settings_display_padding_key">display_padding</string>
@@ -76,19 +81,22 @@
     <string name="settings_game_fruit_key">game_fruit</string>
     <string name="settings_game_fruitenabled">Fruit Enabled</string>
     <string name="settings_game_fruitenabled_key">game_fruitenabled</string>
-    <string name="settings_game_fruitenabled_summary">Whether bonus fruits appear during play</string>
+    <string name="settings_game_fruitenabled_summary">Whether or not bonus fruits appear during play</string>
     <string name="settings_game_fruitonethreshold">Fruit One Threshold</string>
     <string name="settings_game_fruitonethreshold_key">game_fruitonethreshold</string>
-    <string name="settings_game_fruitonethreshold_summary">Number of dots before first fruit appears</string>
+    <string name="settings_game_fruitonethreshold_summary">Dots eaten requirement before first fruit appears</string>
     <string name="settings_game_fruittwothreshold">Fruit Two Threshold</string>
     <string name="settings_game_fruittwothreshold_key">game_fruittwothreshold</string>
-    <string name="settings_game_fruittwothreshold_summary">Number of dots before second fruit appears</string>
+    <string name="settings_game_fruittwothreshold_summary">Dots eaten requirement before second fruit appears</string>
     <string name="settings_game_fruitvisiblelower">Fruit Visible Lower</string>
     <string name="settings_game_fruitvisiblelower_key">game_fruitvisiblelower</string>
-    <string name="settings_game_fruitvisiblelower_summary">Shortest amount of time a fruit can be visible</string>
+    <string name="settings_game_fruitvisiblelower_summary">Shortest amount of time a fruit can be visible (in milliseconds)</string>
     <string name="settings_game_fruitvisibleupper">Fruit Visible Upper</string>
     <string name="settings_game_fruitvisibleupper_key">game_fruitvisibleupper</string>
-    <string name="settings_game_fruitvisibleupper_summary">Longest amount of time a fruit can be visible.</string>
+    <string name="settings_game_fruitvisibleupper_summary">Longest amount of time a fruit can be visible (in milliseconds)</string>
+    <string name="settings_game_reset">Reset Game</string>
+    <string name="settings_game_reset_key">game_reset</string>
+    <string name="settings_game_reset_summary">All game settings back to default</string>
     
     <string name="settings_color_game">Game Board Colors</string>
     <string name="settings_color_game_key">color_game</string>
@@ -119,18 +127,22 @@
     <string name="settings_color_ghost_eyebg">Eye Background</string>
     <string name="settings_color_ghost_eyebg_key"></string>
     <string name="settings_color_ghost_eyebg_summary"></string>
-    <string name="settings_color_ghost_scaredfg">Scared Eye</string>
+    <string name="settings_color_ghost_scaredfg">Scared Eyes</string>
     <string name="settings_color_ghost_scaredfg_key">color_ghost_scaredfg</string>
     <string name="settings_color_ghost_scaredfg_summary"></string>
     <string name="settings_color_ghost_scaredbg">Scared Body</string>
     <string name="settings_color_ghost_scaredbg_key">color_ghost_scaredbg</string>
     <string name="settings_color_ghost_scaredbg_summary"></string>
-    <string name="settings_color_ghost_scaredblinkfg">Scared Blinking Eye</string>
+    <string name="settings_color_ghost_scaredblinkfg">Scared Blinking Eyes</string>
     <string name="settings_color_ghost_scaredblinkfg_key">color_ghost_scaredblinkfg</string>
     <string name="settings_color_ghost_scaredblinkfg_summary"></string>
     <string name="settings_color_ghost_scaredblinkbg">Scared Blinking Body</string>
     <string name="settings_color_ghost_scaredblinkbg_key">color_ghost_scaredblinkbg</string>
     <string name="settings_color_ghost_scaredblinkbg_summary"></string>
+    
+    <string name="settings_color_reset">Reset Color</string>
+    <string name="settings_color_reset_key">color_reset</string>
+    <string name="settings_color_reset_summary">All color settings back to default</string>
     
     <string name="information_header">Information</string>
     <string name="information_version">Version</string>
