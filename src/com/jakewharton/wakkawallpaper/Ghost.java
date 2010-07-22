@@ -71,12 +71,12 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		this.mScaredBlinkEyeForeground = new Paint();
 		this.mScaredBlinkEyeForeground.setAntiAlias(true);
 		this.mScaredBlinkEyeForeground.setStyle(Style.FILL_AND_STROKE);
+		
+		this.mBody = new Path[2];
 
         //Load all preferences or their defaults
         Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
         this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
-		
-		this.mBody = new Path[2];
 	}
 
     /**

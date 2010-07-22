@@ -28,7 +28,7 @@ public class Preferences extends PreferenceActivity {
         
         //reset display
         this.findPreference(resources.getString(R.string.settings_display_reset_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				final SharedPreferences.Editor editor = Preferences.this.getPreferenceManager().getSharedPreferences().edit();
 				
 				//fps
@@ -59,7 +59,7 @@ public class Preferences extends PreferenceActivity {
         
         //reset game
         this.findPreference(resources.getString(R.string.settings_game_reset_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				final SharedPreferences.Editor editor = Preferences.this.getPreferenceManager().getSharedPreferences().edit();
 				
 				//display kill screen
@@ -90,7 +90,7 @@ public class Preferences extends PreferenceActivity {
         
         //reset colors
         this.findPreference(resources.getString(R.string.settings_color_reset_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				final SharedPreferences.Editor editor = Preferences.this.getPreferenceManager().getSharedPreferences().edit();
 				
 				//background
@@ -123,13 +123,12 @@ public class Preferences extends PreferenceActivity {
         
         //info email
         this.findPreference(resources.getString(R.string.information_contact_email_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				final Intent intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("plain/text");
 				intent.putExtra(Intent.EXTRA_EMAIL, new String[] { resources.getString(R.string.information_contact_email_data) });
 				intent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.title));
 				
-				//launcher email activity
 				Preferences.this.startActivity(Intent.createChooser(intent, resources.getString(R.string.information_contact_email)));
 				return true;
 			}
@@ -137,7 +136,7 @@ public class Preferences extends PreferenceActivity {
         
         //info twitter
         this.findPreference(resources.getString(R.string.information_contact_twitter_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				final Intent intent = new Intent(Intent.ACTION_VIEW);
 				intent.setData(Uri.parse(resources.getString(R.string.information_contact_twitter_data)));
 				
@@ -148,7 +147,7 @@ public class Preferences extends PreferenceActivity {
         
         //info web
         this.findPreference(resources.getString(R.string.information_contact_website_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				final Intent intent = new Intent(Intent.ACTION_VIEW);
 				intent.setData(Uri.parse(resources.getString(R.string.information_contact_website_data)));
 				

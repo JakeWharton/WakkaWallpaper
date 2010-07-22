@@ -141,6 +141,17 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 				}
 			}
 		}
+		
+		//Temporary last ditch effort: pick a random direction
+		if (this.mDirectionNext == null) {
+			while (true) {
+				Direction direction = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
+				if (game.isValidPosition(Entity.move(this.mPosition, direction))) {
+					this.mDirectionNext = direction;
+					break;
+				}
+			}
+		}
 	}
 
     @Override

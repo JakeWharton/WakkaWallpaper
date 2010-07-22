@@ -192,10 +192,14 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	if (hasGhostCountChanged) {
 	    	this.mGhosts = new Ghost[this.mGhostCount];
 	    	int i = 0;
-	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Blinky(); }
-	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Pinky(); }
 	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Inky(); }
+	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Pinky(); }
+	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Blinky(); }
 	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Clyde(); }
+	    	
+	    	for (Ghost ghost : this.mGhosts) {
+	    		ghost.performResize(this);
+	    	}
     	}
 		
 		final String displayHud = Wallpaper.CONTEXT.getString(R.string.settings_display_showhud_key);
