@@ -54,7 +54,7 @@ public class EditNumberPreference extends DialogPreference implements SeekBar.On
 
 	@Override
 	protected void onSetInitialValue(boolean restore, Object defaultValue) {
-		mValue = this.getPersistedInt(defaultValue == null ? 0 : (Integer)defaultValue);
+		this.mValue = this.getPersistedInt(defaultValue == null ? 0 : (Integer)defaultValue);
 	}
 
 	@Override
