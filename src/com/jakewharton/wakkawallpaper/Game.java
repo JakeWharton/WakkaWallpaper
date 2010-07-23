@@ -239,6 +239,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String gameBackground = resources.getString(R.string.settings_color_game_background_key);
 		if (all || key.equals(gameBackground)) {
 			this.mGameBackground = Wallpaper.PREFERENCES.getInt(gameBackground, resources.getInteger(R.integer.color_game_background_default));
+	        
+	        //Add background to text overlays after background is loaded
+	        this.mReadyForeground.setShadowLayer(2, 0, 0, this.mGameBackground);
+	        this.mGameOverForeground.setShadowLayer(2, 0, 0, this.mGameBackground);
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Game Background: #" + Integer.toHexString(this.mGameBackground));
@@ -968,10 +972,12 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
     	switch (this.mState) {
     		case READY:
-    			c.drawText(this.mTextReady, (this.mScreenWidth / 2.0f) - (this.mReadyForeground.measureText(this.mTextReady) / 2.0f), this.mDotGridPaddingTop - (Game.HUD_SIZE / 2.0f), this.mReadyForeground);
+    			c.drawText(this.mTextReady, (this.mScreenWidth / 2.0f) - (this.mReadyForeground.measureText(this.mTextReady) / 2.0f), this.mTheMan.getLocation().y + (this.mCellHeight * 1.5f), this.mReadyForeground);
     			break;
     		case GAME_OVER:
-    			c.drawText(this.mTextGameOver, (this.mScreenWidth / 2.0f) - (this.mGameOverForeground.measureText(this.mTextGameOver) / 2.0f), this.mDotGridPaddingTop - (Game.HUD_SIZE / 2.0f), this.mGameOverForeground);
+    			//Put The Man in the middle
+    			this.mTheMan.newLife(this);
+    			c.drawText(this.mTextGameOver, (this.mScreenWidth / 2.0f) - (this.mGameOverForeground.measureText(this.mTextGameOver) / 2.0f), this.mTheMan.getLocation().y + (this.mCellHeight * 1.5f), this.mGameOverForeground);
     			break;
     	}
         

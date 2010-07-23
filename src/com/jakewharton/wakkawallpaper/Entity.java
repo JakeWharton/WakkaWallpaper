@@ -134,6 +134,15 @@ public abstract class Entity {
 	}
 	
 	/**
+	 * Get the current location of the entity.
+	 * 
+	 * @return Position.
+	 */
+	public PointF getLocation() {
+		return this.mLocation;
+	}
+	
+	/**
 	 * Get the current direction of the entity.
 	 * 
 	 * @return Position.
