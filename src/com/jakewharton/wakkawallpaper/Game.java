@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.Log;
 
@@ -90,6 +91,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private float mDotGridPaddingRight;
     private final String mTextReady;
     private final String mTextGameOver;
+    private final PointF mTextLocation;
     
     /**
      * Create a new game adhering to the specified parameters.
@@ -122,6 +124,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         final Resources resources = Wallpaper.CONTEXT.getResources();
         this.mTextReady = resources.getString(R.string.ready);
         this.mTextGameOver = resources.getString(R.string.gameover);
+        this.mTextLocation = new PointF();
         
         //Create "The Man" and fruit
     	this.mTheMan = new TheMan();
@@ -892,12 +895,16 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		Log.d(Game.TAG, "Cell Height: " + this.mCellHeight);
     	}
     	
-
+    	//Resize entities
     	this.mFruit.performResize(this);
     	this.mTheMan.performResize(this);
     	for (Ghost ghost : this.mGhosts) {
     		ghost.performResize(this);
     	}
+    	
+    	//For on-board HUD text
+    	this.mTextLocation.x = this.mDotGridPaddingLeft + ((this.mScreenWidth - this.mDotGridPaddingLeft - this.mDotGridPaddingRight) / 2.0f);
+    	this.mTextLocation.y = this.mDotGridPaddingTop + (this.mTheMan.getInitialPosition(this).y * this.mCellHeight) + (this.mCellHeight * 0.5f);
 
     	if (Wallpaper.LOG_VERBOSE) {
     		Log.v(Game.TAG, "< performResize()");
@@ -921,7 +928,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	        for (int i = 0; i < this.mLives; i++) {
 	        	c.drawArc(new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top), Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
 	        }
-	        //Don't display larger than 999,999
+	        //Don't display larger than 999,999 (bug in original game)
 	        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore % Game.SCORE_FLIPPING));
 	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - 10, top, this.mHudForeground);
     	}
@@ -975,12 +982,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
     	switch (this.mState) {
     		case READY:
-    			c.drawText(this.mTextReady, (this.mScreenWidth / 2.0f) - (this.mReadyForeground.measureText(this.mTextReady) / 2.0f), this.mTheMan.getLocation().y + (this.mCellHeight * 1.5f), this.mReadyForeground);
+    			c.drawText(this.mTextReady, this.mTextLocation.x - (this.mReadyForeground.measureText(this.mTextReady) / 2.0f), this.mTextLocation.y, this.mReadyForeground);
     			break;
     		case GAME_OVER:
-    			//Put The Man in the middle
-    			this.mTheMan.newLife(this);
-    			c.drawText(this.mTextGameOver, (this.mScreenWidth / 2.0f) - (this.mGameOverForeground.measureText(this.mTextGameOver) / 2.0f), this.mTheMan.getLocation().y + (this.mCellHeight * 1.5f), this.mGameOverForeground);
+    			c.drawText(this.mTextGameOver, this.mTextLocation.x - (this.mGameOverForeground.measureText(this.mTextGameOver) / 2.0f), this.mTextLocation.y, this.mGameOverForeground);
     			break;
     	}
         
