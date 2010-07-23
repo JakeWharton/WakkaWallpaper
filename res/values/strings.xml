@@ -153,6 +153,14 @@
     <string name="settings_color_reset_key">color_reset</string>
     <string name="settings_color_reset_summary">All color settings back to default</string>
     
+    <string name="io_header">Import / Export</string>
+    <string name="io_import">Import Settings</string>
+    <string name="io_import_key">io_import</string>
+    <string name="io_import_summary">Load all settings from XML</string>
+    <string name="io_export">Export Settings</string>
+    <string name="io_export_key">io_export</string>
+    <string name="io_export_summary">Save all settings to XML</string>
+    
     <string name="information_header">Information</string>
     <string name="information_version">Version</string>
     <string name="information_version_key">information_version</string>
