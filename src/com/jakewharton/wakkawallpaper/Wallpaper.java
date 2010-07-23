@@ -19,7 +19,7 @@ public class Wallpaper extends WallpaperService {
     public static SharedPreferences PREFERENCES;
     public static Context CONTEXT;
     
-    public static final boolean LOG_DEBUG = true;
+    public static final boolean LOG_DEBUG = false;
     public static final boolean LOG_VERBOSE = false;
     private static final boolean AUTO_TICK = true;
     
