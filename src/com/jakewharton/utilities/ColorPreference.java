@@ -122,17 +122,19 @@ public class ColorPreference extends DialogPreference {
 
 			switch (event.getAction()) {
 				case MotionEvent.ACTION_MOVE:
-					float angle = (float)Math.atan2(y, x);
-					// need to turn angle [-PI ... PI] into unit [0....1]
-					float unit = angle / (2 * PI);
-					if (unit < 0) {
-						unit += 1;
+					if (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) > ColorPickerView.CENTER_RADIUS) {
+						float angle = (float)Math.atan2(y, x);
+						// need to turn angle [-PI ... PI] into unit [0....1]
+						float unit = angle / (2 * PI);
+						if (unit < 0) {
+							unit += 1;
+						}
+						int color = interpColor(this.mColors, unit);
+						this.mCenterPaint.setColor(color);
+						ColorPreference.this.mTempValue = color;
+						ColorPreference.this.mEditText.setText(ColorPreference.convertToARGB(color));
+						this.invalidate();
 					}
-					int color = interpColor(this.mColors, unit);
-					this.mCenterPaint.setColor(color);
-					ColorPreference.this.mTempValue = color;
-					ColorPreference.this.mEditText.setText(ColorPreference.convertToARGB(color));
-					this.invalidate();
 					break;
 			}
 			return true;
