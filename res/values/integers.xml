@@ -74,4 +74,8 @@
 	<integer name="color_ghost_scaredfg_default">0xffffcc33</integer>
 	<integer name="color_ghost_scaredblinkbg_default">0xfffafafa</integer>
 	<integer name="color_ghost_scaredblinkfg_default">0xffff0000</integer>
+	<integer name="color_ghost_blinky_default">0xfff00000</integer>
+	<integer name="color_ghost_pinky_default">0xffff00f0</integer>
+	<integer name="color_ghost_inky_default">0xff01d8ff</integer>
+	<integer name="color_ghost_clyde_default">0xffff8401</integer>
 </resources>

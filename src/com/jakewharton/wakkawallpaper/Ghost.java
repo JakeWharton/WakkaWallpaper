@@ -23,7 +23,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	private static final int FLEE_LENGTH = 7000;
 	
 	protected State mState;
-	private final Paint mBodyBackground;
+	protected final Paint mBodyBackground;
 	private final Paint mEyeBackground;
 	private final Paint mEyeForeground;
 	private final Paint mScaredBackground;
@@ -45,12 +45,11 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
      * 
      * @param backgroundColor Primary color of the ghost.
      */
-	protected Ghost(final int backgroundColor) {
+	protected Ghost() {
 		super();
 		
 		this.mBodyBackground = new Paint();
 		this.mBodyBackground.setAntiAlias(true);
-		this.mBodyBackground.setColor(backgroundColor);
 		this.mEyeBackground = new Paint();
 		this.mEyeBackground.setAntiAlias(true);
 		this.mEyeForeground = new Paint();
@@ -440,14 +439,26 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * 
 	 * @author Jake Wharton
 	 */
-	public static class Blinky extends Ghost {
-		private static final int BACKGROUND_COLOR = 0xfff00000;
+	public static class Blinky extends Ghost implements SharedPreferences.OnSharedPreferenceChangeListener {
+		private static final String TAG = Ghost.TAG + ".Blinky";
 		
-		/**
-		 * Create a new instance of the ghost Blinky (Shadow).
-		 */
-		public Blinky() {
-			super(Blinky.BACKGROUND_COLOR);
+	    /**
+	     * Handle the changing of a preference.
+	     */
+		public void onSharedPreferenceChanged(final SharedPreferences preferences, final String key) {
+			final boolean all = (key == null);
+			final Resources resources = Wallpaper.CONTEXT.getResources();
+			
+			final String color = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_blinky_key);
+			if (all || key.equals(color)) {
+				this.mBodyBackground.setColor(preferences.getInt(color, resources.getInteger(R.integer.color_ghost_blinky_default)));
+				
+				if (Wallpaper.LOG_DEBUG) {
+					Log.d(Blinky.TAG, "Color: #" + Integer.toHexString(this.mBodyBackground.getColor()));
+				}
+			}
+			
+			super.onSharedPreferenceChanged(preferences, key);
 		}
 		
 		@Override
@@ -474,15 +485,27 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * 
 	 * @author Jake Wharton
 	 */
-	public static class Pinky extends Ghost {
-		private static final int BACKGROUND_COLOR = 0xffff00f0;
+	public static class Pinky extends Ghost implements SharedPreferences.OnSharedPreferenceChangeListener {
+		private static final String TAG = Ghost.TAG + ".Pinky";
 		private static final int LEADING_FACTOR = 4;
-		
-		/**
-		 * Create a new instance of the ghost Pinky (Speedy).
-		 */
-		public Pinky() {
-			super(Pinky.BACKGROUND_COLOR);
+
+	    /**
+	     * Handle the changing of a preference.
+	     */
+		public void onSharedPreferenceChanged(final SharedPreferences preferences, final String key) {
+			final boolean all = (key == null);
+			final Resources resources = Wallpaper.CONTEXT.getResources();
+			
+			final String color = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_pinky_key);
+			if (all || key.equals(color)) {
+				this.mBodyBackground.setColor(preferences.getInt(color, resources.getInteger(R.integer.color_ghost_pinky_default)));
+				
+				if (Wallpaper.LOG_DEBUG) {
+					Log.d(Pinky.TAG, "Color: #" + Integer.toHexString(this.mBodyBackground.getColor()));
+				}
+			}
+			
+			super.onSharedPreferenceChanged(preferences, key);
 		}
 
 		@Override
@@ -513,16 +536,28 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * 
 	 * @author Jake Wharton
 	 */
-	public static class Inky extends Ghost {
-		private static final int BACKGROUND_COLOR = 0xff01d8ff;
+	public static class Inky extends Ghost implements SharedPreferences.OnSharedPreferenceChangeListener {
+		private static final String TAG = Ghost.TAG + ".Inky";
 		private static final int LEADING_FACTOR = 2;
 		private static final int BLINKY_INDEX = 0; //always the first ghost initialized
-		
-		/**
-		 * Create a new instance of the ghost Inky (Bashful).
-		 */
-		public Inky() {
-			super(Inky.BACKGROUND_COLOR);
+
+	    /**
+	     * Handle the changing of a preference.
+	     */
+		public void onSharedPreferenceChanged(final SharedPreferences preferences, final String key) {
+			final boolean all = (key == null);
+			final Resources resources = Wallpaper.CONTEXT.getResources();
+			
+			final String color = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_inky_key);
+			if (all || key.equals(color)) {
+				this.mBodyBackground.setColor(preferences.getInt(color, resources.getInteger(R.integer.color_ghost_inky_default)));
+				
+				if (Wallpaper.LOG_DEBUG) {
+					Log.d(Inky.TAG, "Color: #" + Integer.toHexString(this.mBodyBackground.getColor()));
+				}
+			}
+			
+			super.onSharedPreferenceChanged(preferences, key);
 		}
 
 		@Override
@@ -556,15 +591,27 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * 
 	 * @author Jake Wharton
 	 */
-	public static class Clyde extends Ghost {
-		private static final int BACKGROUND_COLOR = 0xffff8401;
+	public static class Clyde extends Ghost implements SharedPreferences.OnSharedPreferenceChangeListener {
+		private static final String TAG = Ghost.TAG + ".Clyde";
 		private static final int PROXIMITY_THRESHOLD = 8;
-		
-		/**
-		 * Create a new instance of the ghost Clyde (Pokey).
-		 */
-		public Clyde() {
-			super(Clyde.BACKGROUND_COLOR);
+
+	    /**
+	     * Handle the changing of a preference.
+	     */
+		public void onSharedPreferenceChanged(final SharedPreferences preferences, final String key) {
+			final boolean all = (key == null);
+			final Resources resources = Wallpaper.CONTEXT.getResources();
+			
+			final String color = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_clyde_key);
+			if (all || key.equals(color)) {
+				this.mBodyBackground.setColor(preferences.getInt(color, resources.getInteger(R.integer.color_ghost_clyde_default)));
+				
+				if (Wallpaper.LOG_DEBUG) {
+					Log.d(Clyde.TAG, "Color: #" + Integer.toHexString(this.mBodyBackground.getColor()));
+				}
+			}
+			
+			super.onSharedPreferenceChanged(preferences, key);
 		}
 
 		@Override

@@ -148,6 +148,20 @@
     <string name="settings_color_ghost_scaredblinkbg">Scared Blinking Body</string>
     <string name="settings_color_ghost_scaredblinkbg_key">color_ghost_scaredblinkbg</string>
     <string name="settings_color_ghost_scaredblinkbg_summary"></string>
+    <string name="settings_color_ghost_individuals">Individuals</string>
+    <string name="settings_color_ghost_individuals_key">color_ghost_individuals</string>
+    <string name="settings_color_ghost_blinky">Blinky Color</string>
+    <string name="settings_color_ghost_blinky_key">color_ghost_blinky</string>
+    <string name="settings_color_ghost_blinky_summary"></string>
+    <string name="settings_color_ghost_pinky">Pinky Color</string>
+    <string name="settings_color_ghost_pinky_key">color_ghost_pinky</string>
+    <string name="settings_color_ghost_pinky_summary"></string>
+    <string name="settings_color_ghost_inky">Inky Color</string>
+    <string name="settings_color_ghost_inky_key">color_ghost_inky</string>
+    <string name="settings_color_ghost_inky_summary"></string>
+    <string name="settings_color_ghost_clyde">Clyde Color</string>
+    <string name="settings_color_ghost_clyde_key">color_ghost_clyde</string>
+    <string name="settings_color_ghost_clyde_summary"></string>
     
     <string name="settings_color_reset">Reset Color Settings</string>
     <string name="settings_color_reset_key">color_reset</string>

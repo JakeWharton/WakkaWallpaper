@@ -264,6 +264,30 @@
 					android:title="@string/settings_color_ghost_scaredblinkfg"
 					android:summary="@string/settings_color_ghost_scaredblinkfg_summary"
 					android:defaultValue="@integer/color_ghost_scaredblinkfg_default"/>
+				<PreferenceCategory
+					android:key="@string/settings_color_ghost_individuals_key"
+					android:title="@string/settings_color_ghost_individuals">
+					<com.jakewharton.utilities.ColorPreference
+						android:key="@string/settings_color_ghost_blinky_key"
+						android:title="@string/settings_color_ghost_blinky"
+						android:summary="@string/settings_color_ghost_blinky_summary"
+						android:defaultValue="@integer/color_ghost_blinky_default"/>
+					<com.jakewharton.utilities.ColorPreference
+						android:key="@string/settings_color_ghost_pinky_key"
+						android:title="@string/settings_color_ghost_pinky"
+						android:summary="@string/settings_color_ghost_pinky_summary"
+						android:defaultValue="@integer/color_ghost_pinky_default"/>
+					<com.jakewharton.utilities.ColorPreference
+						android:key="@string/settings_color_ghost_inky_key"
+						android:title="@string/settings_color_ghost_inky"
+						android:summary="@string/settings_color_ghost_inky_summary"
+						android:defaultValue="@integer/color_ghost_inky_default"/>
+					<com.jakewharton.utilities.ColorPreference
+						android:key="@string/settings_color_ghost_clyde_key"
+						android:title="@string/settings_color_ghost_clyde"
+						android:summary="@string/settings_color_ghost_clyde_summary"
+						android:defaultValue="@integer/color_ghost_clyde_default"/>
+				</PreferenceCategory>
 			</PreferenceScreen>
 			<PreferenceCategory
 				android:key="@string/settings_reset_key"

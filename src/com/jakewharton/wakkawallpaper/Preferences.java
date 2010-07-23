@@ -213,6 +213,14 @@ public class Preferences extends PreferenceActivity {
 		editor.putInt(resources.getString(R.string.settings_color_ghost_scaredblinkbg_key), resources.getInteger(R.integer.color_ghost_scaredblinkbg_default));
 		//scared blinking eyes
 		editor.putInt(resources.getString(R.string.settings_color_ghost_scaredblinkfg_key), resources.getInteger(R.integer.color_ghost_scaredblinkfg_default));
+		//blinky
+		editor.putInt(resources.getString(R.string.settings_color_ghost_blinky_key), resources.getInteger(R.integer.color_ghost_blinky_default));
+		//pinky
+		editor.putInt(resources.getString(R.string.settings_color_ghost_pinky_key), resources.getInteger(R.integer.color_ghost_pinky_default));
+		//inky
+		editor.putInt(resources.getString(R.string.settings_color_ghost_inky_key), resources.getInteger(R.integer.color_ghost_inky_default));
+		//clyde
+		editor.putInt(resources.getString(R.string.settings_color_ghost_clyde_key), resources.getInteger(R.integer.color_ghost_clyde_default));
 		
 		editor.commit();
 	}
@@ -338,6 +346,18 @@ public class Preferences extends PreferenceActivity {
     		//scared blinking eyes
 	    	final String color_ghost_scaredblinkfg = resources.getString(R.string.settings_color_ghost_scaredblinkfg_key);
     		editor.putInt(color_ghost_scaredblinkfg, color.getInt(color_ghost_scaredblinkfg));
+    		//blinky
+    		final String color_ghost_blinky = resources.getString(R.string.settings_color_ghost_blinky_key);
+    		editor.putInt(color_ghost_blinky, color.getInt(color_ghost_blinky));
+    		//pinky
+    		final String color_ghost_pinky = resources.getString(R.string.settings_color_ghost_pinky_key);
+    		editor.putInt(color_ghost_pinky, color.getInt(color_ghost_pinky));
+    		//inky
+    		final String color_ghost_inky = resources.getString(R.string.settings_color_ghost_inky_key);
+    		editor.putInt(color_ghost_inky, color.getInt(color_ghost_inky));
+    		//clyde
+    		final String color_ghost_clyde = resources.getString(R.string.settings_color_ghost_clyde_key);
+    		editor.putInt(color_ghost_clyde, color.getInt(color_ghost_clyde));
     		
     		//save changes
     		editor.commit();
@@ -462,6 +482,18 @@ public class Preferences extends PreferenceActivity {
 			//scared blinking eyes
 	    	final String color_ghost_scaredblinkfg = resources.getString(R.string.settings_color_ghost_scaredblinkfg_key);
 	    	color.put(color_ghost_scaredblinkfg, preferences.getInt(color_ghost_scaredblinkfg, resources.getInteger(R.integer.color_ghost_scaredblinkfg_default)));
+	    	//blinky
+	    	final String color_ghost_blinky = resources.getString(R.string.settings_color_ghost_blinky_key);
+	    	color.put(color_ghost_blinky, preferences.getInt(color_ghost_blinky, resources.getInteger(R.integer.color_ghost_blinky_default)));
+	    	//pinky
+	    	final String color_ghost_pinky = resources.getString(R.string.settings_color_ghost_pinky_key);
+	    	color.put(color_ghost_pinky, preferences.getInt(color_ghost_pinky, resources.getInteger(R.integer.color_ghost_pinky_default)));
+	    	//inky
+	    	final String color_ghost_inky = resources.getString(R.string.settings_color_ghost_inky_key);
+	    	color.put(color_ghost_inky, preferences.getInt(color_ghost_inky, resources.getInteger(R.integer.color_ghost_inky_default)));
+	    	//clyde
+	    	final String color_ghost_clyde = resources.getString(R.string.settings_color_ghost_clyde_key);
+	    	color.put(color_ghost_clyde, preferences.getInt(color_ghost_clyde, resources.getInteger(R.integer.color_ghost_clyde_default)));
 	    	
 	    	//ALL
 	    	final JSONObject settings = new JSONObject();
