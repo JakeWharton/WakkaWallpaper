@@ -65,6 +65,8 @@
 	<integer name="color_game_dot_default">0xff6161a1</integer>
 	<integer name="color_game_hudfg_default">0xff8181c1</integer>
 	<integer name="color_game_hudbg_default">0xff000000</integer>
+	<integer name="color_game_ready_default">0xffffff00</integer>
+	<integer name="color_game_gameover_default">0xffff0000</integer>
 	<integer name="color_theman_default">0xfffff000</integer>
 	<integer name="color_ghost_eyebg_default">0xffffffff</integer>
 	<integer name="color_ghost_eyefg_default">0xff000000</integer>

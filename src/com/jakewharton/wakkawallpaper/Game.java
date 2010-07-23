@@ -82,10 +82,14 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private boolean mIsDisplayingHud;
     private final Paint mHudForeground;
     private final Paint mTheManForeground;
+    private final Paint mReadyForeground;
+    private final Paint mGameOverForeground;
     private float mDotGridPaddingTop;
     private float mDotGridPaddingLeft;
     private float mDotGridPaddingBottom;
     private float mDotGridPaddingRight;
+    private final String mTextReady;
+    private final String mTextGameOver;
     
     /**
      * Create a new game adhering to the specified parameters.
@@ -108,6 +112,16 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         this.mHudForeground.setTextSize(Game.HUD_SIZE);
         this.mTheManForeground = new Paint();
         this.mTheManForeground.setAntiAlias(true);
+        this.mReadyForeground = new Paint();
+        this.mReadyForeground.setAntiAlias(true);
+        this.mReadyForeground.setTextSize(Game.HUD_SIZE);
+        this.mGameOverForeground = new Paint();
+        this.mGameOverForeground.setAntiAlias(true);
+        this.mGameOverForeground.setTextSize(Game.HUD_SIZE);
+        
+        final Resources resources = Wallpaper.CONTEXT.getResources();
+        this.mTextReady = resources.getString(R.string.ready);
+        this.mTextGameOver = resources.getString(R.string.gameover);
         
         //Create "The Man" and fruit
     	this.mTheMan = new TheMan();
@@ -265,6 +279,24 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "TheMan Color: #" + Integer.toHexString(this.mTheManForeground.getColor()));
+			}
+		}
+		
+		final String ready = resources.getString(R.string.settings_color_game_ready_key);
+		if (all || key.equals(ready)) {
+			this.mReadyForeground.setColor(Wallpaper.PREFERENCES.getInt(ready, resources.getInteger(R.integer.color_game_ready_default)));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Ready Color: #" + Integer.toHexString(this.mReadyForeground.getColor()));
+			}
+		}
+		
+		final String gameOver = resources.getString(R.string.settings_color_game_gameover_key);
+		if (all || key.equals(gameOver)) {
+			this.mGameOverForeground.setColor(Wallpaper.PREFERENCES.getInt(gameOver, resources.getInteger(R.integer.color_game_gameover_default)));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Ready Color: #" + Integer.toHexString(this.mGameOverForeground.getColor()));
 			}
 		}
     	
@@ -936,10 +968,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
     	switch (this.mState) {
     		case READY:
-    			//TODO: draw "READY!"
+    			c.drawText(this.mTextReady, (this.mScreenWidth / 2.0f) - (this.mReadyForeground.measureText(this.mTextReady) / 2.0f), this.mDotGridPaddingTop - (Game.HUD_SIZE / 2.0f), this.mReadyForeground);
     			break;
     		case GAME_OVER:
-    			//TODO: draw "GAME OVER"
+    			c.drawText(this.mTextGameOver, (this.mScreenWidth / 2.0f) - (this.mGameOverForeground.measureText(this.mTextGameOver) / 2.0f), this.mDotGridPaddingTop - (Game.HUD_SIZE / 2.0f), this.mGameOverForeground);
     			break;
     	}
         

@@ -101,6 +101,10 @@ public class Preferences extends PreferenceActivity {
 				editor.putInt(resources.getString(R.string.settings_color_game_hudfg_key), resources.getInteger(R.integer.color_game_hudfg_default));
 				//hud background
 				editor.putInt(resources.getString(R.string.settings_color_game_hudbg_key), resources.getInteger(R.integer.color_game_hudbg_default));
+				//ready color
+				editor.putInt(resources.getString(R.string.settings_color_game_ready_key), resources.getInteger(R.integer.color_game_ready_default));
+				//game over color
+				editor.putInt(resources.getString(R.string.settings_color_game_gameover_key), resources.getInteger(R.integer.color_game_gameover_default));
 				//"The Man"
 				editor.putInt(resources.getString(R.string.settings_color_theman_key), resources.getInteger(R.integer.color_theman_default));
 				//eye background

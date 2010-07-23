@@ -214,6 +214,16 @@
 					android:title="@string/settings_color_game_hudbg"
 					android:summary="@string/settings_color_game_hudbg_summary"
 					android:defaultValue="@integer/color_game_hudbg_default"/>
+				<com.jakewharton.utilities.ColorPreference
+					android:key="@string/settings_color_game_ready_key"
+					android:title="@string/settings_color_game_ready"
+					android:summary="@string/settings_color_game_ready_summary"
+					android:defaultValue="@integer/color_game_ready_default"/>
+				<com.jakewharton.utilities.ColorPreference
+					android:key="@string/settings_color_game_gameover_key"
+					android:title="@string/settings_color_game_gameover"
+					android:summary="@string/settings_color_game_gameover_summary"
+					android:defaultValue="@integer/color_game_gameover_default"/>
 			</PreferenceScreen>
 			<com.jakewharton.utilities.ColorPreference
 				android:key="@string/settings_color_theman_key"

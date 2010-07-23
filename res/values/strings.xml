@@ -6,6 +6,9 @@
     <string name="description">Creates a grid of dots that border your icons for some om nom nom.</string>
     <string name="version_name">1.0.0 alpha 2</string>
     
+    <string name="ready">READY!</string>
+    <string name="gameover">GAME OVER</string>
+    
     <string name="settings_key">settings</string>
     <string name="settings_header">Settings</string>
     <string name="settings_display">Display</string>
@@ -113,6 +116,12 @@
     <string name="settings_color_game_hudbg">HUD Shadow</string>
     <string name="settings_color_game_hudbg_key">color_game_hudbg</string>
     <string name="settings_color_game_hudbg_summary">Lives and score text shadow</string>
+    <string name="settings_color_game_ready">"Ready" Color</string>
+    <string name="settings_color_game_ready_key">color_game_ready</string>
+    <string name="settings_color_game_ready_summary">Text color</string>
+    <string name="settings_color_game_gameover">"Game Over" Color</string>
+    <string name="settings_color_game_gameover_key">color_game_gameover</string>
+    <string name="settings_color_game_gameover_summary">Text color</string>
     
     <string name="settings_color_theman">"The Man" Color</string>
     <string name="settings_color_theman_key">color_theman</string>
