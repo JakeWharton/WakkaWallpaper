@@ -12,13 +12,13 @@
     <string name="settings_key">settings</string>
     <string name="settings_header">Settings</string>
     <string name="settings_display">Display</string>
-    <string name="settings_display_key">settings_display</string>
+    <string name="settings_display_key">display</string>
     <string name="settings_display_summary">Layout, offsets, FPS...</string>
     <string name="settings_game">Game</string>
-    <string name="settings_game_key">settings_game</string>
+    <string name="settings_game_key">game</string>
     <string name="settings_game_summary">Points, bonuses, ghosts...</string>
     <string name="settings_color">Colors</string>
-    <string name="settings_color_key">settings_colors</string>
+    <string name="settings_color_key">colors</string>
     <string name="settings_color_summary">Dots, ghosts, background...</string>
     <string name="settings_reset">Reset</string>
     <string name="settings_reset_key">reset</string>
@@ -156,10 +156,14 @@
     <string name="io_header">Import / Export</string>
     <string name="io_import">Import Settings</string>
     <string name="io_import_key">io_import</string>
-    <string name="io_import_summary">Load all settings from XML</string>
+    <string name="io_import_summary">Load all settings from SD card</string>
+    <string name="io_import_success">Successfully loaded settings from "/sdcard/settings.wakkawallpaper.json".</string>
+    <string name="io_import_failed">Failed to load settings from "/sdcard/settings.wakkawallpaper.json".</string>
     <string name="io_export">Export Settings</string>
     <string name="io_export_key">io_export</string>
-    <string name="io_export_summary">Save all settings to XML</string>
+    <string name="io_export_summary">Save all settings to SD card</string>
+    <string name="io_export_success">Successfully saved settings to "/sdcard/settings.wakkawallpaper.json".</string>
+    <string name="io_export_failed">Failed to save settings to "/sdcard/settings.wakkawallpaper.json".</string>
     
     <string name="information_header">Information</string>
     <string name="information_version">Version</string>

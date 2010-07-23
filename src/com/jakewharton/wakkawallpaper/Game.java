@@ -823,6 +823,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	    			case GAME_OVER:
 	    				this.newGame();
 	    				break;
+	    				
 	    			case DYING:
 	    				if (this.mLives < 0) {
 	    					this.setState(Game.State.GAME_OVER);
@@ -831,9 +832,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	    					this.newLife();
 	    					//fall through to next case
 	    				}
+	    				
 	    			case READY:
 	    				this.setState(Game.State.PLAYING);
 	    				break;
+	    				
 	    			case LEVEL_COMPLETE:
 	    				this.newLevel();
 	    				break;

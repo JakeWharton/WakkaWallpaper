@@ -276,7 +276,7 @@
 		</PreferenceScreen>
 	</PreferenceCategory>
 	
-	<!--PreferenceCategory
+	<PreferenceCategory
 		android:title="@string/io_header">
 		<Preference
 			android:key="@string/io_import_key"
@@ -286,7 +286,7 @@
 			android:key="@string/io_export_key"
 			android:title="@string/io_export"
 			android:summary="@string/io_export_summary"/>
-	</PreferenceCategory-->
+	</PreferenceCategory>
 	
 	<PreferenceCategory
 		android:title="@string/information_header">
