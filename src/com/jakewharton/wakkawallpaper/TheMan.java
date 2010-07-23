@@ -4,8 +4,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.jakewharton.wakkawallpaper.Game.Cell;
-
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -21,10 +19,15 @@ import android.util.Log;
  * @author Jake Wharton
  */
 public class TheMan extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
+	enum State { ALIVE, DEAD }
+	
 	private static final String TAG = "WakkaWallpaper.TheMan";
 	private static final int CHOMP_ANGLE_COUNT = 4;
+	private static final int DEATH_ANGLE_GROWTH = 30;
 	private static final int[] CHOMP_ANGLES = new int[] { 90, 45, 0, 45 };
 	
+	private TheMan.State mState;
+	private int mStateTicker;
     private final Paint mForeground;
 	private Direction mWantsToGo;
     
@@ -84,6 +87,17 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
     }
 
 	@Override
+	public void tick(Game game) {
+		//Only tick if we are alive
+		if (this.mState == TheMan.State.ALIVE) {
+			super.tick(game);
+		} else {
+			//for death animation
+			this.mStateTicker += 1;
+		}
+	}
+
+	@Override
     protected void moved(final Game game) {
 		game.checkDots();
 		game.checkFruit();
@@ -91,6 +105,24 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		
 		this.determineNextDirection(game);
     }
+	
+	/**
+	 * Change the state of "The Man".
+	 * 
+	 * @param state New state.
+	 */
+	public void setState(TheMan.State state) {
+		this.mState = state;
+		this.mStateTicker = 0;
+	}
+	
+	/**
+	 * Get the current state of The Man;
+	 * @return
+	 */
+	public TheMan.State getState() {
+		return this.mState;
+	}
 	
 	/**
 	 * Determine our next direction based on a breadth-first search.
@@ -124,7 +156,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 						Log.v(TheMan.TAG, "-- Valid");
 					}
 					
-					if (game.getCell(next.getPosition()) == Cell.DOT) {
+					if (game.getCell(next.getPosition()) == Game.Cell.DOT) {
 						if (Wallpaper.LOG_VERBOSE) {
 							Log.v(TheMan.TAG, "-- Has Dot");
 						}
@@ -159,27 +191,39 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		c.save();
 		c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
 		
-		float startingAngle = 0;
+		float startingAngle = 270;
 		int degrees = 360;
-		if (this.mDirectionCurrent != null) {
-			final int angle = TheMan.CHOMP_ANGLES[this.mTickCount % TheMan.CHOMP_ANGLE_COUNT];
-			startingAngle = this.mDirectionCurrent.getAngle(this.mDirectionNext) + (angle / 2.0f);
-			degrees -= angle;
+		if (this.mState == TheMan.State.ALIVE) {
+			if (this.mDirectionCurrent != null) {
+				final int angle = TheMan.CHOMP_ANGLES[this.mTickCount % TheMan.CHOMP_ANGLE_COUNT];
+				startingAngle = this.mDirectionCurrent.getAngle(this.mDirectionNext) + (angle / 2.0f);
+				degrees -= angle;
+			}
+		} else {
+			final int delta = this.mStateTicker * TheMan.DEATH_ANGLE_GROWTH;
+			startingAngle += delta / 2.0f;
+			degrees -= delta;
 		}
 		
-		c.drawArc(new RectF(0, 0, this.mCellWidth, this.mCellHeight), startingAngle, degrees, true, this.mForeground);
+		if (degrees > 0) {
+			c.drawArc(new RectF(0, 0, this.mCellWidth, this.mCellHeight), startingAngle, degrees, true, this.mForeground);
+		}
 		
 		c.restore();
 	}
 
 	@Override
 	protected void newLevel(final Game game) {
-		if (Wallpaper.LOG_VERBOSE) {
-			Log.v(TheMan.TAG, "> newLevel()");
-		}
-		
+		this.newLife(game);
+	}
+	
+	@Override
+	public void newLife(final Game game) {
 		//Get initial position
 		this.setPosition(this.getInitialPosition(game));
+		
+		//Breath some life
+		this.mState = TheMan.State.ALIVE;
 		
 		//Current direction is stopped
 		this.mDirectionCurrent = null;
@@ -188,10 +232,6 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		while (!valid) {
 			this.mDirectionNext = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
 			valid = game.isValidPosition(Entity.move(this.mPosition, this.mDirectionNext));
-		}
-		
-		if (Wallpaper.LOG_VERBOSE) {
-			Log.v(TheMan.TAG, "< newLevel()");
 		}
 	}
 	

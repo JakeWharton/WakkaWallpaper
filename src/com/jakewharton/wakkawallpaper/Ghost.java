@@ -297,6 +297,11 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	
 	@Override
 	protected void newLevel(final Game game) {
+		this.newLife(game);
+	}
+	
+	@Override
+	public void newLife(final Game game) {
 		//Set initial ghost position
 		this.setPosition(this.getInitialPosition(game));
 		

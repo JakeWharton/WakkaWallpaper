@@ -1,7 +1,5 @@
 package com.jakewharton.wakkawallpaper;
 
-import com.jakewharton.wakkawallpaper.Entity.Direction;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -146,15 +144,15 @@ public class Wallpaper extends WallpaperService {
 	        		
 	        		if (Math.abs(deltaX) > Math.abs(deltaY)) {
 	        			if (deltaX > 0) {
-	        				this.mGame.getTheMan().setWantsToGo(Direction.WEST);
+	        				this.mGame.getTheMan().setWantsToGo(Entity.Direction.WEST);
 	        			} else {
-	        				this.mGame.getTheMan().setWantsToGo(Direction.EAST);
+	        				this.mGame.getTheMan().setWantsToGo(Entity.Direction.EAST);
 	        			}
 	        		} else {
 	        			if (deltaY > 0) {
-	        				this.mGame.getTheMan().setWantsToGo(Direction.NORTH);
+	        				this.mGame.getTheMan().setWantsToGo(Entity.Direction.NORTH);
 	        			} else {
-	        				this.mGame.getTheMan().setWantsToGo(Direction.SOUTH);
+	        				this.mGame.getTheMan().setWantsToGo(Entity.Direction.SOUTH);
 	        			}
 	        		}
         		}

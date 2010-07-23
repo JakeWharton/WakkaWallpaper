@@ -245,11 +245,18 @@ public abstract class Entity {
 	protected abstract void moved(final Game game);
 	
 	/**
-	 * Triggered to reset to initial game position.
+	 * Triggered to reset to initial level state.
 	 * 
 	 * @param game Game instance
 	 */
 	protected abstract void newLevel(final Game game);
+	
+	/**
+	 * Triggered to reset to initial level position.
+	 * 
+	 * @param game Game instance
+	 */
+	public abstract void newLife(final Game game);
 	
 	
 	/**

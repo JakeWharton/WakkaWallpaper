@@ -193,6 +193,11 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		this.mType = Fruit.getForLevel(game.getLevel());
 	}
 	
+	@Override
+	public void newLife(final Game game) {
+		//We do not move
+	}
+	
 
 	/**
 	 * Return which type of fruit should appear on which level.

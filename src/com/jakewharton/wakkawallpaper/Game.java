@@ -4,9 +4,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Random;
 
-import com.jakewharton.wakkawallpaper.Entity.Direction;
-import com.jakewharton.wakkawallpaper.Ghost.State;
-
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -22,6 +19,15 @@ import android.util.Log;
  */
 public class Game implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum Cell { BLANK, WALL, DOT, JUGGERDOT }
+	enum State {
+		READY(3000), PLAYING(0), DYING(3000), LEVEL_COMPLETE(1500), GAME_OVER(3000);
+		
+		public final int length;
+		
+		private State(int length) {
+			this.length = length;
+		}
+	}
 
 	public static final Random RANDOM = new Random();
 	private static final String TAG = "WakkaWallpaper.Game";
@@ -39,6 +45,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	private static final int NUMBER_OF_JUGGERDOTS = 4;
 	private static final int KILL_SCREEN_LEVEL = 256;
 	
+	private Game.State mState;
+	private long mStateTimestamp;
 	private int mCellsWide;
 	private int mCellsTall;
 	private int mCellColumnSpacing;
@@ -52,7 +60,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private int mIconCols;
     private boolean mIsOnKillScreen;
     private boolean mIsKillScreenEnabled;
-	private Cell[][] mBoard;
+	private Game.Cell[][] mBoard;
 	private TheMan mTheMan;
 	private Fruit mFruit;
 	private Ghost[] mGhosts;
@@ -519,7 +527,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      */
     public boolean isIntersection(final Point position) {
     	int directions = 0;
-    	for (Direction direction : Direction.values()) {
+    	for (Entity.Direction direction : Entity.Direction.values()) {
     		if (this.isValidPosition(Entity.move(position, direction))) {
     			directions += 1;
     		}
@@ -536,7 +544,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      */
     public boolean isGhostAtPosition(final Point position) {
     	for (Ghost ghost : this.mGhosts) {
-    		if ((ghost.getPosition().x == position.x) && (ghost.getPosition().y == position.y) && ((ghost.getState() == State.CHASE) || (ghost.getState() == State.SCATTER))) {
+    		if ((ghost.getPosition().x == position.x) && (ghost.getPosition().y == position.y) && ((ghost.getState() == Ghost.State.CHASE) || (ghost.getState() == Ghost.State.SCATTER))) {
     			return true;
     		}
     	}
@@ -607,8 +615,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     			switch (ghost.getState()) {
 					case CHASE:
 					case SCATTER:
-				    	if (this.mIsGhostDeadly) {
-				    		//TODO: Kill pacman
+				    	if (this.mIsGhostDeadly && (this.mTheMan.getState() == TheMan.State.ALIVE)) {
+				    		//Kill "The Man"
+				    		this.mLives -= 1;
+				    		this.mTheMan.setState(TheMan.State.DEAD);
+				    		this.setState(Game.State.DYING);
 				    	}
 						break;
 	
@@ -616,7 +627,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 						//Eat ghost
 						this.mFleeingGhostsEaten += 1;
 						this.addToScore(Game.POINTS_FLEEING_GHOSTS[this.mFleeingGhostsEaten]);
-						ghost.setState(this, State.EATEN);
+						ghost.setState(this, Ghost.State.EATEN);
 						
 						//See if we have eaten all the ghosts for this juggerdot
 						if (this.mFleeingGhostsEaten == this.mGhostCount) {
@@ -639,12 +650,26 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * 
      * @param state New state.
      */
-    private void switchGhostsState(final State state) {
+    private void switchGhostsState(final Ghost.State state) {
     	for (Ghost ghost : this.mGhosts) {
     		ghost.setState(this, state);
     	}
-    	if (state == State.FRIGHTENED) {
+    	if (state == Ghost.State.FRIGHTENED) {
     		this.mFleeingGhostsEaten = 0;
+    	}
+    }
+    
+    /**
+     * Switch the current state of the game.
+     * 
+     * @param state New state.
+     */
+    private void setState(final Game.State state) {
+    	this.mState = state;
+    	this.mStateTimestamp = System.currentTimeMillis();
+    	
+    	if (Wallpaper.LOG_DEBUG) {
+    		Log.d(Game.TAG, "Changing game state to " + state);
     	}
     }
     
@@ -680,13 +705,14 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     	
     	this.mLevel += 1;
+    	this.setState(Game.State.READY);
     	
     	//Kill screen is shown randomly one out of 256 levels as long as we are not on level one
     	if ((this.mLevel > 1) && (Game.RANDOM.nextInt(Game.KILL_SCREEN_LEVEL) == 0) && this.mIsKillScreenEnabled) {
     		this.mIsOnKillScreen = true;
     		
     		if (Wallpaper.LOG_DEBUG) {
-    			Log.d(Game.TAG, "Kill Screen Enabled");
+    			Log.d(Game.TAG, "Kill screen enabled for this level");
     		}
     	}
     	
@@ -726,18 +752,65 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     }
     
     /**
+     * Called after The Man dies to reset entity positions.
+     */
+    private void newLife() {
+    	this.mTheMan.newLife(this);
+    	for (Ghost ghost : this.mGhosts) {
+    		ghost.newLife(this);
+    	}
+    }
+    
+    /**
      * Iterate all entities one step.
      */
     public void tick() {
     	//Check for level complete
     	if (this.mDotsRemaining <= 0) {
-    		this.newLevel();
+        	this.setState(Game.State.LEVEL_COMPLETE);
     	}
-
-    	this.mFruit.tick(this);
-    	this.mTheMan.tick(this);
-    	for (Ghost ghost : this.mGhosts) {
-    		ghost.tick(this);
+    	
+    	//Always tick the fruit if the level is active, it waits for no one, living or dead
+    	if (this.mState != Game.State.LEVEL_COMPLETE) {
+    		this.mFruit.tick(this);
+    	}
+    	
+    	if (this.mState != Game.State.PLAYING) {
+    		//continue to tick The Man in death
+    		if (this.mState == Game.State.DYING) {
+    			this.mTheMan.tick(this);
+    		}
+    		
+    		//check if current state has expired
+    		if ((System.currentTimeMillis() - this.mStateTimestamp) > this.mState.length) {
+	    		switch (this.mState) {
+	    			case GAME_OVER:
+	    				this.newGame();
+	    				break;
+	    			case DYING:
+	    				if (this.mLives < 0) {
+	    					this.setState(Game.State.GAME_OVER);
+	    					break;
+	    				} else {
+	    					this.newLife();
+	    					//fall through to next case
+	    				}
+	    			case READY:
+	    				this.setState(Game.State.PLAYING);
+	    				break;
+	    			case LEVEL_COMPLETE:
+	    				this.newLevel();
+	    				break;
+	    		}
+    		}
+    	} else {
+	    	//The Man is ticked when playing
+	    	this.mTheMan.tick(this);
+	    	
+	    	//Ghosts are only ticked when playing
+	    	for (Ghost ghost : this.mGhosts) {
+	    		ghost.tick(this);
+	    	}
     	}
     }
 
@@ -846,18 +919,38 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         	this.drawKillScreen(c);
         }
         
-        //Draw the entities
+        //Draw the fruit only if it is enabled
     	if (this.mIsFruitEnabled) {
         	this.mFruit.draw(c);
     	}
+    	
+    	//Draw "The Man"
     	this.mTheMan.draw(c);
-    	for (Ghost ghost : this.mGhosts) {
-    		ghost.draw(c);
+    	
+    	//Draw the ghosts if we are ready or playing
+    	if ((this.mState == Game.State.READY) || (this.mState == Game.State.PLAYING)) {
+	    	for (Ghost ghost : this.mGhosts) {
+	    		ghost.draw(c);
+	    	}
+    	}
+    	
+    	switch (this.mState) {
+    		case READY:
+    			//TODO: draw "READY!"
+    			break;
+    		case GAME_OVER:
+    			//TODO: draw "GAME OVER"
+    			break;
     	}
         
         c.restore();
     }
     
+    /**
+     * Render the kill screen garbage over the board.
+     * 
+     * @param c Canvas to draw on.
+     */
     private void drawKillScreen(final Canvas c) {
     	c.save();
     	
