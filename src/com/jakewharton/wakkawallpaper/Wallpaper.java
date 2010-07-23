@@ -40,7 +40,7 @@ public class Wallpaper extends WallpaperService {
     private class WakkaEngine extends Engine implements SharedPreferences.OnSharedPreferenceChangeListener {
     	private static final String TAG = "WakkaWallpaper.WakkaEngine";
     	private static final int MILLISECONDS_IN_SECOND = 1000;
-    	private static final long RESET_THRESHOLD = 500;
+    	private static final long RESET_THRESHOLD = 100;
     	
     	private Game mGame;
         private boolean mIsVisible;
