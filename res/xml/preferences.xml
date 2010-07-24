@@ -111,13 +111,13 @@
 					android:title="@string/settings_game_deadlyghosts"
 					android:summary="@string/settings_game_deadlyghosts_summary"
 					android:defaultValue="@bool/game_deadlyghosts_default"/>
-				<com.jakewharton.utilities.IntegerListPreference
+				<com.jakewharton.utilities.EditNumberPreference
 					android:key="@string/settings_game_ghostcount_key"
 					android:title="@string/settings_game_ghostcount"
 					android:summary="@string/settings_game_ghostcount_summary"
-					android:entries="@array/game_ghostcount"
-					android:entryValues="@array/game_ghostcount_values"
-					android:defaultValue="@integer/game_ghostcount_default"/>
+					android:defaultValue="@integer/game_ghostcount_default"
+					app:min="@integer/game_ghostcount_min"
+					app:max="@integer/game_ghostcount_max"/>
 			</PreferenceCategory>
 			<PreferenceCategory
 				android:key="@string/settings_game_bonus_key"

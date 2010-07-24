@@ -44,6 +44,8 @@
 	<integer name="game_bonuslifethreshold_max">100000</integer>
 	
 	<integer name="game_ghostcount_default">4</integer>
+	<integer name="game_ghostcount_min">0</integer>
+	<integer name="game_ghostcount_max">4</integer>
 	
 	<integer name="game_fruitonethreshold_default">70</integer>
 	<integer name="game_fruitonethreshold_min">50</integer>
