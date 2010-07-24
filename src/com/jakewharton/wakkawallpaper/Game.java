@@ -633,6 +633,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		//Blank cell since we've eaten the dot
     		this.setCell(this.mTheMan.getPosition(), Cell.BLANK);
     	}
+    	
+    	//Check for fruit
+    	if ((this.mTheMan.getPosition().x == this.mFruit.getPosition().x) && (this.mTheMan.getPosition().y == this.mFruit.getPosition().y) && (this.mFruit.isVisible())) {
+    		this.addToScore(this.mFruit.eat());
+    	}
     }
     
     /**
@@ -965,8 +970,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         	this.drawKillScreen(c);
         }
         
-        //Draw the fruit only if it is enabled
-    	if (this.mIsFruitEnabled) {
+        //Draw the fruit only if it is enabled and the game isn't over or level completed
+    	if (this.mIsFruitEnabled && (this.mState != Game.State.GAME_OVER) && (this.mState != Game.State.LEVEL_COMPLETE)) {
         	this.mFruit.draw(c);
     	}
     	

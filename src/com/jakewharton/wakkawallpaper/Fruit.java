@@ -3,6 +3,7 @@ package com.jakewharton.wakkawallpaper;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.Log;
 
 /**
@@ -25,12 +26,14 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	
 	private Type mType;
 	private long mCreated;
-	private boolean mVisible;
+	private boolean mIsVisible;
 	private int mVisibleLength;
 	private int mVisibleLower;
 	private int mVisibleUpper;
 	private int mThresholdFirst;
 	private int mThresholdSecond;
+	private int mNumberDisplayed;
+	private final Paint mTempColor;
 	
 	/**
 	 * Initialize a new fruit adhering to the parameters.
@@ -42,6 +45,10 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	 */
 	public Fruit() {
 		super();
+		
+		this.mTempColor = new Paint();
+		this.mTempColor.setAntiAlias(true);
+		this.mTempColor.setColor(0xffff6666);
 
         //Load all preferences or their defaults
         Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
@@ -125,20 +132,30 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	 * Move off screen and make invisible.
 	 */
 	private void hide() {
-		this.mVisible = false;
+		this.mIsVisible = false;
 		this.mPosition.set(-1, -1);
+	}
+	
+	/**
+	 * Whether or not the fruit is on the board.
+	 * 
+	 * @return Boolean.
+	 */
+	public boolean isVisible() {
+		return this.mIsVisible;
 	}
 	
 	@Override
 	public void tick(final Game game) {
-		if (this.mVisible) {
+		if (this.mIsVisible) {
 			if ((System.currentTimeMillis() - this.mCreated) > this.mVisibleLength) {
-				this.newLevel(game);
+				this.hide();
 			}
 		} else {
 			final int dotsEaten = game.getDotsEaten();
-			if ((dotsEaten > this.mThresholdFirst) || (dotsEaten > this.mThresholdSecond)) {
-				this.mVisible = true; 
+			if (((dotsEaten > this.mThresholdFirst) && (this.mNumberDisplayed == 0)) || ((dotsEaten > this.mThresholdSecond) && (this.mNumberDisplayed == 1))) {
+				this.mIsVisible = true;
+				this.mNumberDisplayed += 1;
 				this.mVisibleLength = Game.RANDOM.nextInt(this.mVisibleUpper - this.mVisibleLower + 1) + this.mVisibleLower;
 				this.setPosition(game.getTheMan().getInitialPosition(game));
 				this.mCreated = System.currentTimeMillis();
@@ -148,7 +165,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 
 	@Override
 	public void draw(final Canvas c) {
-		if (this.mType != null) {
+		if (this.mIsVisible) {
 			c.save();
 			c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
 			
@@ -178,6 +195,8 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 					break;
 			}
 			
+			c.drawCircle(this.mCellWidthOverTwo, this.mCellHeightOverTwo, this.mCellWidthOverTwo, this.mTempColor);
+			
 			c.restore();
 		}
 	}
@@ -190,6 +209,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	@Override
 	protected void newLevel(final Game game) {
 		this.hide();
+		this.mNumberDisplayed = 0;
 		this.mType = Fruit.getForLevel(game.getLevel());
 	}
 	
