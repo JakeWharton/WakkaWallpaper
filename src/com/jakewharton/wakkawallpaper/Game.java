@@ -908,8 +908,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     	
     	//For on-board HUD text
-    	this.mTextLocation.x = this.mDotGridPaddingLeft + ((this.mScreenWidth - this.mDotGridPaddingLeft - this.mDotGridPaddingRight) / 2.0f);
-    	this.mTextLocation.y = this.mDotGridPaddingTop + (this.mTheMan.getInitialPosition(this).y * this.mCellHeight) + (this.mCellHeight * 0.5f);
+    	this.mTextLocation.x = ((this.mScreenWidth - this.mDotGridPaddingLeft - this.mDotGridPaddingRight) / 2.0f);
+    	this.mTextLocation.y = (this.mTheMan.getInitialPosition(this).y * this.mCellHeight);
 
     	if (Wallpaper.LOG_VERBOSE) {
     		Log.v(Game.TAG, "< performResize()");
