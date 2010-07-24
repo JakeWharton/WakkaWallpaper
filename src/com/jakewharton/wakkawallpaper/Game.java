@@ -805,7 +805,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      */
     public void tick() {
     	//Check for level complete
-    	if (this.mDotsRemaining <= 0) {
+    	if ((this.mDotsRemaining <= 0) && (this.mState != Game.State.LEVEL_COMPLETE)) {
         	this.setState(Game.State.LEVEL_COMPLETE);
     	}
     	
