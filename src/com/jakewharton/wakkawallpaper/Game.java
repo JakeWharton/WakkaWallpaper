@@ -934,8 +934,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	        	c.drawArc(new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top), Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
 	        }
 	        //Don't display larger than 999,999 (bug in original game)
-	        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore % Game.SCORE_FLIPPING));
-	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - 10, top, this.mHudForeground);
+	        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore % Game.SCORE_FLIPPING)) + " L" + String.valueOf(this.mLevel);
+	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - Game.HUD_PADDING, top, this.mHudForeground);
     	}
         
         if (this.mIsLandscape) {
