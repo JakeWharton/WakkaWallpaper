@@ -13,7 +13,6 @@
     <string name="about_key">about</string>
     <string name="about_summary">Overview of Wakka Wallpaper features</string>
     <string name="about_title">About Wakka Wallpaper</string>
-    <string name="about_text">Wakka Wallpaper is an Android live wallpaper which simulates a popular 1980\'s arcade game.\n\nMore soon...</string>
     
     <string name="settings_key">settings</string>
     <string name="settings_header">Settings</string>
