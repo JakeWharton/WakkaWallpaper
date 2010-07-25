@@ -97,6 +97,14 @@ public class Preferences extends PreferenceActivity {
 				return true;
 			}
 		});
+        
+        //about
+        this.findPreference(resources.getString(R.string.about_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Preferences.this.startActivity(new Intent(Preferences.this, About.class));
+				return true;
+			}
+		});
     }
 
     private void infoEmail() {

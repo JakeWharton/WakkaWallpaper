@@ -319,6 +319,10 @@
 			android:title="@string/information_version"
 			android:summary="@string/version_name"
 			style="?android:preferenceInformationStyle"/>
+		<Preference
+			android:key="@string/about_key"
+			android:title="@string/about"
+			android:summary="@string/about_summary"/>
 		<PreferenceScreen
 			android:key="@string/information_author_key"
 			android:title="@string/information_author"
