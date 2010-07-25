@@ -244,7 +244,7 @@ public abstract class Entity {
      * 
      * @param c Canvas on which to draw.
      */
-	public abstract void draw(final Canvas c);
+	public abstract void draw(final Canvas c, final boolean isLandscape);
 	
 	/**
 	 * Triggered when we have moved into a new cell.

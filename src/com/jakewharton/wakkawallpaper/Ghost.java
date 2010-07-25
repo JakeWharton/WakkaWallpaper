@@ -216,9 +216,13 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
      * @param c Canvas to draw on.
      */
 	@Override
-	public void draw(final Canvas c) {
+	public void draw(final Canvas c, final boolean isLandscape) {
 		c.save();
 		c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
+		
+		if (isLandscape) {
+			c.rotate(90, this.mCellWidthOverTwo, this.mCellHeightOverTwo);
+		}
 		
 		switch (this.mState) {
 			case CHASE:

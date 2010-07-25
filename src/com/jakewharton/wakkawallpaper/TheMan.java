@@ -187,7 +187,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	}
 
     @Override
-	public void draw(final Canvas c) {
+	public void draw(final Canvas c, final boolean isLandscape) {
 		c.save();
 		c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
 		
@@ -200,6 +200,9 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 				degrees -= angle;
 			}
 		} else {
+			if (isLandscape) {
+				c.rotate(90, this.mCellWidthOverTwo, this.mCellHeightOverTwo);
+			}
 			final int delta = this.mStateTicker * TheMan.DEATH_ANGLE_GROWTH;
 			startingAngle += delta / 2.0f;
 			degrees -= delta;

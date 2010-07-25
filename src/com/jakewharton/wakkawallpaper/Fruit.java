@@ -184,10 +184,14 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	}
 
 	@Override
-	public void draw(final Canvas c) {
+	public void draw(final Canvas c, final boolean isLandscape) {
 		if (this.mIsVisible) {
 			c.save();
 			c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
+
+			if (isLandscape) {
+				c.rotate(90, this.mCellWidthOverTwo, this.mCellHeightOverTwo);
+			}
 			
 			switch (this.mType) {
 				case CHERRY:

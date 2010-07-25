@@ -972,16 +972,16 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         
         //Draw the fruit only if it is enabled and the game isn't over or level completed
     	if (this.mIsFruitEnabled && (this.mState != Game.State.GAME_OVER) && (this.mState != Game.State.LEVEL_COMPLETE)) {
-        	this.mFruit.draw(c);
+        	this.mFruit.draw(c, this.mIsLandscape);
     	}
     	
     	//Draw "The Man"
-    	this.mTheMan.draw(c);
+    	this.mTheMan.draw(c, this.mIsLandscape);
     	
     	//Draw the ghosts if we are ready or playing
     	if ((this.mState == Game.State.READY) || (this.mState == Game.State.PLAYING)) {
 	    	for (Ghost ghost : this.mGhosts) {
-	    		ghost.draw(c);
+	    		ghost.draw(c, this.mIsLandscape);
 	    	}
     	}
     	
