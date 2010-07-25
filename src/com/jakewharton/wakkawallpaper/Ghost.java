@@ -153,12 +153,6 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
     	}
 	}
 
-	/**
-	 * Resize the entity to fit within the specified dimensions.
-	 * 
-	 * @param width New width.
-	 * @param height New height.
-	 */
     @Override
 	public void performResize(final Game game) {
 		super.performResize(game);

@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.util.Log;
 
 /**
@@ -34,6 +35,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	private int mThresholdSecond;
 	private int mNumberDisplayed;
 	private final Paint mTempColor;
+	private Point[] mPositions;
 	
 	/**
 	 * Initialize a new fruit adhering to the parameters.
@@ -145,6 +147,24 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		return this.mIsVisible;
 	}
 	
+    @Override
+	public void performResize(final Game game) {
+    	super.performResize(game);
+    	
+    	final int dotCols = game.getIconCols() + 1;
+    	final int dotRows = game.getIconRows() + 1;
+    	final int dotsCol = game.getCellColumnSpacing() + 1;
+    	final int dotsRow = game.getCellRowSpacing() + 1;
+    	
+    	//Get all possible fruit positions
+    	this.mPositions = new Point[dotCols * dotRows];
+    	for (int i = 0; i < dotCols; i++) {
+    		for (int j = 0; j < dotRows; j++) {
+    			this.mPositions[(i * dotRows) + j] = new Point(i * dotsCol, j * dotsRow);
+    		}
+    	}
+    }
+	
 	@Override
 	public void tick(final Game game) {
 		if (this.mIsVisible) {
@@ -157,7 +177,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 				this.mIsVisible = true;
 				this.mNumberDisplayed += 1;
 				this.mVisibleLength = Game.RANDOM.nextInt(this.mVisibleUpper - this.mVisibleLower + 1) + this.mVisibleLower;
-				this.setPosition(game.getTheMan().getInitialPosition(game));
+				this.setPosition(this.mPositions[Game.RANDOM.nextInt(this.mPositions.length)]);
 				this.mCreated = System.currentTimeMillis();
 			}
 		}
