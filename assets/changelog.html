@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<style type="text/css">
+			div { margin-bottom: 2em; }
+			p, li { font-size: 12px; padding-bottom: 1px; padding-top: 1px; }
+			ul { padding-left: 1em; margin: 0; }
+			h1 { border-bottom: 1px solid; font-size: 18px; }
+			h2 { font-size: 12px; margin-bottom: 5px; }
+		</style>
+	</head>
+	<body>
+		<div>
+			<h1>1.0.0 beta 4 <em>(In Development)</em></h1>
+			<h2>New Features:</h2>
+			<ul>
+				<li>Instructions and change log in about section</li>
+				<li>HUD offset from bottom of screen is now adjustable via settings. This should allow for users of HTC Sense to see the HUD.</li>
+			</ul>
+		</div>
+		<div>
+			<h1>1.0.0 beta 3 <em>(2010-07-25)</em></h1>
+			<h2>New Features:</h2>
+			<ul>
+				<li>Tapping the top, bottom, left, or right of your screen will influence The Man's direction. If you tap a direction, he will attempt to change to that direction every time he moves until he hits a wall. If he successfully changes direction he will continue going that direction until he hits a wall. If he hit a wall while going the current direction and was unable to change to your desired direction the AI will choose a new direction and your desired direction will be cleared. This does not yet work in landscape. The directions are calculated based off of the center of your screen and not The Man's location. Even though you may be tapping to The Man's left, if it is to the right of the screen center he will go right.</li>
+			</ul>
+			<h2>Bug Fixes:</h2>
+			<ul>
+				<li>Ghosts, The Man, Fruit, and "Ready"/"Game Over" text now rotate when in landscape.</li>
+			</ul>
+		</div>
+		<div>
+			<h1>1.0.0 beta 2 <em>(2010-07-24)</em></h1>
+			<h2>New Features:</h2>
+			<ul>
+				<li>Fruit now appears as a pinkish circle at random intersections.</li>
+				<li>About screen in settings to list instructions and general info (eventually)</li>
+				<li>Current level added next to score</li>
+				<li>Number of ghosts can now be any number between zero and four.</li>
+			</ul>
+			<h2>Bug Fixes:</h2>
+			<ul>
+				<li>Level completion bug resolved</li>
+				<li>Preferences are no longer translucent to make reading easier</li>
+			</ul>
+		</div>
+		<div>
+			<h1>1.0.0 beta 1 <em>(2010-07-23)</em></h1>
+			<p>Total rewrite of codebase.</p>
+			<h2>New Features:</h2>
+			<ul>
+				<li>The Man's mouth is now animated as he moves.</li>
+				<li>Landscape support.</li>
+				<li>Antialiased drawing enabled.</li>
+				<li>AI for seeking out closest dot.</li>
+				<li>Ghosts now drawn properly.</li>
+				<li>HUD displaying score and lives.</li>
+				<li>Double-tap within 0.1s to reset game.</li>
+				<li>Settings activity to change all of the preferences.</li>
+				<li>Preferences JSON import and export to SD card.</li>
+			</ul>
+		</div>
+		<div>
+			<h1>1.0.0 alpha 1 <em>(2010-07-08)</em></h1>
+			<p>Initial proof-of-concept release.</p>
+		</div>
+	</body>
+</html>

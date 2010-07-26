@@ -6,10 +6,10 @@ import java.io.InputStreamReader;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.webkit.WebView;
 
 public class ChangeLog extends Activity {
-	private static final String FILENAME = "changelog.txt";
+	private static final String FILENAME = "changelog.html";
 	private static final char NEWLINE = '\n';
 	private static final String ERROR = "Failed to load change log text from assets.";
 	
@@ -36,6 +36,6 @@ public class ChangeLog extends Activity {
 		}
 		
 		//Put text into layout
-		((TextView)this.findViewById(R.id.content)).setText(content.toString());
+		((WebView)this.findViewById(R.id.content)).loadData(content.toString(), "text/html", "utf8");
     }
 }
