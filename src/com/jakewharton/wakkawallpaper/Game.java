@@ -94,6 +94,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private final String mTextGameOver;
     private final PointF mTextLocation;
     private int mHudOffset;
+    private long mTickCount;
+    private int mJuggerdotBlinkInterval;
+    private int mJuggerdotBlinkLength;
     
     /**
      * Create a new game adhering to the specified parameters.
@@ -161,6 +164,16 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 
 		
 		// GENERAL //
+		
+		final String juggerdotBlink = resources.getString(R.string.settings_display_juggerdotblink_key);
+		if (all || key.equals(juggerdotBlink)) {
+			this.mJuggerdotBlinkInterval = Wallpaper.PREFERENCES.getInt(juggerdotBlink, resources.getInteger(R.integer.display_juggerdotblink_default));
+			this.mJuggerdotBlinkLength = this.mJuggerdotBlinkInterval * 2;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Juggerdot Blink: " + this.mJuggerdotBlinkInterval);
+			}
+		}
 		
 		final String bonusAllowed = resources.getString(R.string.settings_game_bonuslife_key);
 		if (all || key.equals(bonusAllowed)) {
@@ -763,6 +776,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		this.mLevel = 0; //changed to 1 in newLevel
 		this.mIsBonusLifeGiven = false;
         this.mIsOnKillScreen = false;
+        this.mTickCount = 0;
     	
     	//Reset board
     	this.newLevel();
@@ -841,6 +855,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * Iterate all entities one step.
      */
     public void tick() {
+    	this.mTickCount += 1;
+    	
     	//Check for level complete
     	if ((this.mDotsRemaining <= 0) && (this.mState != Game.State.LEVEL_COMPLETE)) {
         	this.setState(Game.State.LEVEL_COMPLETE);
@@ -987,7 +1003,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
             		final float bottom = top + (this.mCellHeight * 0.25f);
             		
             		c.drawOval(new RectF(left, top, right, bottom), this.mDotForeground);
-        		} else if (this.mBoard[y][x] == Cell.JUGGERDOT) {
+        		} else if ((this.mBoard[y][x] == Cell.JUGGERDOT) && (this.mTickCount % this.mJuggerdotBlinkLength < this.mJuggerdotBlinkInterval)) {
             		final float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.25f) / 2);
             		final float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.25f) / 2);
             		final float right = left + (this.mCellWidth * 0.75f);

@@ -7,6 +7,10 @@
 	<integer name="display_fps_min">5</integer>
 	<integer name="display_fps_max">20</integer>
 	
+	<integer name="display_juggerdotblink_default">3</integer>
+	<integer name="display_juggerdotblink_min">1</integer>
+	<integer name="display_juggerdotblink_max">6</integer>
+	
 	<integer name="display_padding_left_default">-5</integer>
 	<integer name="display_padding_left_min">-15</integer>
 	<integer name="display_padding_left_max">15</integer>

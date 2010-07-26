@@ -29,6 +29,9 @@
     <string name="settings_display_fps">FPS</string>
     <string name="settings_display_fps_key">display_fps</string>
     <string name="settings_display_fps_summary">Number of times per second to advance the game</string>
+    <string name="settings_display_juggerdotblink">Juggerdot Blink Interval</string>
+    <string name="settings_display_juggerdotblink_key">display_juggerdotblink</string>
+    <string name="settings_display_juggerdotblink_summary">Number of frames to toggle visibility of juggerdots.</string>
     <string name="settings_display_showhud">Show HUD</string>
     <string name="settings_display_showhud_key">display_showhud</string>
     <string name="settings_display_showhud_summary">Toggle the heads-up display for lives and score</string>

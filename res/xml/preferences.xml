@@ -19,6 +19,13 @@
 				android:defaultValue="@integer/display_fps_default"
 				app:min="@integer/display_fps_min"
 				app:max="@integer/display_fps_max"/>
+			<com.jakewharton.utilities.NumberPreference
+				android:key="@string/settings_display_juggerdotblink_key"
+				android:title="@string/settings_display_juggerdotblink"
+				android:summary="@string/settings_display_juggerdotblink_summary"
+				android:defaultValue="@integer/display_juggerdotblink_default"
+				app:min="@integer/display_juggerdotblink_min"
+				app:max="@integer/display_juggerdotblink_max"/>
 			<CheckBoxPreference
 				android:key="@string/settings_display_showhud_key"
 				android:title="@string/settings_display_showhud"
