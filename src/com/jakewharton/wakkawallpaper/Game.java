@@ -154,6 +154,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		boolean hasBonusChanged = false;
         boolean hasGhostCountChanged = false;
 		boolean hasLayoutChanged = false;
+		boolean hasPaddingChanged = false;
 
 		
 		// GENERAL //
@@ -323,6 +324,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String dotGridPaddingLeft = resources.getString(R.string.settings_display_padding_left_key);
 		if (all || key.equals(dotGridPaddingLeft)) {
 			this.mDotGridPaddingLeft = Wallpaper.PREFERENCES.getInt(dotGridPaddingLeft, resources.getInteger(R.integer.display_padding_left_default));
+			hasPaddingChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Left: " + this.mDotGridPaddingLeft);
@@ -332,6 +334,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String dotGridPaddingRight = resources.getString(R.string.settings_display_padding_right_key);
 		if (all || key.equals(dotGridPaddingRight)) {
 			this.mDotGridPaddingRight = Wallpaper.PREFERENCES.getInt(dotGridPaddingRight, resources.getInteger(R.integer.display_padding_right_default));
+			hasPaddingChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Right: " + this.mDotGridPaddingRight);
@@ -341,6 +344,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String dotGridPaddingTop = resources.getString(R.string.settings_display_padding_top_key);
 		if (all || key.equals(dotGridPaddingTop)) {
 			this.mDotGridPaddingTop = Wallpaper.PREFERENCES.getInt(dotGridPaddingTop, resources.getInteger(R.integer.display_padding_top_default));
+			hasPaddingChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Top: " + this.mDotGridPaddingTop);
@@ -350,10 +354,16 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String dotGridPaddingBottom = resources.getString(R.string.settings_display_padding_bottom_key);
 		if (all || key.equals(dotGridPaddingBottom)) {
 			this.mDotGridPaddingBottom = Wallpaper.PREFERENCES.getInt(dotGridPaddingBottom, resources.getInteger(R.integer.display_padding_bottom_default));
+			hasPaddingChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Bottom: " + this.mDotGridPaddingBottom);
 			}
+		}
+		
+		//If any of the padding has changed we need to recalculate cell widths and heights
+		if (hasPaddingChanged) {
+			this.performResize(this.mScreenWidth, this.mScreenHeight);
 		}
 		
 		
