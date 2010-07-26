@@ -40,4 +40,5 @@
     
     <uses-sdk android:minSdkVersion="7" />
 	<uses-feature android:name="android.software.live_wallpaper" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>

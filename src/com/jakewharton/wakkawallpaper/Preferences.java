@@ -2,9 +2,11 @@ package com.jakewharton.wakkawallpaper;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import org.json.JSONObject;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,6 +30,8 @@ import android.widget.Toast;
 public class Preferences extends PreferenceActivity {
 	public static final String SHARED_NAME = "WakkaWallpaper";
 	private static final String FILE_NAME = "settings.wakkawallpaper.json";
+	private static final int IMPORT_JSON = 1;
+	private static final String MIME_TYPE = "text/plain";
 	
     @Override
     protected void onCreate(final Bundle icicle) {
@@ -115,21 +119,15 @@ public class Preferences extends PreferenceActivity {
 		
 		switch (item.getItemId()) {
 			case R.id.menu_import:
-				(new AlertDialog.Builder(this))
-					.setMessage(resources.getString(R.string.io_import_prompt))
-					.setCancelable(false)
-					.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							Preferences.this.jsonImport();
-						}
-					})
-					.setNegativeButton(resources.getString(R.string.no), null)
-					.show();
+				final Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+				intent.addCategory(Intent.CATEGORY_OPENABLE);
+				intent.setType(Preferences.MIME_TYPE);
+				this.startActivityForResult(Intent.createChooser(intent, resources.getString(R.string.menu_import)), Preferences.IMPORT_JSON);
 				return true;
 				
 			case R.id.menu_export:
 				(new AlertDialog.Builder(this))
-					.setMessage(resources.getString(R.string.io_export_prompt))
+					.setMessage(resources.getString(R.string.menu_export_prompt))
 					.setCancelable(false)
 					.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
@@ -148,6 +146,29 @@ public class Preferences extends PreferenceActivity {
 				
 			default:
 				return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+		switch (requestCode) {
+			case Preferences.IMPORT_JSON:
+				if (resultCode == Activity.RESULT_OK) {
+					final Resources resources = this.getResources();
+					
+					(new AlertDialog.Builder(this))
+						.setMessage(resources.getString(R.string.menu_import_prompt))
+						.setCancelable(false)
+						.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {
+								Preferences.this.jsonImport(data.getData());
+							}
+						})
+						.setNegativeButton(resources.getString(R.string.no), null)
+						.show();
+				}
+			default:
+				super.onActivityResult(requestCode, resultCode, data);
 		}
 	}
 
@@ -281,13 +302,13 @@ public class Preferences extends PreferenceActivity {
 		editor.commit();
 	}
     
-    private void jsonImport() {
+    private void jsonImport(final Uri uri) {
     	final Resources resources = this.getResources();
     	final SharedPreferences.Editor editor = this.getPreferenceManager().getSharedPreferences().edit();
     	
     	try {
     		//Load entire file into JSONOBject
-    		BufferedReader file = new BufferedReader(new FileReader(new File(Environment.getExternalStorageDirectory(), Preferences.FILE_NAME)));
+    		BufferedReader file = new BufferedReader(new InputStreamReader(this.getContentResolver().openInputStream(uri)));
     		StringBuilder json = new StringBuilder();
     		String data;
     		while ((data = file.readLine()) != null) {
@@ -428,10 +449,10 @@ public class Preferences extends PreferenceActivity {
     		editor.commit();
     		
     		//cheers
-    		Toast.makeText(this, R.string.io_import_success, Toast.LENGTH_SHORT).show();
+    		Toast.makeText(this, R.string.menu_import_success, Toast.LENGTH_SHORT).show();
     	} catch (Exception e) {
-    		Toast.makeText(this, R.string.io_import_failed, Toast.LENGTH_LONG).show();
     		e.printStackTrace();
+    		Toast.makeText(this, R.string.menu_import_failed, Toast.LENGTH_LONG).show();
     	}
     }
     
@@ -576,15 +597,15 @@ public class Preferences extends PreferenceActivity {
 	    	settings.put(resources.getString(R.string.settings_color_key), color);
 	    	
 	    	//write to disk
-	    	final PrintWriter file = new PrintWriter(new File(Environment.getExternalStorageDirectory(), Preferences.FILE_NAME));
+	    	PrintWriter file = new PrintWriter(new FileOutputStream(new File(Environment.getExternalStorageDirectory(), Preferences.FILE_NAME)));
 	    	file.write(settings.toString());
 	    	file.close();
 	    	
 	    	//cheers
-	    	Toast.makeText(this, R.string.io_export_success, Toast.LENGTH_SHORT).show();
+	    	Toast.makeText(this, R.string.menu_export_success, Toast.LENGTH_SHORT).show();
 		} catch (Exception e) {
-			Toast.makeText(this, R.string.io_export_failed, Toast.LENGTH_LONG).show();
 			e.printStackTrace();
+			Toast.makeText(this, R.string.menu_export_failed, Toast.LENGTH_LONG).show();
 		}
     }
 }
