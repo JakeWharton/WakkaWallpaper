@@ -9,11 +9,6 @@
     <string name="ready">READY!</string>
     <string name="gameover">GAME OVER</string>
     
-    <string name="about">About</string>
-    <string name="about_key">about</string>
-    <string name="about_summary">Overview of Wakka Wallpaper features</string>
-    <string name="about_title">About Wakka Wallpaper</string>
-    
     <string name="settings_key">settings</string>
     <string name="settings_header">Settings</string>
     <string name="settings_display">Display</string>
@@ -186,6 +181,21 @@
     <string name="io_export_summary">Save all settings to SD card</string>
     <string name="io_export_success">Successfully saved settings to "settings.wakkawallpaper.json" on SD card.</string>
     <string name="io_export_failed">Failed to save settings to "settings.wakkawallpaper.json" on SD card.</string>
+    
+    <string name="about">About</string>
+    <string name="about_key">about</string>
+    <string name="about_summary">Instructions and change log</string>
+    <string name="about_header_key">about_header</string>
+    <string name="about_header_summary">An Android live wallpaper which simulates a popular 1980\'s arcade game</string>
+    <string name="about_contents">Contents</string>
+    <string name="instructions">Instructions</string>
+    <string name="instructions_key">instructions</string>
+    <string name="instructions_title">Wakka Wallpaper Instructions</string>
+    <string name="instructions_summary">Simple overview of usage</string>
+    <string name="changelog">Change Log</string>
+    <string name="changelog_key">changelog</string>
+    <string name="changelog_title">Wakka Wallpaper Change Log</string>
+    <string name="changelog_summary">Summary of differences between versions</string>
     
     <string name="information_header">Information</string>
     <string name="information_version">Version</string>

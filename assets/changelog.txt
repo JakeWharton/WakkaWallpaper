@@ -1,0 +1,54 @@
+1.0.0 beta 4 (In Development)
+=============================
+
+New Features:
+ * Instructions and change log in about section
+ * HUD offset from bottom of screen is now adjustable via settings. This should allow for users of HTC Sense to see the HUD.
+
+
+1.0.0 beta 3 (2010-07-25)
+=========================
+
+New Features:
+ * Tapping the top, bottom, left, or right of your screen will influence The Man's direction. If you tap a direction, he will attempt to change to that direction every time he moves until he hits a wall. If he successfully changes direction he will continue going that direction until he hits a wall. If he hit a wall while going the current direction and was unable to change to your desired direction the AI will choose a new direction and your desired direction will be cleared. This does not yet work in landscape. The directions are calculated based off of the center of your screen and not The Man's location. Even though you may be tapping to The Man's left, if it is to the right of the screen center he will go right.
+
+
+Bug Fixes:
+ * Ghosts, The Man, Fruit, and "Ready"/"Game Over" text now rotate when in landscape.
+
+
+1.0.0 beta 2 (2010-07-24)
+=========================
+
+New Features:
+ * Fruit now appears as a pinkish circle at random intersections.
+ * About screen in settings to list instructions and general info (eventually)
+ * Current level added next to score
+ * Number of ghosts can now be any number between zero and four.
+
+Bug Fixes:
+ * Level completion bug resolved
+ * Preferences are no longer translucent to make reading easier
+
+
+1.0.0 beta 1 (2010-07-23)
+=========================
+
+Total rewrite of codebase.
+
+New Features:
+ * The Man's mouth is now animated as he moves.
+ * Landscape support.
+ * Antialiased drawing enabled.
+ * AI for seeking out closest dot.
+ * Ghosts now drawn properly.
+ * HUD displaying score and lives.
+ * Double-tap within 0.1s to reset game.
+ * Settings activity to change all of the preferences.
+ * Preferences JSON import and export to SD card.
+
+
+1.0.0 alpha 1 (2010-07-08)
+==========================
+
+Initial proof-of-concept release.

@@ -8,8 +8,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-public class About extends Activity {
-	private static final String FILENAME = "about.txt";
+public class Instructions extends Activity {
+	private static final String FILENAME = "instructions.txt";
 	private static final char NEWLINE = '\n';
 	private static final String ERROR = "Failed to load about text from assets.";
 	
@@ -18,21 +18,21 @@ public class About extends Activity {
         super.onCreate(savedInstanceState);
         
         //Create layout
-        this.setContentView(R.layout.about);
+        this.setContentView(R.layout.instructions);
         
         StringBuffer content = new StringBuffer();
         
         try {
         	//Load entire about plain text from asset
-			BufferedReader about = new BufferedReader(new InputStreamReader(this.getAssets().open(About.FILENAME)));
+			BufferedReader about = new BufferedReader(new InputStreamReader(this.getAssets().open(Instructions.FILENAME)));
 			String data;
 			while ((data = about.readLine()) != null) {
 				content.append(data);
-				content.append(About.NEWLINE);
+				content.append(Instructions.NEWLINE);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			content.append(About.ERROR);
+			content.append(Instructions.ERROR);
 		}
 		
 		//Put text into layout

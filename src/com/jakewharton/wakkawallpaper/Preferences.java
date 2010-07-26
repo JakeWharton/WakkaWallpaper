@@ -98,10 +98,18 @@ public class Preferences extends PreferenceActivity {
 			}
 		});
         
-        //about
-        this.findPreference(resources.getString(R.string.about_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        //instructions
+        this.findPreference(resources.getString(R.string.instructions_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				Preferences.this.startActivity(new Intent(Preferences.this, About.class));
+				Preferences.this.startActivity(new Intent(Preferences.this, Instructions.class));
+				return true;
+			}
+		});
+        
+        //change log
+        this.findPreference(resources.getString(R.string.changelog_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Preferences.this.startActivity(new Intent(Preferences.this, ChangeLog.class));
 				return true;
 			}
 		});

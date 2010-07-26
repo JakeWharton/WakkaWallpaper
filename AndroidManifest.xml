@@ -27,13 +27,15 @@
         <activity
             android:label="@string/title"
             android:name="Preferences"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
-            android:label="@string/about_title"
-            android:name="About"
-            android:exported="false">
-        </activity>
+            android:label="@string/instructions_title"
+            android:name="Instructions"
+            android:exported="false" />
+        <activity
+            android:label="@string/changelog_title"
+            android:name="ChangeLog"
+            android:exported="false" />
     </application>
     
     <uses-sdk android:minSdkVersion="7" />
