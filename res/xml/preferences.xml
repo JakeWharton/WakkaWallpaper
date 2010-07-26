@@ -110,6 +110,11 @@
 				android:title="@string/settings_game_killscreen"
 				android:summary="@string/settings_game_killscreen_summary"
 				android:defaultValue="@bool/game_killscreen_default"/>
+			<CheckBoxPreference
+				android:key="@string/settings_game_usercontrol_key"
+				android:title="@string/settings_game_usercontrol"
+				android:summary="@string/settings_game_usercontrol_summary"
+				android:defaultValue="@bool/game_usercontrol_default"/>
 			<PreferenceCategory
 				android:key="@string/settings_game_ghosts_key"
 				android:title="@string/settings_game_ghosts">

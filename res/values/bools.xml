@@ -7,4 +7,5 @@
 	<bool name="game_killscreen_default">true</bool>
 	<bool name="game_deadlyghosts_default">true</bool>
 	<bool name="game_fruitenabled_default">true</bool>
+	<bool name="game_usercontrol_default">true</bool>
 </resources>

@@ -179,6 +179,8 @@ public class Preferences extends PreferenceActivity {
 		
 		//display kill screen
 		editor.putBoolean(resources.getString(R.string.settings_game_killscreen_key), resources.getBoolean(R.bool.game_killscreen_default));
+		//user controllable
+		editor.putBoolean(resources.getString(R.string.settings_game_usercontrol_key), resources.getBoolean(R.bool.game_usercontrol_default));
 		//ghosts are deadly
 		editor.putBoolean(resources.getString(R.string.settings_game_deadlyghosts_key), resources.getBoolean(R.bool.game_deadlyghosts_default));
 		//ghost count
@@ -298,6 +300,9 @@ public class Preferences extends PreferenceActivity {
     		//display kill screen
 	    	final String game_killscreen = resources.getString(R.string.settings_game_killscreen_key);
     		editor.putBoolean(game_killscreen, game.getBoolean(game_killscreen));
+    		//user controllable
+    		final String game_usercontrol = resources.getString(R.string.settings_game_usercontrol_key);
+    		editor.putBoolean(game_usercontrol, game.getBoolean(game_usercontrol));
     		//ghosts are deadly
 			final String game_deadlyghosts = resources.getString(R.string.settings_game_deadlyghosts_key);
     		editor.putBoolean(game_deadlyghosts, game.getBoolean(game_deadlyghosts));
@@ -437,6 +442,9 @@ public class Preferences extends PreferenceActivity {
 			//display kill screen
 	    	final String game_killscreen = resources.getString(R.string.settings_game_killscreen_key);
 	    	game.put(game_killscreen, preferences.getBoolean(game_killscreen, resources.getBoolean(R.bool.game_killscreen_default)));
+	    	//user controllable
+	    	final String game_usercontrol = resources.getString(R.string.settings_game_usercontrol_key);
+	    	game.put(game_usercontrol, preferences.getBoolean(game_usercontrol, resources.getBoolean(R.bool.game_usercontrol_default)));
 			//ghosts are deadly
 			final String game_deadlyghosts = resources.getString(R.string.settings_game_deadlyghosts_key);
 			game.put(game_deadlyghosts, preferences.getBoolean(game_deadlyghosts, resources.getBoolean(R.bool.game_deadlyghosts_default)));

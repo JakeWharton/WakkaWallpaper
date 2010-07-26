@@ -67,6 +67,9 @@
     <string name="settings_game_killscreen">Display Kill Screen</string>
     <string name="settings_game_killscreen_key">game_killscreen</string>
     <string name="settings_game_killscreen_summary">Randomly display the infamous kill screen</string>
+    <string name="settings_game_usercontrol">User Control</string>
+    <string name="settings_game_usercontrol_key">game_usercontrol</string>
+    <string name="settings_game_usercontrol_summary">Allow touches on the screen to influence The Man\'s direction</string>
     <string name="settings_game_ghosts">Ghosts</string>
     <string name="settings_game_ghosts_key">game_ghosts</string>
     <string name="settings_game_deadlyghosts">Ghosts Are Deadly</string>

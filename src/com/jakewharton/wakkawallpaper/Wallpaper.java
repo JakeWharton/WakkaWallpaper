@@ -45,6 +45,7 @@ public class Wallpaper extends WallpaperService {
     	private Game mGame;
         private boolean mIsVisible;
         private int mFPS;
+        private boolean mIsControllable;
         private float mScreenCenterX;
         private float mScreenCenterY;
         private long mLastTouch;
@@ -92,7 +93,16 @@ public class Wallpaper extends WallpaperService {
 				this.mFPS = preferences.getInt(fps, resources.getInteger(R.integer.display_fps_default));
 				
 				if (Wallpaper.LOG_DEBUG) {
-					Log.d(WakkaEngine.TAG, "FPS = " + this.mFPS);
+					Log.d(WakkaEngine.TAG, "FPS: " + this.mFPS);
+				}
+			}
+			
+			final String userControl = Wallpaper.this.getString(R.string.settings_game_usercontrol_key);
+			if (all || key.equals(userControl)) {
+				this.mIsControllable = preferences.getBoolean(userControl, resources.getBoolean(R.bool.game_usercontrol_default));
+				
+				if (Wallpaper.LOG_DEBUG) {
+					Log.d(WakkaEngine.TAG, "Is User Controllable: " + this.mIsControllable);
 				}
 			}
 
@@ -131,7 +141,7 @@ public class Wallpaper extends WallpaperService {
         
         @Override
         public void onTouchEvent(final MotionEvent event) {
-        	if (event.getAction() == MotionEvent.ACTION_DOWN) {
+        	if ((event.getAction() == MotionEvent.ACTION_DOWN) && this.mIsControllable) {
         		final long touch = System.currentTimeMillis();
         		if (touch - this.mLastTouch < WakkaEngine.RESET_THRESHOLD) {
         			this.mGame.newGame();
