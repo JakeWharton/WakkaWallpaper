@@ -45,7 +45,16 @@ public class Preferences extends PreferenceActivity {
         //reset display
         this.findPreference(resources.getString(R.string.settings_display_reset_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(final Preference preference) {
-				Preferences.this.loadDisplayDefaults();
+				(new AlertDialog.Builder(Preferences.this))
+					.setMessage(resources.getString(R.string.reset_display))
+					.setCancelable(false)
+					.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							Preferences.this.loadDisplayDefaults();
+						}
+					})
+					.setNegativeButton(resources.getString(R.string.no), null)
+					.show();
 				return true;
 			}
 		});
@@ -53,7 +62,16 @@ public class Preferences extends PreferenceActivity {
         //reset game
         this.findPreference(resources.getString(R.string.settings_game_reset_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(final Preference preference) {
-				Preferences.this.loadGameDefaults();
+				(new AlertDialog.Builder(Preferences.this))
+				.setMessage(resources.getString(R.string.reset_game))
+				.setCancelable(false)
+				.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						Preferences.this.loadGameDefaults();
+					}
+				})
+				.setNegativeButton(resources.getString(R.string.no), null)
+				.show();
 				return true;
 			}
 		});
@@ -61,7 +79,16 @@ public class Preferences extends PreferenceActivity {
         //reset colors
         this.findPreference(resources.getString(R.string.settings_color_reset_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(final Preference preference) {
-				Preferences.this.loadColorDefaults();
+				(new AlertDialog.Builder(Preferences.this))
+				.setMessage(resources.getString(R.string.reset_color))
+				.setCancelable(false)
+				.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						Preferences.this.loadColorDefaults();
+					}
+				})
+				.setNegativeButton(resources.getString(R.string.no), null)
+				.show();
 				return true;
 			}
 		});
@@ -139,9 +166,18 @@ public class Preferences extends PreferenceActivity {
 				return true;
 				
 			case R.id.menu_reset:
-				this.loadDisplayDefaults();
-				this.loadGameDefaults();
-				this.loadColorDefaults();
+				(new AlertDialog.Builder(this))
+					.setMessage(resources.getString(R.string.reset_all))
+					.setCancelable(false)
+					.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							Preferences.this.loadDisplayDefaults();
+							Preferences.this.loadGameDefaults();
+							Preferences.this.loadColorDefaults();
+						}
+					})
+					.setNegativeButton(resources.getString(R.string.no), null)
+					.show();
 				return true;
 				
 			default:
