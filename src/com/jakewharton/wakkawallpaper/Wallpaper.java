@@ -44,6 +44,7 @@ public class Wallpaper extends WallpaperService {
     	
     	private Game mGame;
         private boolean mIsVisible;
+        private boolean mIsLandscape;
         private int mFPS;
         private boolean mIsControllable;
         private float mScreenCenterX;
@@ -154,15 +155,15 @@ public class Wallpaper extends WallpaperService {
 	        		
 	        		if (Math.abs(deltaX) > Math.abs(deltaY)) {
 	        			if (deltaX > 0) {
-	        				this.mGame.getTheMan().setWantsToGo(Entity.Direction.WEST);
+	        				this.mGame.getTheMan().setWantsToGo(this.mIsLandscape ? Entity.Direction.SOUTH : Entity.Direction.WEST);
 	        			} else {
-	        				this.mGame.getTheMan().setWantsToGo(Entity.Direction.EAST);
+	        				this.mGame.getTheMan().setWantsToGo(this.mIsLandscape ? Entity.Direction.NORTH : Entity.Direction.EAST);
 	        			}
 	        		} else {
 	        			if (deltaY > 0) {
-	        				this.mGame.getTheMan().setWantsToGo(Entity.Direction.NORTH);
+	        				this.mGame.getTheMan().setWantsToGo(this.mIsLandscape ? Entity.Direction.WEST : Entity.Direction.NORTH);
 	        			} else {
-	        				this.mGame.getTheMan().setWantsToGo(Entity.Direction.SOUTH);
+	        				this.mGame.getTheMan().setWantsToGo(this.mIsLandscape ? Entity.Direction.EAST : Entity.Direction.SOUTH);
 	        			}
 	        		}
         		}
@@ -181,6 +182,8 @@ public class Wallpaper extends WallpaperService {
         	}
         	
             super.onSurfaceChanged(holder, format, width, height);
+            
+            this.mIsLandscape = (width > height);
             
             this.mScreenCenterX = width / 2.0f;
             this.mScreenCenterY = height / 2.0f;
