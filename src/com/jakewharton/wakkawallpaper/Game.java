@@ -761,8 +761,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	this.mLevel += 1;
     	this.setState(Game.State.READY);
     	
-    	//Kill screen is shown randomly one out of 256 levels as long as we are not on level one
-    	if ((this.mLevel > 1) && (Game.RANDOM.nextInt(Game.KILL_SCREEN_LEVEL) == 0) && this.mIsKillScreenEnabled) {
+    	//Kill screen on level 256
+    	if (this.mLevel == Game.KILL_SCREEN_LEVEL) {
     		this.mIsOnKillScreen = true;
     		
     		if (Wallpaper.LOG_DEBUG) {
