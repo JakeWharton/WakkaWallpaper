@@ -1,37 +1,21 @@
 package com.jakewharton.utilities;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
-import android.graphics.Typeface;
-import android.graphics.BlurMaskFilter.Blur;
-import android.graphics.Paint.Style;
-import android.graphics.drawable.Drawable;
-import android.os.SystemClock;
 import android.preference.DialogPreference;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.StateSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Transformation;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 
 public class ColorPreference extends DialogPreference {
 	private class ColorPickerView extends View {
@@ -80,14 +64,6 @@ public class ColorPreference extends DialogPreference {
 			this.invalidate();
 		}
 
-		public void setTransparency(int alpha) {
-			int color = this.mCenterPaint.getColor();
-			int newColor = Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
-			this.mCenterPaint.setColor(newColor);
-			ColorPreference.this.mEditText.setText(ColorPreference.convertToARGB(newColor));
-			invalidate();
-		}
-
 		private int ave(int s, int d, float p) {
 			return s + Math.round(p * (d - s));
 		}
@@ -107,12 +83,11 @@ public class ColorPreference extends DialogPreference {
 			// now p is just the fractional part [0...1) and i is the index
 			int c0 = colors[i];
 			int c1 = colors[i + 1];
-			int a = ave(Color.alpha(c0), Color.alpha(c1), p);
 			int r = ave(Color.red(c0), Color.red(c1), p);
 			int g = ave(Color.green(c0), Color.green(c1), p);
 			int b = ave(Color.blue(c0), Color.blue(c1), p);
 
-			return Color.argb(a, r, g, b);
+			return Color.argb(255, r, g, b);
 		}
 
 		@Override
@@ -140,167 +115,21 @@ public class ColorPreference extends DialogPreference {
 			return true;
 		}
 	}
-	private static class TextSeekBarDrawable extends Drawable implements Runnable {
-		// Source: http://www.anddev.org/announce_color_picker_dialog-t10771.html
-		private static final int[] STATE_FOCUSED = { android.R.attr.state_focused };
-		private static final int[] STATE_PRESSED = { android.R.attr.state_pressed };
-		private static final long DELAY = 50;
-		
-		private String mText;
-		private Drawable mProgress;
-		private Paint mPaint;
-		private Paint mOutlinePaint;
-		private float mTextWidth;
-		private boolean mActive;
-		private float mTextXScale;
-		private int mDelta;
-		private ScrollAnimation mAnimation;
-
-		public TextSeekBarDrawable(Resources res, String label, boolean labelOnRight) {
-			this.mText = label;
-			this.mProgress = res.getDrawable(android.R.drawable.progress_horizontal);
-			this.mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-			this.mPaint.setTypeface(Typeface.DEFAULT_BOLD);
-			this.mPaint.setTextSize(16);
-			this.mPaint.setColor(0xff000000);
-			this.mOutlinePaint = new Paint(this.mPaint);
-			this.mOutlinePaint.setStyle(Style.STROKE);
-			this.mOutlinePaint.setStrokeWidth(3);
-			this.mOutlinePaint.setColor(0xbbffc300);
-			this.mOutlinePaint.setMaskFilter(new BlurMaskFilter(1, Blur.NORMAL));
-			this.mTextWidth = this.mOutlinePaint.measureText(this.mText);
-			this.mTextXScale = labelOnRight ? 1 : 0;
-			this.mAnimation = new ScrollAnimation();
-		}
-
-		@Override
-		protected void onBoundsChange(Rect bounds) {
-			this.mProgress.setBounds(bounds);
-		}
-
-		@Override
-		protected boolean onStateChange(int[] state) {
-			this.mActive = StateSet.stateSetMatches(STATE_FOCUSED, state) | StateSet.stateSetMatches(STATE_PRESSED, state);
-			this.invalidateSelf();
-			return false;
-		}
-
-		@Override
-		public boolean isStateful() {
-			return true;
-		}
-
-		@Override
-		protected boolean onLevelChange(int level) {
-			// Log.d(TAG, "onLevelChange " + level);
-			if ((level < 4000) && (this.mDelta <= 0)) {
-				// Log.d(TAG, "onLevelChange scheduleSelf ++");
-				this.mDelta = 1;
-				this.mAnimation.startScrolling(this.mTextXScale, 1);
-				this.scheduleSelf(this, SystemClock.uptimeMillis() + DELAY);
-			} else if ((level > 6000) && (mDelta >= 0)) {
-				// Log.d(TAG, "onLevelChange scheduleSelf --");
-				this.mDelta = -1;
-				this.mAnimation.startScrolling(this.mTextXScale, 0);
-				this.scheduleSelf(this, SystemClock.uptimeMillis() + DELAY);
-			}
-			return this.mProgress.setLevel(level);
-		}
-
-		@Override
-		public void draw(Canvas canvas) {
-			this.mProgress.draw(canvas);
-
-			if (this.mAnimation.hasStarted() && !this.mAnimation.hasEnded()) {
-				// pending animation
-				this.mAnimation.getTransformation(AnimationUtils.currentAnimationTimeMillis(), null);
-				this.mTextXScale = this.mAnimation.getCurrent();
-				// Log.d(TAG, "draw " + mTextX + " " +
-				// SystemClock.uptimeMillis());
-			}
-
-			Rect bounds = getBounds();
-			float x = 6 + this.mTextXScale * (bounds.width() - this.mTextWidth - 6 - 6);
-			float y = (bounds.height() + this.mPaint.getTextSize()) / 2;
-			this.mOutlinePaint.setAlpha(this.mActive ? 255 : 255 / 2);
-			this.mPaint.setAlpha(mActive ? 255 : 255 / 2);
-			canvas.drawText(this.mText, x, y, this.mOutlinePaint);
-			canvas.drawText(this.mText, x, y, this.mPaint);
-		}
-
-		@Override
-		public int getOpacity() {
-			return PixelFormat.TRANSLUCENT;
-		}
-
-		@Override
-		public void setAlpha(int alpha) {}
-
-		@Override
-		public void setColorFilter(ColorFilter cf) {}
-
-		public void run() {
-			this.mAnimation.getTransformation(AnimationUtils.currentAnimationTimeMillis(), null);
-			// close interpolation of mTextX
-			this.mTextXScale = mAnimation.getCurrent();
-			if (!this.mAnimation.hasEnded()) {
-				this.scheduleSelf(this, SystemClock.uptimeMillis() + DELAY);
-			}
-			this.invalidateSelf();
-			// Log.d(TAG, "run " + mTextX + " " + SystemClock.uptimeMillis());
-		}
-	}
-	private static class ScrollAnimation extends Animation {
-		private static final long DURATION = 750;
-		private float mFrom;
-		private float mTo;
-		private float mCurrent;
-
-		public ScrollAnimation() {
-			this.setDuration(DURATION);
-			this.setInterpolator(new DecelerateInterpolator());
-		}
-
-		public void startScrolling(float from, float to) {
-			this.mFrom = from;
-			this.mTo = to;
-			this.startNow();
-		}
-
-		@Override
-		protected void applyTransformation(float interpolatedTime, Transformation t) {
-			this.mCurrent = this.mFrom + (this.mTo - this.mFrom) * interpolatedTime;
-			// Log.d(TAG, "applyTransformation " + mCurrent);
-		}
-
-		public float getCurrent() {
-			return this.mCurrent;
-		}
-	}
 	
 	private EditText mEditText;
 	private ColorPickerView mColorPickerView;
-	private SeekBar mTransparencyBar;
 	private int mValue;
 	private int mTempValue;
 	
-	private SeekBar.OnSeekBarChangeListener onTransparencyChangedListener = new SeekBar.OnSeekBarChangeListener() {
-		public void onStartTrackingTouch(SeekBar seekBar) {}
-		public void onStopTrackingTouch(SeekBar seekBar) {}
-		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-			ColorPreference.this.mColorPickerView.setTransparency(progress);
-		}
-	};
 	private TextWatcher mEditTextListener = new TextWatcher() {
 		public void afterTextChanged(Editable s) {}
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
 			try {
 				String s2 = s.toString().replace("#", "");
-				if ((s2.length() == 6) || (s2.length() == 8)) {
+				if (s2.length() == 6) {
 					int color = ColorPreference.convertToColorInt(s2);
 					ColorPreference.this.mColorPickerView.setCenterColor(color);
-					ColorPreference.this.mTransparencyBar.setProgress(Color.alpha(color));
 				}
 			} catch (NumberFormatException e) {}
 		}
@@ -324,13 +153,6 @@ public class ColorPreference extends DialogPreference {
 
 		this.mColorPickerView = new ColorPickerView(getContext(), this.mValue);
 		layout.addView(this.mColorPickerView, layoutParams);
-
-		this.mTransparencyBar = new SeekBar(context);
-		this.mTransparencyBar.setMax(255);
-		this.mTransparencyBar.setProgressDrawable(new TextSeekBarDrawable(this.getContext().getResources(), "alpha", true));
-		this.mTransparencyBar.setProgress(Color.alpha(this.mValue));
-		this.mTransparencyBar.setOnSeekBarChangeListener(this.onTransparencyChangedListener);
-		layout.addView(this.mTransparencyBar, layoutParams);
 
 		this.mEditText = new EditText(context);
 		this.mEditText.addTextChangedListener(this.mEditTextListener);
@@ -386,18 +208,13 @@ public class ColorPreference extends DialogPreference {
 			blue = "0" + blue;
 		}
 
-		return "#" + alpha + red + green + blue;
+		return "#" + red + green + blue;
 	}
 	private static int convertToColorInt(String argb) throws NumberFormatException {
 
 		int alpha = -1, red = -1, green = -1, blue = -1;
 
-		if (argb.length() == 8) {
-			alpha = Integer.parseInt(argb.substring(0, 2), 16);
-			red = Integer.parseInt(argb.substring(2, 4), 16);
-			green = Integer.parseInt(argb.substring(4, 6), 16);
-			blue = Integer.parseInt(argb.substring(6, 8), 16);
-		} else if (argb.length() == 6) {
+		if (argb.length() == 6) {
 			alpha = 255;
 			red = Integer.parseInt(argb.substring(0, 2), 16);
 			green = Integer.parseInt(argb.substring(2, 4), 16);
