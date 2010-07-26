@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-public class EditNumberPreference extends DialogPreference implements SeekBar.OnSeekBarChangeListener {
+public class NumberPreference extends DialogPreference implements SeekBar.OnSeekBarChangeListener {
 	private SeekBar mSeekBar;
 	private TextView mValueText;
 	private String mSuffix;
@@ -17,7 +17,7 @@ public class EditNumberPreference extends DialogPreference implements SeekBar.On
 	private int mMin;
 	private int mValue = 0;
 
-	public EditNumberPreference(Context context, AttributeSet attrs) {
+	public NumberPreference(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		this.setPersistent(true);
 
@@ -26,7 +26,7 @@ public class EditNumberPreference extends DialogPreference implements SeekBar.On
 		this.mMin = a.getInt(R.styleable.EditNumberPreference_min, 0);
 		this.mMax = a.getInt(R.styleable.EditNumberPreference_max, 100);
 
-		this.setDialogLayoutResource(R.layout.edit_number_preference);
+		this.setDialogLayoutResource(R.layout.number_preference);
 	}
 
 	@Override
