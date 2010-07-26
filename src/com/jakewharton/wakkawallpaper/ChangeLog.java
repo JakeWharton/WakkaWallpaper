@@ -12,6 +12,8 @@ public class ChangeLog extends Activity {
 	private static final String FILENAME = "changelog.html";
 	private static final char NEWLINE = '\n';
 	private static final String ERROR = "Failed to load change log text from assets.";
+	private static final String MIME_TYPE = "text/html";
+	private static final String ENCODING = "utf8";
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,6 @@ public class ChangeLog extends Activity {
 		}
 		
 		//Put text into layout
-		((WebView)this.findViewById(R.id.content)).loadData(content.toString(), "text/html", "utf8");
+		((WebView)this.findViewById(R.id.content)).loadData(content.toString(), ChangeLog.MIME_TYPE, ChangeLog.ENCODING);
     }
 }
