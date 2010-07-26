@@ -39,7 +39,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	private static final int[] POINTS_FLEEING_GHOSTS = new int[] { 200, 400, 800, 1600 };
 	private static final int POINTS_ALL_FLEEING_GHOSTS = 12000;
 	private static final float HUD_SIZE = 20;
-	private static final float HUD_OFFSET = 5;
 	private static final float HUD_PADDING = 3;
 	private static final float HUD_THEMAN_ANGLE = 202.5f;
 	private static final float HUD_THEMAN_ARC = 315;
@@ -1058,7 +1057,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private void drawHud(final Canvas c) {
     	if (this.mIsDisplayingHud) {
 	        //Lives and score
-	        final float top = this.mScreenHeight - Game.HUD_OFFSET;
+	        final float top = this.mScreenHeight - this.mHudOffset;
 	        for (int i = 0; i < this.mLives; i++) {
 	        	c.drawArc(new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top), Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
 	        }
