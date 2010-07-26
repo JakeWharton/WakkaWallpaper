@@ -151,6 +151,8 @@ public class Preferences extends PreferenceActivity {
 		editor.putInt(resources.getString(R.string.settings_display_rowspacing_key), resources.getInteger(R.integer.display_rowspacing_default));
 		//icon col spacing
 		editor.putInt(resources.getString(R.string.settings_display_colspacing_key), resources.getInteger(R.integer.display_colspacing_default));
+		//hud offset
+		editor.putInt(resources.getString(R.string.settings_display_hudoffset_key), resources.getInteger(R.integer.display_hudoffset_default));
 		//padding top
 		editor.putInt(resources.getString(R.string.settings_display_padding_top_key), resources.getInteger(R.integer.display_padding_top_default));
 		//padding bottom
@@ -267,6 +269,9 @@ public class Preferences extends PreferenceActivity {
     		//icon col spacing
 	        final String display_colspacing = resources.getString(R.string.settings_display_colspacing_key); 
     		editor.putInt(display_colspacing, display.getInt(display_colspacing));
+    		//hud offset
+    		final String display_hudoffset = resources.getString(R.string.settings_display_hudoffset_key);
+    		editor.putInt(display_hudoffset, display.getInt(display_hudoffset));
     		//padding top
 	        final String display_paddingtop = resources.getString(R.string.settings_display_padding_top_key);
     		editor.putInt(display_paddingtop, display.getInt(display_paddingtop));
@@ -397,6 +402,9 @@ public class Preferences extends PreferenceActivity {
 			//icon cols
 	        final String display_iconcols = resources.getString(R.string.settings_display_iconcols_key);
 	        display.put(display_iconcols, preferences.getInt(display_iconcols, resources.getInteger(R.integer.display_iconcols_default)));
+    		//hud offset
+    		final String display_hudoffset = resources.getString(R.string.settings_display_hudoffset_key);
+    		display.put(display_hudoffset, preferences.getInt(display_hudoffset, resources.getInteger(R.integer.display_hudoffset_default)));
 			//icon row spacing
 	        final String display_rowspacing = resources.getString(R.string.settings_display_rowspacing_key);
 	        display.put(display_rowspacing, preferences.getInt(display_rowspacing, resources.getInteger(R.integer.display_rowspacing_default)));
@@ -516,7 +524,6 @@ public class Preferences extends PreferenceActivity {
 	    	
 	    	//cheers
 	    	Toast.makeText(this, R.string.io_export_success, Toast.LENGTH_SHORT).show();
-
 		} catch (Exception e) {
 			Toast.makeText(this, R.string.io_export_failed, Toast.LENGTH_LONG).show();
 			e.printStackTrace();

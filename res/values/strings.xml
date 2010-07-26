@@ -46,6 +46,9 @@
     <string name="settings_display_colspacing">Icon Column Cell Spacing</string>
     <string name="settings_display_colspacing_key">display_colspacing</string>
     <string name="settings_display_colspacing_summary">Number of cells in an icon column</string>
+    <string name="settings_display_hudoffset">HUD Offset</string>
+    <string name="settings_display_hudoffset_key">display_hudoffset</string>
+    <string name="settings_display_hudoffset_summary">Offset from bottom of screen</string>
     <string name="settings_display_reset">Reset Display Settings</string>
     <string name="settings_display_reset_key">display_reset</string>
     <string name="settings_display_reset_summary">All display settings back to default</string>

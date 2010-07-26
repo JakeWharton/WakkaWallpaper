@@ -52,6 +52,13 @@
 				android:defaultValue="@integer/display_colspacing_default"
 				app:min="@integer/display_colspacing_min"
 				app:max="@integer/display_colspacing_max"/>
+			<com.jakewharton.utilities.EditNumberPreference
+				android:key="@string/settings_display_hudoffset_key"
+				android:title="@string/settings_display_hudoffset"
+				android:summary="@string/settings_display_hudoffset_summary"
+				android:defaultValue="@integer/display_hudoffset_default"
+				app:min="@integer/display_hudoffset_min"
+				app:max="@integer/display_hudoffset_max"/>
 			<PreferenceScreen
 				android:key="@string/settings_display_padding_key"
 				android:title="@string/settings_display_padding"

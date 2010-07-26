@@ -92,6 +92,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private final String mTextReady;
     private final String mTextGameOver;
     private final PointF mTextLocation;
+    private int mHudOffset;
     
     /**
      * Create a new game adhering to the specified parameters.
@@ -229,10 +230,19 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		
 		final String displayHud = Wallpaper.CONTEXT.getString(R.string.settings_display_showhud_key);
 		if (all || key.equals(displayHud)) {
-			this.mIsDisplayingHud = Wallpaper.PREFERENCES.getBoolean(key, Wallpaper.CONTEXT.getResources().getBoolean(R.bool.display_showhud_default));
+			this.mIsDisplayingHud = Wallpaper.PREFERENCES.getBoolean(displayHud, resources.getBoolean(R.bool.display_showhud_default));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Is Displaying HUD: " + this.mIsDisplayingHud);
+			}
+		}
+		
+		final String hudOffset = Wallpaper.CONTEXT.getString(R.string.settings_display_hudoffset_key);
+		if (all || key.equals(hudOffset)) {
+			this.mHudOffset = Wallpaper.PREFERENCES.getInt(hudOffset, resources.getInteger(R.integer.display_hudoffset_default));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "HUD Offset: " + this.mHudOffset);
 			}
 		}
 		

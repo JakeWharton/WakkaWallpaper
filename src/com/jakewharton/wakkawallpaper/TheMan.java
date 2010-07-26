@@ -117,7 +117,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	}
 	
 	/**
-	 * Get the current state of The Man;
+	 * Get the current state of The Man
 	 * @return
 	 */
 	public TheMan.State getState() {
@@ -131,7 +131,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	 */
 	private void determineNextDirection(final Game game) {
 		//Try the user direction first
-		if ((this.mWantsToGo != null) && (game.isValidPosition(Entity.move(this.mPosition, this.mWantsToGo)))) {
+		if ((this.mWantsToGo != null) && game.isValidPosition(Entity.move(this.mPosition, this.mWantsToGo))) {
 			this.mDirectionNext = this.mWantsToGo;
 			return;
 		}
