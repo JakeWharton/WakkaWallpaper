@@ -130,7 +130,11 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	 * @param game Game instance.
 	 */
 	private void determineNextDirection(final Game game) {
-		//TODO: account for this.mWantsToGo
+		//Try the user direction first
+		if ((this.mWantsToGo != null) && (game.isValidPosition(Entity.move(this.mPosition, this.mWantsToGo)))) {
+			this.mDirectionNext = this.mWantsToGo;
+			return;
+		}
 		
 		//Breadth-first search for new next direction
 		final Queue<Vector> queue = new LinkedList<Vector>();
@@ -162,7 +166,8 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 						}
 						
 						this.mDirectionNext = next.getInitialDirection();
-						return;
+						queue.clear(); //break out of while
+						break; //break out of for
 					} else {
 						if (Wallpaper.LOG_VERBOSE) {
 							Log.v(TheMan.TAG, "-- Empty, Queued");
@@ -182,6 +187,16 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 					this.mDirectionNext = direction;
 					break;
 				}
+			}
+		}
+		
+		//If the wants-to-go direction exists and the AI forced us to change direction then wants-to-go direction
+		//is impossible and should be cleared
+		if ((this.mWantsToGo != null) && (this.mDirectionNext != this.mDirectionCurrent)) {
+			this.mWantsToGo = null;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(TheMan.TAG, "Clearing wants-to-go direction via AI.");
 			}
 		}
 	}
@@ -230,6 +245,10 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		
 		//Current direction is stopped
 		this.mDirectionCurrent = null;
+		
+		//No influence on direction
+		this.mWantsToGo = null;
+		
 		//Randomize next direction
 		boolean valid = false;
 		while (!valid) {
