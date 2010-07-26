@@ -211,6 +211,8 @@ public class Preferences extends PreferenceActivity {
 		editor.putInt(resources.getString(R.string.settings_color_game_background_key), resources.getInteger(R.integer.color_game_background_default));
 		//dots
 		editor.putInt(resources.getString(R.string.settings_color_game_dot_key), resources.getInteger(R.integer.color_game_dot_default));
+		//juggerdots
+		editor.putInt(resources.getString(R.string.settings_color_game_juggerdot_key), resources.getInteger(R.integer.color_game_juggerdot_default));
 		//hud foreground
 		editor.putInt(resources.getString(R.string.settings_color_game_hudfg_key), resources.getInteger(R.integer.color_game_hudfg_default));
 		//hud background
@@ -339,6 +341,9 @@ public class Preferences extends PreferenceActivity {
     		//dots
 	    	final String color_game_dot = resources.getString(R.string.settings_color_game_dot_key);
     		editor.putInt(color_game_dot, color.getInt(color_game_dot));
+    		//juggerdots
+	    	final String color_game_juggerdot = resources.getString(R.string.settings_color_game_juggerdot_key);
+    		editor.putInt(color_game_juggerdot, color.getInt(color_game_juggerdot));
     		//hud foreground
 	    	final String color_game_hudfg = resources.getString(R.string.settings_color_game_hudfg_key);
     		editor.putInt(color_game_hudfg, color.getInt(color_game_hudfg));
@@ -481,6 +486,9 @@ public class Preferences extends PreferenceActivity {
 			//dots
 	    	final String color_game_dot = resources.getString(R.string.settings_color_game_dot_key);
 	    	color.put(color_game_dot, preferences.getInt(color_game_dot, resources.getInteger(R.integer.color_game_dot_default)));
+			//jugger dots
+	    	final String color_game_juggerdot = resources.getString(R.string.settings_color_game_juggerdot_key);
+	    	color.put(color_game_juggerdot, preferences.getInt(color_game_juggerdot, resources.getInteger(R.integer.color_game_juggerdot_default)));
 			//hud foreground
 	    	final String color_game_hudfg = resources.getString(R.string.settings_color_game_hudfg_key);
 	    	color.put(color_game_hudfg, preferences.getInt(color_game_hudfg, resources.getInteger(R.integer.color_game_hudfg_default)));

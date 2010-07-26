@@ -217,6 +217,11 @@
 					android:summary="@string/settings_color_game_dot_summary"
 					android:defaultValue="@integer/color_game_dot_default"/>
 				<com.jakewharton.utilities.ColorPreference
+					android:key="@string/settings_color_game_juggerdot_key"
+					android:title="@string/settings_color_game_juggerdot"
+					android:summary="@string/settings_color_game_juggerdot_summary"
+					android:defaultValue="@integer/color_game_juggerdot_default"/>
+				<com.jakewharton.utilities.ColorPreference
 					android:key="@string/settings_color_game_hudfg_key"
 					android:title="@string/settings_color_game_hudfg"
 					android:summary="@string/settings_color_game_hudfg_summary"

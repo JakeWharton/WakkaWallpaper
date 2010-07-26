@@ -116,6 +116,9 @@
     <string name="settings_color_game_dot">Dots</string>
     <string name="settings_color_game_dot_key">color_game_dot</string>
     <string name="settings_color_game_dot_summary"></string>
+    <string name="settings_color_game_juggerdot">Juggerdot</string>
+    <string name="settings_color_game_juggerdot_key">color_game_juggerdot</string>
+    <string name="settings_color_game_juggerdot_summary"></string>
     <string name="settings_color_game_hudfg">HUD Foreground</string>
     <string name="settings_color_game_hudfg_key">color_game_hudfg</string>
     <string name="settings_color_game_hudfg_summary">Level and score text</string>
