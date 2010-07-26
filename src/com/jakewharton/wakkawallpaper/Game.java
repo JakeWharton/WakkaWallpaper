@@ -229,7 +229,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		
 		final String displayHud = Wallpaper.CONTEXT.getString(R.string.settings_display_showhud_key);
 		if (all || key.equals(displayHud)) {
-			this.mIsDisplayingHud = Wallpaper.PREFERENCES.getBoolean(key, Wallpaper.CONTEXT.getResources().getBoolean(R.bool.display_showhud));
+			this.mIsDisplayingHud = Wallpaper.PREFERENCES.getBoolean(key, Wallpaper.CONTEXT.getResources().getBoolean(R.bool.display_showhud_default));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Is Displaying HUD: " + this.mIsDisplayingHud);
