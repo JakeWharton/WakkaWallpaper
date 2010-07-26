@@ -14,6 +14,8 @@ import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 /**
@@ -54,22 +56,6 @@ public class Preferences extends PreferenceActivity {
         this.findPreference(resources.getString(R.string.settings_color_reset_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(final Preference preference) {
 				Preferences.this.loadColorDefaults();
-				return true;
-			}
-		});
-        
-        //import JSON
-        this.findPreference(resources.getString(R.string.io_import_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
-				Preferences.this.jsonImport();
-				return true;
-			}
-		});
-        
-        //export JSON
-        this.findPreference(resources.getString(R.string.io_export_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
-				Preferences.this.jsonExport();
 				return true;
 			}
 		});
@@ -115,7 +101,35 @@ public class Preferences extends PreferenceActivity {
 		});
     }
 
-    private void infoEmail() {
+    @Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		this.getMenuInflater().inflate(R.menu.preferences, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_import:
+				this.jsonImport();
+				return true;
+				
+			case R.id.menu_export:
+				this.jsonExport();
+				return true;
+				
+			case R.id.menu_reset:
+				this.loadDisplayDefaults();
+				this.loadGameDefaults();
+				this.loadColorDefaults();
+				return true;
+				
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+
+	private void infoEmail() {
         final Resources resources = this.getResources();
 		final Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("plain/text");
@@ -123,7 +137,6 @@ public class Preferences extends PreferenceActivity {
 		intent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.title));
 		
 		Preferences.this.startActivity(Intent.createChooser(intent, resources.getString(R.string.information_contact_email)));
-    	
     }
     
     private void infoTwitter() {
@@ -132,7 +145,6 @@ public class Preferences extends PreferenceActivity {
 		intent.setData(Uri.parse(resources.getString(R.string.information_contact_twitter_data)));
 		
 		Preferences.this.startActivity(Intent.createChooser(intent, resources.getString(R.string.information_contact_twitter)));
-    	
     }
     
     private void infoWeb() {

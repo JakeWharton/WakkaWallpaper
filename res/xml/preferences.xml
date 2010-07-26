@@ -318,18 +318,6 @@
 	</PreferenceCategory>
 	
 	<PreferenceCategory
-		android:title="@string/io_header">
-		<Preference
-			android:key="@string/io_import_key"
-			android:title="@string/io_import"
-			android:summary="@string/io_import_summary"/>
-		<Preference
-			android:key="@string/io_export_key"
-			android:title="@string/io_export"
-			android:summary="@string/io_export_summary"/>
-	</PreferenceCategory>
-	
-	<PreferenceCategory
 		android:title="@string/information_header">
 		<Preference
 			android:key="@string/information_version_key"
