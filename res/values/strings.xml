@@ -83,6 +83,9 @@
     <string name="settings_game_usercontrol_summary">Allow touches on the screen to influence The Man\'s direction</string>
     <string name="settings_game_ghosts">Ghosts</string>
     <string name="settings_game_ghosts_key">game_ghosts</string>
+    <string name="settings_game_ghostmode">Ghost Movement Mode</string>
+    <string name="settings_game_ghostmode_key">game_ghostmode</string>
+    <string name="settings_game_ghostmode_summary">Chase, scatter, or random</string>
     <string name="settings_game_deadlyghosts">Ghosts Are Deadly</string>
     <string name="settings_game_deadlyghosts_key">game_deadlyghosts</string>
     <string name="settings_game_deadlyghosts_summary">Whether or not colliding with ghost will kill you</string>

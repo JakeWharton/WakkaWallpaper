@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string-array name="game_ghostmode">
+		<item>Chase and scatter</item>
+		<item>Chase only</item>
+		<item>Scatter only</item>
+		<item>Random turns</item>
+	</string-array>
+	<string-array name="game_ghostmode_values">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+	</string-array>
+</resources>

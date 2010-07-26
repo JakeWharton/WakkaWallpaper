@@ -125,6 +125,13 @@
 			<PreferenceCategory
 				android:key="@string/settings_game_ghosts_key"
 				android:title="@string/settings_game_ghosts">
+				<com.jakewharton.utilities.IntegerListPreference
+					android:key="@string/settings_game_ghostmode_key"
+					android:title="@string/settings_game_ghostmode"
+					android:summary="@string/settings_game_ghostmode_summary"
+					android:defaultValue="@integer/game_ghostmode_default"
+					android:entries="@array/game_ghostmode"
+					android:entryValues="@array/game_ghostmode_values"/>
 				<CheckBoxPreference
 					android:key="@string/settings_game_deadlyghosts_key"
 					android:title="@string/settings_game_deadlyghosts"

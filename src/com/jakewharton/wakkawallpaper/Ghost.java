@@ -17,12 +17,37 @@ import android.util.Log;
  */
 public abstract class Ghost extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum State { CHASE, SCATTER, FRIGHTENED, EATEN }
+	enum Mode {
+		CHASE_AND_SCATTER(0), CHASE_ONLY(1), SCATTER_ONLY(2), RANDOM_TURNS(3);
+		
+		public final int value;
+		
+		private Mode(final int value) {
+			this.value = value;
+		}
+		
+		public static Ghost.Mode parseInt(final int modeValue) {
+			switch (modeValue) {
+				case 0:
+					return CHASE_AND_SCATTER;
+				case 1:
+					return CHASE_ONLY;
+				case 2:
+					return SCATTER_ONLY;
+				case 3:
+					return RANDOM_TURNS;
+				default:
+					return null;
+			}
+		}
+	}
 
 	private static final String TAG = "WakkaWallpaper.Ghost";
 	private static final int FLEE_LENGTH_BLINK = 5000;
 	private static final int FLEE_LENGTH = 7000;
 	
-	protected State mState;
+	protected Ghost.State mState;
+	protected Ghost.Mode mMode;
 	protected final Paint mBodyBackground;
 	private final Paint mEyeBackground;
 	private final Paint mEyeForeground;
@@ -147,6 +172,15 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			}
 		}
 		
+		final String ghostMode = Wallpaper.CONTEXT.getString(R.string.settings_game_ghostmode_key);
+		if (all || key.equals(ghostMode)) {
+			this.mMode = Ghost.Mode.parseInt(Wallpaper.PREFERENCES.getInt(ghostMode, resources.getInteger(R.integer.game_ghostmode_default)));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Mode: " + this.mMode);
+			}
+		}
+		
 
     	if (Wallpaper.LOG_VERBOSE) {
     		Log.v(Ghost.TAG, "< onSharedPreferenceChanged()");
@@ -203,10 +237,15 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 
     @Override
 	public void tick(Game game) {
-    	if ((this.mState == State.FRIGHTENED) && ((System.currentTimeMillis() - this.mStateChanged) > Ghost.FLEE_LENGTH)) {
-    		this.mState = State.CHASE;
+    	if ((this.mState == Ghost.State.FRIGHTENED) && ((System.currentTimeMillis() - this.mStateChanged) > Ghost.FLEE_LENGTH)) {
+    		if (this.mMode == Ghost.Mode.SCATTER_ONLY) {
+    			this.mState = Ghost.State.SCATTER;
+    		} else {
+    			this.mState = Ghost.State.CHASE;
+    			this.mStateChanged = System.currentTimeMillis();
+    		}
     	}
-    	
+
 		super.tick(game);
 	}
 
@@ -304,10 +343,19 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		//Initial direction is stopped
 		this.mDirectionCurrent = null;
-		//Chasing state
-		this.mState = State.CHASE;
-		//Begin TheMan-seeking logic
-		this.determineNextDirection(game, false);
+		
+		//Set initial state based on mode
+		switch (this.mMode) {
+			case CHASE_AND_SCATTER:
+			case CHASE_ONLY:
+			case RANDOM_TURNS:
+				this.setState(game, Ghost.State.CHASE);
+				break;
+				
+			case SCATTER_ONLY:
+				this.setState(game, Ghost.State.SCATTER);
+				break;
+		}
 	}
 	
 	@Override
@@ -335,7 +383,11 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				}
 			
 			case CHASE:
-				this.determineNextDirectionByLineOfSight(game, this.getChasingTarget(game), isStateChange);				
+				if (this.mMode == Ghost.Mode.RANDOM_TURNS) {
+					this.determineNextDirectionByRandomness(game, isStateChange);
+				} else {
+					this.determineNextDirectionByLineOfSight(game, this.getChasingTarget(game), isStateChange);
+				}
 				break;
 				
 			case SCATTER:
@@ -404,6 +456,27 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 		
 		this.mDirectionNext = nextDirection;
+	}
+	
+	/**
+	 * Pick a next direction at random when at an intersection.
+	 * 
+	 * @param game Game state.
+	 * @param isStateChange Whether or not this is occurring because of a state change
+	 */
+	protected void determineNextDirectionByRandomness(final Game game, final boolean isStateChange) {
+		if (game.isIntersection(this.mPosition)) {
+			while (true) {
+				this.mDirectionNext = Entity.Direction.values()[Game.RANDOM.nextInt(Entity.Direction.values().length)];
+				
+				if (game.isValidPosition(Entity.move(this.mPosition, this.mDirectionNext)) && ((this.mDirectionCurrent == null) || isStateChange || (this.mDirectionNext != this.mDirectionCurrent.getOpposite()))) {
+					break;
+				}
+			}
+		} else {
+			//Not at intersection, go straight
+			this.mDirectionNext = this.mDirectionCurrent;
+		}
 	}
 	
 	/**

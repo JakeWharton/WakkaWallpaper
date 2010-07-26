@@ -274,6 +274,8 @@ public class Preferences extends PreferenceActivity {
 		editor.putBoolean(resources.getString(R.string.settings_game_killscreen_key), resources.getBoolean(R.bool.game_killscreen_default));
 		//user controllable
 		editor.putBoolean(resources.getString(R.string.settings_game_usercontrol_key), resources.getBoolean(R.bool.game_usercontrol_default));
+		//ghost mode
+		editor.putInt(resources.getString(R.string.settings_game_ghostmode_key), resources.getInteger(R.integer.game_ghostmode_default));
 		//ghosts are deadly
 		editor.putBoolean(resources.getString(R.string.settings_game_deadlyghosts_key), resources.getBoolean(R.bool.game_deadlyghosts_default));
 		//ghost count
@@ -401,6 +403,9 @@ public class Preferences extends PreferenceActivity {
     		//user controllable
     		final String game_usercontrol = resources.getString(R.string.settings_game_usercontrol_key);
     		editor.putBoolean(game_usercontrol, game.getBoolean(game_usercontrol));
+    		//ghost mode
+    		final String game_ghostmode = resources.getString(R.string.settings_game_ghostmode_key);
+    		editor.putInt(game_ghostmode, game.getInt(game_ghostmode));
     		//ghosts are deadly
 			final String game_deadlyghosts = resources.getString(R.string.settings_game_deadlyghosts_key);
     		editor.putBoolean(game_deadlyghosts, game.getBoolean(game_deadlyghosts));
@@ -549,6 +554,9 @@ public class Preferences extends PreferenceActivity {
 	    	//user controllable
 	    	final String game_usercontrol = resources.getString(R.string.settings_game_usercontrol_key);
 	    	game.put(game_usercontrol, preferences.getBoolean(game_usercontrol, resources.getBoolean(R.bool.game_usercontrol_default)));
+    		//ghost mode
+    		final String game_ghostmode = resources.getString(R.string.settings_game_ghostmode_key);
+    		game.put(game_ghostmode, preferences.getInt(game_ghostmode, resources.getInteger(R.integer.game_ghostmode_default)));
 			//ghosts are deadly
 			final String game_deadlyghosts = resources.getString(R.string.settings_game_deadlyghosts_key);
 			game.put(game_deadlyghosts, preferences.getBoolean(game_deadlyghosts, resources.getBoolean(R.bool.game_deadlyghosts_default)));
