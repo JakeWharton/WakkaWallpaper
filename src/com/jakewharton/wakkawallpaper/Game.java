@@ -78,6 +78,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private boolean mIsBonusLifeAllowed;
     private boolean mIsBonusLifeGiven;
     private final Paint mDotForeground;
+    private final Paint mJuggerdotForeground;
     private int mGameBackground;
     private int mBonusLifeThreshold;
     private boolean mIsDisplayingHud;
@@ -110,6 +111,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         //Create Paints
         this.mDotForeground = new Paint(); 
         this.mDotForeground.setAntiAlias(true);
+        this.mJuggerdotForeground = new Paint();
+        this.mJuggerdotForeground.setAntiAlias(true);
         this.mHudForeground = new Paint();
         this.mHudForeground.setAntiAlias(true);
         this.mHudForeground.setTextSize(Game.HUD_SIZE);
@@ -269,6 +272,15 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Foreground: #" + Integer.toHexString(this.mDotForeground.getColor()));
+			}
+		}
+        
+		final String juggerdot = resources.getString(R.string.settings_color_game_juggerdot_key);
+		if (all || key.equals(juggerdot)) {
+			this.mJuggerdotForeground.setColor(Wallpaper.PREFERENCES.getInt(juggerdot, resources.getInteger(R.integer.color_game_juggerdot_default)));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Juggerdot Foreground: #" + Integer.toHexString(this.mJuggerdotForeground.getColor()));
 			}
 		}
 		
@@ -981,7 +993,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
             		final float right = left + (this.mCellWidth * 0.75f);
             		final float bottom = top + (this.mCellHeight * 0.75f);
 
-            		c.drawOval(new RectF(left, top, right, bottom), this.mDotForeground);
+            		c.drawOval(new RectF(left, top, right, bottom), this.mJuggerdotForeground);
         		}
         	}
         }
