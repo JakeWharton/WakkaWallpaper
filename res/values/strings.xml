@@ -6,6 +6,9 @@
     <string name="description">Creates a grid of dots that border your icons for some om nom nom.</string>
     <string name="version_name">1.0.0 beta 4</string>
     
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    
     <string name="ready">READY!</string>
     <string name="gameover">GAME OVER</string>
     
@@ -218,12 +221,14 @@
     <string name="io_header">Import / Export</string>
     <string name="io_import">Import Settings</string>
     <string name="io_import_key">io_import</string>
+    <string name="io_import_prompt">Import settings from SD card?\n\nThis will overwrite any customizations you have made.</string>
     <string name="io_import_summary">Load all settings from SD card</string>
-    <string name="io_import_success">Successfully loaded settings from "settings.wakkawallpaper.json" on SD card.</string>
-    <string name="io_import_failed">Failed to load settings from "settings.wakkawallpaper.json" on SD card.</string>
+    <string name="io_import_success">Successfully loaded settings from \"settings.wakkawallpaper.json\" on SD card.</string>
+    <string name="io_import_failed">Failed to load settings from \"settings.wakkawallpaper.json\" on SD card.</string>
     <string name="io_export">Export Settings</string>
     <string name="io_export_key">io_export</string>
+    <string name="io_export_prompt">Export settings to SD card?</string>
     <string name="io_export_summary">Save all settings to SD card</string>
-    <string name="io_export_success">Successfully saved settings to "settings.wakkawallpaper.json" on SD card.</string>
-    <string name="io_export_failed">Failed to save settings to "settings.wakkawallpaper.json" on SD card.</string>
+    <string name="io_export_success">Successfully saved settings to \"settings.wakkawallpaper.json\" on SD card.</string>
+    <string name="io_export_failed">Failed to save settings to \"settings.wakkawallpaper.json\" on SD card.</string>
 </resources>

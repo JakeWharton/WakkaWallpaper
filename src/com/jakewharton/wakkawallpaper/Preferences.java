@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import org.json.JSONObject;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -109,13 +111,33 @@ public class Preferences extends PreferenceActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		final Resources resources = this.getResources();
+		
 		switch (item.getItemId()) {
 			case R.id.menu_import:
-				this.jsonImport();
+				(new AlertDialog.Builder(this))
+					.setMessage(resources.getString(R.string.io_import_prompt))
+					.setCancelable(false)
+					.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							Preferences.this.jsonImport();
+						}
+					})
+					.setNegativeButton(resources.getString(R.string.no), null)
+					.show();
 				return true;
 				
 			case R.id.menu_export:
-				this.jsonExport();
+				(new AlertDialog.Builder(this))
+					.setMessage(resources.getString(R.string.io_export_prompt))
+					.setCancelable(false)
+					.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							Preferences.this.jsonExport();
+						}
+					})
+					.setNegativeButton(resources.getString(R.string.no), null)
+					.show();
 				return true;
 				
 			case R.id.menu_reset:
