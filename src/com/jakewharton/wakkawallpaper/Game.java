@@ -908,8 +908,13 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     	
     	//For on-board HUD text
-    	this.mTextLocation.x = ((this.mScreenWidth - this.mDotGridPaddingLeft - this.mDotGridPaddingRight) / 2.0f);
-    	this.mTextLocation.y = (this.mTheMan.getInitialPosition(this).y * this.mCellHeight);
+    	if (this.mIsLandscape) {
+    		this.mTextLocation.x = (this.mScreenHeight - (this.mDotGridPaddingBottom + this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / 2.0f;
+    		this.mTextLocation.y = ((this.mTheMan.getInitialPosition(this).y - 1) * this.mCellWidth) - (this.mDotGridPaddingTop + this.mDotGridPaddingLeft);
+    	} else {
+    		this.mTextLocation.x = (this.mScreenWidth - this.mDotGridPaddingLeft - this.mDotGridPaddingRight) / 2.0f;
+    		this.mTextLocation.y = (this.mTheMan.getInitialPosition(this).y * this.mCellHeight);
+    	}
 
     	if (Wallpaper.LOG_VERBOSE) {
     		Log.v(Game.TAG, "< performResize()");
@@ -926,23 +931,18 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
     	//Background
     	c.drawColor(this.mGameBackground);
-    	
-    	if (this.mIsDisplayingHud) {
-	        //Lives and score
-	        final float top = this.mScreenHeight - Game.HUD_OFFSET;
-	        for (int i = 0; i < this.mLives; i++) {
-	        	c.drawArc(new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top), Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
-	        }
-	        //Don't display larger than 999,999 (bug in original game)
-	        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore % Game.SCORE_FLIPPING)) + " L" + String.valueOf(this.mLevel);
-	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - Game.HUD_PADDING, top, this.mHudForeground);
-    	}
         
         if (this.mIsLandscape) {
         	//Perform counter-clockwise rotation
         	c.rotate(-90, this.mScreenWidth / 2.0f, this.mScreenWidth / 2.0f);
         	c.translate(0, this.mDotGridPaddingLeft);
+
+        	//Draw HUD after rotation and translation
+        	this.drawHud(c);
         } else {
+        	//Draw HUD before translation
+        	this.drawHud(c);
+        	
         	c.translate(this.mDotGridPaddingLeft, this.mDotGridPaddingTop);
         }
         
@@ -984,7 +984,12 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	    		ghost.draw(c, this.mIsLandscape);
 	    	}
     	}
-    	
+
+        if (this.mIsLandscape) {
+        	//Perform clockwise rotation back to normal
+        	c.rotate(90, this.mScreenWidth / 2.0f, this.mScreenWidth / 2.0f);
+        }
+        
     	switch (this.mState) {
     		case READY:
     			c.drawText(this.mTextReady, this.mTextLocation.x - (this.mReadyForeground.measureText(this.mTextReady) / 2.0f), this.mTextLocation.y, this.mReadyForeground);
@@ -995,6 +1000,25 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
         
         c.restore();
+    }
+    
+    /**
+     * Draw the lives, score, and level
+     * 
+     * @param c Canvas to draw on.
+     */
+    private void drawHud(final Canvas c) {
+    	if (this.mIsDisplayingHud) {
+	        //Lives and score
+	        final float top = this.mScreenHeight - Game.HUD_OFFSET;
+	        for (int i = 0; i < this.mLives; i++) {
+	        	c.drawArc(new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top), Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
+	        }
+	        //Don't display larger than 999,999 (bug in original game)
+	        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore % Game.SCORE_FLIPPING)) + " L" + String.valueOf(this.mLevel);
+	        final float landscapeOffset = this.mIsLandscape ? this.mDotGridPaddingTop : 0;
+	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - Game.HUD_PADDING - landscapeOffset, top, this.mHudForeground);
+    	}
     }
     
     /**
