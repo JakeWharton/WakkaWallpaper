@@ -5,7 +5,7 @@
     
 	<integer name="display_fps_default">8</integer>
 	<integer name="display_fps_min">5</integer>
-	<integer name="display_fps_max">20</integer>
+	<integer name="display_fps_max">30</integer>
 	
 	<integer name="display_juggerdotblink_default">3</integer>
 	<integer name="display_juggerdotblink_min">1</integer>
