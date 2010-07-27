@@ -707,8 +707,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	
 					case FRIGHTENED:
 						//Eat ghost
-						this.mFleeingGhostsEaten += 1;
 						this.addToScore(Game.POINTS_FLEEING_GHOSTS[this.mFleeingGhostsEaten]);
+						this.mFleeingGhostsEaten += 1;
 						ghost.setState(this, Ghost.State.EATEN);
 						
 						//See if we have eaten all the ghosts for this juggerdot
