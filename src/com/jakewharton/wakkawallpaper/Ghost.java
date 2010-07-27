@@ -73,27 +73,18 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	protected Ghost() {
 		super();
 		
-		this.mBodyBackground = new Paint();
-		this.mBodyBackground.setAntiAlias(true);
-		this.mEyeBackground = new Paint();
-		this.mEyeBackground.setAntiAlias(true);
-		this.mEyeForeground = new Paint();
-		this.mEyeForeground.setAntiAlias(true);
-		this.mScaredBackground = new Paint();
-		this.mScaredBackground.setAntiAlias(true);
-		this.mScaredMouthForeground = new Paint();
-		this.mScaredMouthForeground.setAntiAlias(true);
+		this.mBodyBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
+		this.mEyeBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
+		this.mEyeForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
+		this.mScaredBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
+		this.mScaredMouthForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.mScaredMouthForeground.setStyle(Style.STROKE);
-		this.mScaredEyeForeground = new Paint();
-		this.mScaredEyeForeground.setAntiAlias(true);
+		this.mScaredEyeForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.mScaredEyeForeground.setStyle(Style.FILL_AND_STROKE);
-		this.mScaredBlinkBackground = new Paint();
-		this.mScaredBlinkBackground.setAntiAlias(true);
-		this.mScaredBlinkMouthForeground = new Paint();
-		this.mScaredBlinkMouthForeground.setAntiAlias(true);
+		this.mScaredBlinkBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
+		this.mScaredBlinkMouthForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.mScaredBlinkMouthForeground.setStyle(Style.STROKE);
-		this.mScaredBlinkEyeForeground = new Paint();
-		this.mScaredBlinkEyeForeground.setAntiAlias(true);
+		this.mScaredBlinkEyeForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.mScaredBlinkEyeForeground.setStyle(Style.FILL_AND_STROKE);
 		
 		this.mBody = new Path[2];

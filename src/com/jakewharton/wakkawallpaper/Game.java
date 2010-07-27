@@ -111,20 +111,14 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     	
         //Create Paints
-        this.mDotForeground = new Paint(); 
-        this.mDotForeground.setAntiAlias(true);
-        this.mJuggerdotForeground = new Paint();
-        this.mJuggerdotForeground.setAntiAlias(true);
-        this.mHudForeground = new Paint();
-        this.mHudForeground.setAntiAlias(true);
+        this.mDotForeground = new Paint(Paint.ANTI_ALIAS_FLAG); 
+        this.mJuggerdotForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
+        this.mHudForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mHudForeground.setTextSize(Game.HUD_SIZE);
-        this.mTheManForeground = new Paint();
-        this.mTheManForeground.setAntiAlias(true);
-        this.mReadyForeground = new Paint();
-        this.mReadyForeground.setAntiAlias(true);
+        this.mTheManForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
+        this.mReadyForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mReadyForeground.setTextSize(Game.HUD_SIZE);
-        this.mGameOverForeground = new Paint();
-        this.mGameOverForeground.setAntiAlias(true);
+        this.mGameOverForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mGameOverForeground.setTextSize(Game.HUD_SIZE);
         
         final Resources resources = Wallpaper.CONTEXT.getResources();

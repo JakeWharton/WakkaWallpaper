@@ -48,8 +48,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	public Fruit() {
 		super();
 		
-		this.mTempColor = new Paint();
-		this.mTempColor.setAntiAlias(true);
+		this.mTempColor = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.mTempColor.setColor(0xffff6666);
 
         //Load all preferences or their defaults

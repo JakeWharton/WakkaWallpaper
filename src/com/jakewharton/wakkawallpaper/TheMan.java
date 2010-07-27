@@ -37,8 +37,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	public TheMan() {
 		super();
         
-        this.mForeground = new Paint();
-        this.mForeground.setAntiAlias(true);
+        this.mForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mForeground.setStyle(Style.FILL_AND_STROKE);
 
         //Load all preferences or their defaults
