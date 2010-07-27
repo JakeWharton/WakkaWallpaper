@@ -180,15 +180,13 @@ public abstract class Entity {
 	public void tick(final Game game) {
 		this.mTickCount += 1;
 
-		if (Wallpaper.LOG_DEBUG) {
-			if (this.mDirectionNext == null) {
-				Log.w(Entity.TAG, this.getClass().getSimpleName() + "'s next direction is null. This will result in a fatal error.");
-				Log.w(Entity.TAG, "Position: (" + this.mPosition.x + ", " + this.mPosition.y + ")");
-				Log.w(Entity.TAG, "Location: (" + this.mLocation.x + ", " + this.mLocation.y + ")");
-				Log.w(Entity.TAG, "Direction Current: " + this.mDirectionCurrent);
-				Log.w(Entity.TAG, "Direction Last: " + this.mDirectionLast);
-				Log.w(Entity.TAG, "Speed: " + (this.mSpeed * 100) + "%");
-			}
+		if (this.mDirectionNext == null) {
+			Log.w(Entity.TAG, this.getClass().getSimpleName() + "'s next direction is null. This will result in a fatal error.");
+			Log.w(Entity.TAG, "Position: (" + this.mPosition.x + ", " + this.mPosition.y + ")");
+			Log.w(Entity.TAG, "Location: (" + this.mLocation.x + ", " + this.mLocation.y + ")");
+			Log.w(Entity.TAG, "Direction Current: " + this.mDirectionCurrent);
+			Log.w(Entity.TAG, "Direction Last: " + this.mDirectionLast);
+			Log.w(Entity.TAG, "Speed: " + (this.mSpeed * 100) + "%");
 		}
 		
 		//Promote current direction to last
