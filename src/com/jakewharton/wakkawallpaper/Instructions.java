@@ -3,22 +3,20 @@ package com.jakewharton.wakkawallpaper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.webkit.WebView;
 
 public class Instructions extends Activity {
-	private static final String FILENAME = "instructions.txt";
+	private static final String FILENAME = "instructions.html";
 	private static final char NEWLINE = '\n';
-	private static final String ERROR = "Failed to load about text from assets.";
+	private static final String ERROR = "Failed to load instructions from assets.";
+	private static final String MIME_TYPE = "text/html";
+	private static final String ENCODING = "utf8";
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        //Create layout
-        this.setContentView(R.layout.instructions);
         
         StringBuffer content = new StringBuffer();
         
@@ -36,6 +34,9 @@ public class Instructions extends Activity {
 		}
 		
 		//Put text into layout
-		((TextView)this.findViewById(R.id.content)).setText(content.toString());
+        final WebView view = new WebView(this);
+		view.loadData(content.toString(), Instructions.MIME_TYPE, Instructions.ENCODING);
+		
+		this.setContentView(view);
     }
 }
