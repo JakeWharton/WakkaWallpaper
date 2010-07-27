@@ -236,8 +236,15 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
     			this.mStateChanged = System.currentTimeMillis();
     		}
     	}
+    	
+    	final Ghost.State stateBefore = this.mState;
 
 		super.tick(game);
+		
+		if ((stateBefore == Ghost.State.EATEN) && (this.mState == Ghost.State.EATEN)) {
+			//tick twice!
+			super.tick(game);
+		}
 	}
 
 	/**
