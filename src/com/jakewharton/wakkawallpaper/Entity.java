@@ -187,6 +187,26 @@ public abstract class Entity {
 			Log.w(Entity.TAG, "Direction Current: " + this.mDirectionCurrent);
 			Log.w(Entity.TAG, "Direction Last: " + this.mDirectionLast);
 			Log.w(Entity.TAG, "Speed: " + (this.mSpeed * 100) + "%");
+			
+			StringBuilder params = new StringBuilder('{');
+			params.append("Position = (");
+			params.append(this.mPosition.x);
+			params.append(", ");
+			params.append(this.mPosition.y);
+			params.append("); Location = (");
+			params.append(this.mLocation.x);
+			params.append(", ");
+			params.append(this.mLocation.y);
+			params.append("); DirectionLast = ");
+			params.append(this.mDirectionLast);
+			params.append("; DirectionCurrent = ");
+			params.append(this.mDirectionCurrent);
+			params.append("; DirectionNext = null; Speed = ");
+			params.append(this.mSpeed);
+			params.append('}');
+			
+			//get this over with before the switch below throws it anyways
+			throw new NullPointerException(this.getClass().getSimpleName() + "'s next direction is null. " + params.toString());
 		}
 		
 		//Promote current direction to last

@@ -312,17 +312,20 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * @param game Game instance
 	 * @param state Next ghost state
 	 */
-	public void setState(final Game game, final State state) {
-		if (this.mState != State.EATEN) {
-			this.mState = state;
-			
-			if (state == State.FRIGHTENED) {
-				//reverse direction immediately if frightened
-				this.mDirectionNext = this.mDirectionCurrent.getOpposite();
-			} else {
-				//otherwise get new next direction
-				this.determineNextDirection(game, true);
-			}
+	public void setState(final Game game, final Ghost.State state) {
+		//We cannot be re-eaten or frightened when eaten
+		if ((this.mState == Ghost.State.EATEN) && ((state == Ghost.State.EATEN) || (state == Ghost.State.FRIGHTENED))) {
+			return;
+		}
+		
+		this.mState = state;
+		
+		if (state == Ghost.State.FRIGHTENED) {
+			//reverse direction immediately if frightened
+			this.mDirectionNext = this.mDirectionCurrent.getOpposite();
+		} else {
+			//otherwise get new next direction
+			this.determineNextDirection(game, true);
 		}
 		
 		//Set the timestamp for timed states
@@ -343,16 +346,26 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		this.mDirectionCurrent = null;
 		
 		//Set initial state based on mode
+		this.setState(game, this.getInitialState());
+	}
+	
+	/**
+	 * Get initial state based on mode.
+	 * 
+	 * @return Ghost.State
+	 */
+	private Ghost.State getInitialState() {
 		switch (this.mMode) {
 			case CHASE_AND_SCATTER:
 			case CHASE_ONLY:
 			case RANDOM_TURNS:
-				this.setState(game, Ghost.State.CHASE);
-				break;
+				return Ghost.State.CHASE;
 				
 			case SCATTER_ONLY:
-				this.setState(game, Ghost.State.SCATTER);
-				break;
+				return Ghost.State.SCATTER;
+				
+			default:
+				throw new IllegalArgumentException("Unknown ghost mode: " + this.mMode);
 		}
 	}
 	
@@ -368,17 +381,20 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * @param game Game instance
 	 * @param isStateChange Whether or not this change is the result of a state change
 	 */
-	protected void determineNextDirection(final Game game, final boolean isStateChange) {
+	protected void determineNextDirection(final Game game, boolean isStateChange) {
 		switch (this.mState) {
 			case EATEN:
 				final Point initialPosition = this.getInitialPosition(game);
 				if ((this.mPosition.x == initialPosition.x) && (this.mPosition.y == initialPosition.y)) {
-					this.mState = State.CHASE;
-					//fall through to next case
+					if (Wallpaper.LOG_DEBUG) {
+						Log.d(Ghost.TAG, this.getClass().getSimpleName() + " has reached initial position. Reverting to initial ghost state.");
+					}
+					
+					this.setState(game, this.getInitialState());
 				} else {
 					this.determineNextDirectionByLineOfSight(game, initialPosition, isStateChange);
-					break;
 				}
+				break;
 			
 			case CHASE:
 				if (this.mMode == Ghost.Mode.RANDOM_TURNS) {
@@ -450,6 +466,16 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 					nextDirection = direction;
 					shortestDistance = nextDistance; 
 				}
+			}
+		}
+		
+		if (Wallpaper.LOG_DEBUG) {
+			if (nextDirection == null) {
+				Log.w(Ghost.TAG, this.getClass().getSimpleName() + "'s next direction is null. This will result in a fatal error.");
+				Log.w(Ghost.TAG, "Target: (" + target.x + ", " + target.y + ")");
+				Log.w(Ghost.TAG, "State Changed: " + isStateChange);
+				Log.w(Ghost.TAG, "State: " + this.mState);
+				Log.w(Ghost.TAG, "Mode: " + this.mMode);
 			}
 		}
 		
