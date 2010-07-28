@@ -40,6 +40,7 @@
     <string name="settings_display_showhud">Show HUD</string>
     <string name="settings_display_showhud_key">display_showhud</string>
     <string name="settings_display_showhud_summary">Toggle the heads-up display for lives and score</string>
+    <string name="settings_display_layout">Layout</string>
     <string name="settings_display_iconrows">Icon Rows</string>
     <string name="settings_display_iconrows_key">display_iconrows</string>
     <string name="settings_display_iconrows_summary">Number of icon rows on your home screen</string>
