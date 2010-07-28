@@ -49,9 +49,13 @@
 	
 	<integer name="game_mode_default">0</integer>
 	
-	<integer name="game_endlessthresholdpercent_default">50</integer>
-	<integer name="game_endlessthresholdpercent_min">25</integer>
-	<integer name="game_endlessthresholdpercent_max">75</integer>
+	<integer name="game_endlessdotregen_default">50</integer>
+	<integer name="game_endlessdotregen_min">25</integer>
+	<integer name="game_endlessdotregen_max">75</integer>
+	
+	<integer name="game_endlessjuggerdotregen_default">2</integer>
+	<integer name="game_endlessjuggerdotregen_min">1</integer>
+	<integer name="game_endlessjuggerdotregen_max">4</integer>
 	
 	<integer name="game_bonuslifethreshold_default">10000</integer>
 	<integer name="game_bonuslifethreshold_min">5000</integer>

@@ -272,8 +272,10 @@ public class Preferences extends PreferenceActivity {
 		
 		//mode
 		editor.putInt(resources.getString(R.string.settings_game_mode_key), resources.getInteger(R.integer.game_mode_default));
-		//endless threshold
-		editor.putInt(resources.getString(R.string.settings_game_endlessthresholdpercent_key), resources.getInteger(R.integer.game_endlessthresholdpercent_default));
+		//endless dot threshold
+		editor.putInt(resources.getString(R.string.settings_game_endlessdotregen_key), resources.getInteger(R.integer.game_endlessdotregen_default));
+		//endless jugger threshold
+		editor.putInt(resources.getString(R.string.settings_game_endlessjuggerdotregen_key), resources.getInteger(R.integer.game_endlessjuggerdotregen_default));
 		//display kill screen
 		editor.putBoolean(resources.getString(R.string.settings_game_killscreen_key), resources.getBoolean(R.bool.game_killscreen_default));
 		//user controllable
@@ -404,9 +406,12 @@ public class Preferences extends PreferenceActivity {
     		//mode
     		final String game_mode = resources.getString(R.string.settings_game_mode_key);
     		editor.putInt(game_mode, game.getInt(game_mode));
-    		//endless threshold
-    		final String game_endlessthresholdpercent = resources.getString(R.string.settings_game_endlessthresholdpercent_key);
-    		editor.putInt(game_endlessthresholdpercent, game.getInt(game_endlessthresholdpercent));
+    		//endless dot threshold
+    		final String game_endlessdotregen = resources.getString(R.string.settings_game_endlessdotregen_key);
+    		editor.putInt(game_endlessdotregen, game.getInt(game_endlessdotregen));
+    		//endless jugger threshold
+    		final String game_endlessjuggerdotregen = resources.getString(R.string.settings_game_endlessjuggerdotregen_key);
+    		editor.putInt(game_endlessjuggerdotregen, game.getInt(game_endlessjuggerdotregen));
     		//display kill screen
 	    	final String game_killscreen = resources.getString(R.string.settings_game_killscreen_key);
     		editor.putBoolean(game_killscreen, game.getBoolean(game_killscreen));
@@ -561,9 +566,12 @@ public class Preferences extends PreferenceActivity {
     		//mode
     		final String game_mode = resources.getString(R.string.settings_game_mode_key);
     		game.put(game_mode, preferences.getInt(game_mode, resources.getInteger(R.integer.game_mode_default)));
-    		//endless threshold
-    		final String game_endlessthresholdpercent = resources.getString(R.string.settings_game_endlessthresholdpercent_key);
-    		game.put(game_endlessthresholdpercent, preferences.getInt(game_endlessthresholdpercent, resources.getInteger(R.integer.game_endlessthresholdpercent_default)));
+    		//endless dot threshold
+    		final String game_endlessdotregen = resources.getString(R.string.settings_game_endlessdotregen_key);
+    		game.put(game_endlessdotregen, preferences.getInt(game_endlessdotregen, resources.getInteger(R.integer.game_endlessdotregen_default)));
+    		//endless juggerdot threshold
+    		final String game_endlessjuggerdotregen = resources.getString(R.string.settings_game_endlessjuggerdotregen_key);
+    		game.put(game_endlessjuggerdotregen, preferences.getInt(game_endlessjuggerdotregen, resources.getInteger(R.integer.game_endlessjuggerdotregen_default)));
 			//display kill screen
 	    	final String game_killscreen = resources.getString(R.string.settings_game_killscreen_key);
 	    	game.put(game_killscreen, preferences.getBoolean(game_killscreen, resources.getBoolean(R.bool.game_killscreen_default)));

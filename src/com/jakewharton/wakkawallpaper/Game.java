@@ -70,7 +70,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	private static final float HUD_THEMAN_ARC = 315;
 	private static final int NUMBER_OF_JUGGERDOTS = 4;
 	private static final int KILL_SCREEN_LEVEL = 256;
-	private static final int ENDLESS_JUGGERDOT_THRESHOLD = 2;
 	
 	private Game.State mState;
 	private Game.Mode mMode;
@@ -126,6 +125,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private int mJuggerdotBlinkLength;
     private int mJuggerdotsRemaining;
     private int mEndlessDotThresholdPercent;
+    private int mEndlessJuggerdotThreshold;
     
     /**
      * Create a new game adhering to the specified parameters.
@@ -199,12 +199,21 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			}
 		}
 		
-		final String endlessDotThreshold = resources.getString(R.string.settings_game_endlessthresholdpercent_key);
+		final String endlessDotThreshold = resources.getString(R.string.settings_game_endlessdotregen_key);
 		if (all || key.equals(endlessDotThreshold)) {
-			this.mEndlessDotThresholdPercent = Wallpaper.PREFERENCES.getInt(endlessDotThreshold, resources.getInteger(R.integer.game_endlessthresholdpercent_default));
+			this.mEndlessDotThresholdPercent = Wallpaper.PREFERENCES.getInt(endlessDotThreshold, resources.getInteger(R.integer.game_endlessdotregen_default));
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Game.TAG, "Endless Dot Threshold: " + this.mEndlessDotThresholdPercent);
+				Log.d(Game.TAG, "Endless Dot Threshold (%): " + this.mEndlessDotThresholdPercent);
+			}
+		}
+		
+		final String endlessJuggerdotThreshold = resources.getString(R.string.settings_game_endlessjuggerdotregen_key);
+		if (all || key.equals(endlessJuggerdotThreshold)) {
+			this.mEndlessJuggerdotThreshold = Wallpaper.PREFERENCES.getInt(endlessJuggerdotThreshold, resources.getInteger(R.integer.game_endlessjuggerdotregen_default));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Endless Juggerdot Threshold: " + this.mEndlessJuggerdotThreshold);
 			}
 		}
 		
@@ -734,7 +743,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		//Blank cell since we've eaten the dot
     		this.setCell(this.mTheMan.getPosition(), Cell.BLANK);
         	
-        	if ((this.mMode == Game.Mode.ENDLESS) && (this.mJuggerdotsRemaining < Game.ENDLESS_JUGGERDOT_THRESHOLD)) {
+        	if ((this.mMode == Game.Mode.ENDLESS) && (this.mJuggerdotsRemaining < this.mEndlessJuggerdotThreshold)) {
         		//regen juggerdot randomly
         		while (true) {
         			final Point dotPoint = new Point(Game.RANDOM.nextInt(this.mCellsWide), Game.RANDOM.nextInt(this.mCellsTall));

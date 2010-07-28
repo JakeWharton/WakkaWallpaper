@@ -123,12 +123,19 @@
 				android:entries="@array/game_mode"
 				android:entryValues="@array/game_mode_values"/>
 			<com.jakewharton.utilities.NumberPreference
-				android:key="@string/settings_game_endlessthresholdpercent_key"
-				android:title="@string/settings_game_endlessthresholdpercent"
-				android:summary="@string/settings_game_endlessthresholdpercent_summary"
-				android:defaultValue="@integer/game_endlessthresholdpercent_default"
-				app:min="@integer/game_endlessthresholdpercent_min"
-				app:max="@integer/game_endlessthresholdpercent_max"/>
+				android:key="@string/settings_game_endlessdotregen_key"
+				android:title="@string/settings_game_endlessdotregen"
+				android:summary="@string/settings_game_endlessdotregen_summary"
+				android:defaultValue="@integer/game_endlessdotregen_default"
+				app:min="@integer/game_endlessdotregen_min"
+				app:max="@integer/game_endlessdotregen_max"/>
+			<com.jakewharton.utilities.NumberPreference
+				android:key="@string/settings_game_endlessjuggerdotregen_key"
+				android:title="@string/settings_game_endlessjuggerdotregen"
+				android:summary="@string/settings_game_endlessjuggerdotregen_summary"
+				android:defaultValue="@integer/game_endlessjuggerdotregen_default"
+				app:min="@integer/game_endlessjuggerdotregen_min"
+				app:max="@integer/game_endlessjuggerdotregen_max"/>
 			<CheckBoxPreference
 				android:key="@string/settings_game_killscreen_key"
 				android:title="@string/settings_game_killscreen"
