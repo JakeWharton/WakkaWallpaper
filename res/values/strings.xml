@@ -201,7 +201,7 @@
     <string name="about_key">about</string>
     <string name="about_summary">Instructions and change log</string>
     <string name="about_header_key">about_header</string>
-    <string name="about_header_summary">An Android live wallpaper which simulates a popular 1980\'s arcade game</string>
+    <string name="about_header_summary">An Android live wallpaper which simulates a popular 1980\'s arcade game.</string>
     <string name="about_contents">Contents</string>
     <string name="instructions">Instructions</string>
     <string name="instructions_key">instructions</string>
