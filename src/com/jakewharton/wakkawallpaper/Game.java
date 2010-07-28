@@ -1124,17 +1124,18 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	if (this.mIsDisplayingHud) {
 	        //Lives and score
 	        final float top = this.mScreenHeight - this.mHudOffset;
-	        
-	        //Don't display larger than 999,999 (bug in original game)
-	        String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore % Game.SCORE_FLIPPING));
-	        
+	        String score;
+
 	        if (this.mMode != Game.Mode.ENDLESS) {
 		        for (int i = 0; i < this.mLives; i++) {
 		        	c.drawArc(new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top), Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
 		        }
 		        
-		        //Add lives to score
-		        score += " L" + String.valueOf(this.mLevel);
+		        //Don't display larger than 999,999 (bug in original game)
+		        score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore % Game.SCORE_FLIPPING)) + " L" + String.valueOf(this.mLevel);
+	        } else {
+	        	//In endless mode display actual score
+	        	score = String.valueOf(this.mScore);
 	        }
 	        
 	        final float landscapeOffset = this.mIsLandscape ? this.mDotGridPaddingTop : 0;
