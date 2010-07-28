@@ -47,6 +47,12 @@
 	<integer name="display_hudoffset_min">0</integer>
 	<integer name="display_hudoffset_max">50</integer>
 	
+	<integer name="game_mode_default">0</integer>
+	
+	<integer name="game_endlessthresholdpercent_default">50</integer>
+	<integer name="game_endlessthresholdpercent_min">25</integer>
+	<integer name="game_endlessthresholdpercent_max">75</integer>
+	
 	<integer name="game_bonuslifethreshold_default">10000</integer>
 	<integer name="game_bonuslifethreshold_min">5000</integer>
 	<integer name="game_bonuslifethreshold_max">100000</integer>

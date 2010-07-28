@@ -20,6 +20,32 @@ import android.util.Log;
  */
 public class Game implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum Cell { BLANK, WALL, DOT, JUGGERDOT }
+	enum Mode {
+		ARCADE(0), ENDLESS(1);
+		
+		public final int value;
+		
+		private Mode(final int value) {
+			this.value = value;
+		}
+		
+		/**
+		 * Convert an integer to its corresponding Game.Mode.
+		 * 
+		 * @param value Integer
+		 * @return Game.Mode
+		 */
+		public static Game.Mode parseInt(final int value) {
+			switch (value) {
+				case 0:
+					return Game.Mode.ARCADE;
+				case 1:
+					return Game.Mode.ENDLESS;
+				default:
+					throw new IllegalArgumentException("Unknown mode: " + value);
+			}
+		}
+	}
 	enum State {
 		READY(3000), PLAYING(0), DYING(3000), LEVEL_COMPLETE(1500), GAME_OVER(3000);
 		
@@ -44,8 +70,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	private static final float HUD_THEMAN_ARC = 315;
 	private static final int NUMBER_OF_JUGGERDOTS = 4;
 	private static final int KILL_SCREEN_LEVEL = 256;
+	private static final int ENDLESS_JUGGERDOT_THRESHOLD = 2;
 	
 	private Game.State mState;
+	private Game.Mode mMode;
 	private long mStateTimestamp;
 	private int mCellsWide;
 	private int mCellsTall;
@@ -70,7 +98,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	private int mFleeingGhostsEaten;
 	private int mAllFleeingGhostsEaten;
 	private int mDotsRemaining;
-	private int mDotsEaten;
+	private int mDotsTotal;
 	private int mLives;
 	private int mScore;
 	private int mLevel;
@@ -96,6 +124,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private long mTickCount;
     private int mJuggerdotBlinkInterval;
     private int mJuggerdotBlinkLength;
+    private int mJuggerdotsRemaining;
+    private int mEndlessDotThresholdPercent;
     
     /**
      * Create a new game adhering to the specified parameters.
@@ -154,9 +184,29 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         boolean hasGhostCountChanged = false;
 		boolean hasLayoutChanged = false;
 		boolean hasPaddingChanged = false;
+		boolean hasModeChanged = false;
 
 		
 		// GENERAL //
+		
+		final String mode = resources.getString(R.string.settings_game_mode_key);
+		if (all || key.equals(mode)) {
+			this.mMode = Game.Mode.parseInt(Wallpaper.PREFERENCES.getInt(mode, resources.getInteger(R.integer.game_mode_default)));
+			hasModeChanged = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Mode: " + this.mMode);
+			}
+		}
+		
+		final String endlessDotThreshold = resources.getString(R.string.settings_game_endlessthresholdpercent_key);
+		if (all || key.equals(endlessDotThreshold)) {
+			this.mEndlessDotThresholdPercent = Wallpaper.PREFERENCES.getInt(endlessDotThreshold, resources.getInteger(R.integer.game_endlessthresholdpercent_default));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Endless Dot Threshold: " + this.mEndlessDotThresholdPercent);
+			}
+		}
 		
 		final String juggerdotBlink = resources.getString(R.string.settings_display_juggerdotblink_key);
 		if (all || key.equals(juggerdotBlink)) {
@@ -445,7 +495,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		
 		
 		//Check to see if we need a new game
-		if (hasBonusChanged || hasGhostCountChanged || hasLayoutChanged) {
+		if (hasBonusChanged || hasGhostCountChanged || hasLayoutChanged || hasModeChanged) {
 	    	this.newGame();
 		}
 
@@ -500,7 +550,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * @return Number of dots eaten.
      */
     public int getDotsEaten() {
-    	return this.mDotsEaten;
+    	return this.mDotsTotal - this.mDotsRemaining;
     }
     
     /**
@@ -658,23 +708,44 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      */
     public void checkDots() {
     	if (this.getCell(this.mTheMan.getPosition()) == Cell.DOT) {
-    		this.mDotsEaten += 1;
     		this.mDotsRemaining -= 1;
     		this.addToScore(Game.POINTS_DOT);
     		
     		//Blank cell since we've eaten the dot
     		this.setCell(this.mTheMan.getPosition(), Cell.BLANK);
+        	
+        	if ((this.mMode == Game.Mode.ENDLESS) && (this.mDotsRemaining < (this.mDotsTotal * this.mEndlessDotThresholdPercent / 100.0f))) {
+        		//regen dot randomly
+        		while (true) {
+        			final Point dotPoint = new Point(Game.RANDOM.nextInt(this.mCellsWide), Game.RANDOM.nextInt(this.mCellsTall));
+        			if (this.isValidPosition(dotPoint) && (this.getCell(dotPoint) == Game.Cell.BLANK)) {
+        				this.setCell(dotPoint, Game.Cell.DOT);
+        				break;
+        			}
+        		}
+        		
+        		this.mDotsRemaining += 1;
+        	}
     	} else if (this.getCell(this.mTheMan.getPosition()) == Cell.JUGGERDOT) {
+    		this.mJuggerdotsRemaining -= 1;
     		this.addToScore(Game.POINTS_JUGGERDOT);
     		this.switchGhostsState(Ghost.State.FRIGHTENED);
     		
     		//Blank cell since we've eaten the dot
     		this.setCell(this.mTheMan.getPosition(), Cell.BLANK);
-    	}
-    	
-    	//Check for fruit
-    	if ((this.mTheMan.getPosition().x == this.mFruit.getPosition().x) && (this.mTheMan.getPosition().y == this.mFruit.getPosition().y) && (this.mFruit.isVisible())) {
-    		this.addToScore(this.mFruit.eat());
+        	
+        	if ((this.mMode == Game.Mode.ENDLESS) && (this.mJuggerdotsRemaining < Game.ENDLESS_JUGGERDOT_THRESHOLD)) {
+        		//regen juggerdot randomly
+        		while (true) {
+        			final Point dotPoint = new Point(Game.RANDOM.nextInt(this.mCellsWide), Game.RANDOM.nextInt(this.mCellsTall));
+        			if (this.isValidPosition(dotPoint) && (this.getCell(dotPoint) == Game.Cell.BLANK)) {
+        				this.setCell(dotPoint, Game.Cell.JUGGERDOT);
+        				break;
+        			}
+        		}
+        		
+        		this.mJuggerdotsRemaining += 1;
+        	}
     	}
     }
     
@@ -682,7 +753,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * Check to see if The Man has eaten the fruit.
      */
     public void checkFruit() {
-    	if (this.mTheMan.isCollidingWith(this.mFruit)) {
+    	if (this.mTheMan.isCollidingWith(this.mFruit) && this.mFruit.isVisible()) {
     		//eat the fruit
     		this.addToScore(this.mFruit.eat());
     	}
@@ -800,18 +871,18 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     	
     	//Initialize dots
-    	this.mDotsRemaining = 0;
-    	this.mDotsEaten = 0;
+    	this.mDotsTotal = 0;
     	for (int y = 0; y < this.mCellsTall; y++) {
     		for (int x = 0; x < this.mCellsWide; x++) {
     			if ((x % (this.mCellColumnSpacing + 1) == 0) || (y % (this.mCellRowSpacing + 1) == 0)) {
     				this.mBoard[y][x] = Cell.DOT;
-    				this.mDotsRemaining += 1;
+    				this.mDotsTotal += 1;
     			} else {
     				this.mBoard[y][x] = Cell.WALL;
     			}
     		}
     	}
+    	this.mDotsRemaining = this.mDotsTotal;
     	
     	this.mAllFleeingGhostsEaten = 0;
     	
@@ -821,6 +892,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	this.mBoard[this.mCellsTall - this.mCellRowSpacing - 2][this.mCellsWide - 1] = Cell.JUGGERDOT;
     	this.mBoard[this.mCellsTall - 1][this.mCellColumnSpacing + 1] = Cell.JUGGERDOT;
     	this.mDotsRemaining -= Game.NUMBER_OF_JUGGERDOTS;
+    	this.mJuggerdotsRemaining = Game.NUMBER_OF_JUGGERDOTS;
     	
     	//Initialize entities
     	this.mTheMan.newLevel(this);
@@ -874,7 +946,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	    				break;
 	    				
 	    			case DYING:
-	    				if (this.mLives < 0) {
+	    				if ((this.mLives < 0) && (this.mMode != Game.Mode.ENDLESS)) {
 	    					this.setState(Game.State.GAME_OVER);
 	    					break;
 	    				} else {
@@ -1052,11 +1124,19 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	if (this.mIsDisplayingHud) {
 	        //Lives and score
 	        final float top = this.mScreenHeight - this.mHudOffset;
-	        for (int i = 0; i < this.mLives; i++) {
-	        	c.drawArc(new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top), Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
-	        }
+	        
 	        //Don't display larger than 999,999 (bug in original game)
-	        final String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore % Game.SCORE_FLIPPING)) + " L" + String.valueOf(this.mLevel);
+	        String score = String.valueOf(Game.SCORE_FORMAT.format(this.mScore % Game.SCORE_FLIPPING));
+	        
+	        if (this.mMode != Game.Mode.ENDLESS) {
+		        for (int i = 0; i < this.mLives; i++) {
+		        	c.drawArc(new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top), Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
+		        }
+		        
+		        //Add lives to score
+		        score += " L" + String.valueOf(this.mLevel);
+	        }
+	        
 	        final float landscapeOffset = this.mIsLandscape ? this.mDotGridPaddingTop : 0;
 	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - Game.HUD_PADDING - landscapeOffset, top, this.mHudForeground);
     	}

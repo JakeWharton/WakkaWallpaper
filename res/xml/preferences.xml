@@ -112,6 +112,20 @@
 			android:key="@string/settings_game_key"
 			android:title="@string/settings_game"
 			android:summary="@string/settings_game_summary">
+			<com.jakewharton.utilities.IntegerListPreference
+				android:key="@string/settings_game_mode_key"
+				android:title="@string/settings_game_mode"
+				android:summary="@string/settings_game_mode_summary"
+				android:defaultValue="@integer/game_mode_default"
+				android:entries="@array/game_mode"
+				android:entryValues="@array/game_mode_values"/>
+			<com.jakewharton.utilities.NumberPreference
+				android:key="@string/settings_game_endlessthresholdpercent_key"
+				android:title="@string/settings_game_endlessthresholdpercent"
+				android:summary="@string/settings_game_endlessthresholdpercent_summary"
+				android:defaultValue="@integer/game_endlessthresholdpercent_default"
+				app:min="@integer/game_endlessthresholdpercent_min"
+				app:max="@integer/game_endlessthresholdpercent_max"/>
 			<CheckBoxPreference
 				android:key="@string/settings_game_killscreen_key"
 				android:title="@string/settings_game_killscreen"

@@ -270,6 +270,10 @@ public class Preferences extends PreferenceActivity {
         final Resources resources = this.getResources();
 		final SharedPreferences.Editor editor = Preferences.this.getPreferenceManager().getSharedPreferences().edit();
 		
+		//mode
+		editor.putInt(resources.getString(R.string.settings_game_mode_key), resources.getInteger(R.integer.game_mode_default));
+		//endless threshold
+		editor.putInt(resources.getString(R.string.settings_game_endlessthresholdpercent_key), resources.getInteger(R.integer.game_endlessthresholdpercent_default));
 		//display kill screen
 		editor.putBoolean(resources.getString(R.string.settings_game_killscreen_key), resources.getBoolean(R.bool.game_killscreen_default));
 		//user controllable
@@ -397,6 +401,12 @@ public class Preferences extends PreferenceActivity {
     		
     		//GAME
     		final JSONObject game = settings.getJSONObject(resources.getString(R.string.settings_game_key));
+    		//mode
+    		final String game_mode = resources.getString(R.string.settings_game_mode_key);
+    		editor.putInt(game_mode, game.getInt(game_mode));
+    		//endless threshold
+    		final String game_endlessthresholdpercent = resources.getString(R.string.settings_game_endlessthresholdpercent_key);
+    		editor.putInt(game_endlessthresholdpercent, game.getInt(game_endlessthresholdpercent));
     		//display kill screen
 	    	final String game_killscreen = resources.getString(R.string.settings_game_killscreen_key);
     		editor.putBoolean(game_killscreen, game.getBoolean(game_killscreen));
@@ -548,6 +558,12 @@ public class Preferences extends PreferenceActivity {
 	    	
 	    	//GAME
 	    	final JSONObject game = new JSONObject();
+    		//mode
+    		final String game_mode = resources.getString(R.string.settings_game_mode_key);
+    		game.put(game_mode, preferences.getInt(game_mode, resources.getInteger(R.integer.game_mode_default)));
+    		//endless threshold
+    		final String game_endlessthresholdpercent = resources.getString(R.string.settings_game_endlessthresholdpercent_key);
+    		game.put(game_endlessthresholdpercent, preferences.getInt(game_endlessthresholdpercent, resources.getInteger(R.integer.game_endlessthresholdpercent_default)));
 			//display kill screen
 	    	final String game_killscreen = resources.getString(R.string.settings_game_killscreen_key);
 	    	game.put(game_killscreen, preferences.getBoolean(game_killscreen, resources.getBoolean(R.bool.game_killscreen_default)));
