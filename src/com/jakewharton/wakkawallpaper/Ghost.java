@@ -342,11 +342,11 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		//Set initial ghost position
 		this.setPosition(this.getInitialPosition(game));
 		
-		//Initial direction is stopped
-		this.mDirectionCurrent = null;
-		
 		//Set initial state based on mode
 		this.setState(game, this.getInitialState());
+		
+		//Since mDirectionNext will have been set by the state change, copy it to mDirectionCurrent in case of an immediate state change
+		this.mDirectionCurrent = this.mDirectionNext;
 	}
 	
 	/**
