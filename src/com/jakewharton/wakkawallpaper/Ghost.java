@@ -37,7 +37,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				case 3:
 					return RANDOM_TURNS;
 				default:
-					return null;
+					throw new IllegalArgumentException("Unknown Ghost mode value: " + modeValue);
 			}
 		}
 	}

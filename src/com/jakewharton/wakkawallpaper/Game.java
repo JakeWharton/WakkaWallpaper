@@ -42,7 +42,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 				case 1:
 					return Game.Mode.ENDLESS;
 				default:
-					throw new IllegalArgumentException("Unknown mode: " + value);
+					throw new IllegalArgumentException("Unknown Game mode value: " + value);
 			}
 		}
 	}
