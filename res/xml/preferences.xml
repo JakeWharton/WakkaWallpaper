@@ -423,18 +423,21 @@
 				style="?android:preferenceInformationStyle"/>
 			<PreferenceCategory
 				android:title="@string/information_contact">
-				<Preference
+				<com.jakewharton.utilities.IconPreference
 					android:key="@string/information_contact_email_key"
 					android:title="@string/information_contact_email"
-					android:summary="@string/information_contact_email_summary"/>
-				<Preference
+					android:summary="@string/information_contact_email_summary"
+					app:icon="@drawable/email"/>
+				<com.jakewharton.utilities.IconPreference
 					android:key="@string/information_contact_twitter_key"
 					android:title="@string/information_contact_twitter"
-					android:summary="@string/information_contact_twitter_summary"/>
-				<Preference
+					android:summary="@string/information_contact_twitter_summary"
+					app:icon="@drawable/twitter"/>
+				<com.jakewharton.utilities.IconPreference
 					android:key="@string/information_contact_website_key"
 					android:title="@string/information_contact_website"
-					android:summary="@string/information_contact_website_summary"/>
+					android:summary="@string/information_contact_website_summary"
+					app:icon="@drawable/world"/>
 			</PreferenceCategory>
 		</PreferenceScreen>
 	</PreferenceCategory>

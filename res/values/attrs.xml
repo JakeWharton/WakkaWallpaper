@@ -6,4 +6,8 @@
 		<attr name="min" format="integer"/>
 		<attr name="max" format="integer"/>
 	</declare-styleable>
+	
+	<declare-styleable name="IconPreferenceScreen">
+		<attr name="icon" format="reference"/>
+	</declare-styleable>
 </resources>
