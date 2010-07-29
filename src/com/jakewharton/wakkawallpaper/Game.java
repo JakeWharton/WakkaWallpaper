@@ -23,7 +23,15 @@ import android.util.Log;
  * @author Jake Wharton
  */
 public class Game implements SharedPreferences.OnSharedPreferenceChangeListener {
-	enum Cell { BLANK, WALL, DOT, JUGGERDOT }
+	enum Cell {
+		BLANK(0), WALL(-1), DOT(10), JUGGERDOT(50);
+		
+		public final int value;
+		
+		private Cell(final int value) {
+			this.value = value;
+		}
+	}
 	enum Mode {
 		ARCADE(0), ENDLESS(1);
 		
@@ -62,8 +70,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	private static final String TAG = "WakkaWallpaper.Game";
 	private static final NumberFormat SCORE_FORMAT = new DecimalFormat("000000");
 	private static final int SCORE_FLIPPING = 1000000;
-	private static final int POINTS_DOT = 10;
-	private static final int POINTS_JUGGERDOT = 50;
 	private static final int[] POINTS_FLEEING_GHOSTS = new int[] { 200, 400, 800, 1600 };
 	private static final int POINTS_ALL_FLEEING_GHOSTS = 12000;
 	private static final float HUD_SIZE = 20;
@@ -743,9 +749,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * Check to see if The Man has eaten a dot or juggerdot.
      */
     public void checkDots() {
-    	if (this.getCell(this.mTheMan.getPosition()) == Cell.DOT) {
+    	final Game.Cell cell = this.getCell(this.mTheMan.getPosition());
+    	if (cell == Cell.DOT) {
     		this.mDotsRemaining -= 1;
-    		this.addToScore(Game.POINTS_DOT);
+    		this.addToScore(cell.value);
     		
     		//Blank cell since we've eaten the dot
     		this.setCell(this.mTheMan.getPosition(), Cell.BLANK);
@@ -762,9 +769,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         		
         		this.mDotsRemaining += 1;
         	}
-    	} else if (this.getCell(this.mTheMan.getPosition()) == Cell.JUGGERDOT) {
+    	} else if (cell == Cell.JUGGERDOT) {
     		this.mJuggerdotsRemaining -= 1;
-    		this.addToScore(Game.POINTS_JUGGERDOT);
+    		this.addToScore(cell.value);
     		this.switchGhostsState(Ghost.State.FRIGHTENED);
     		
     		//Blank cell since we've eaten the dot
