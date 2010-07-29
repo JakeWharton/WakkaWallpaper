@@ -1010,6 +1010,40 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		Log.v(Game.TAG, "> performResize(width = " + screenWidth + ", height = " + screenHeight + ")");
     	}
     	
+    	//Background image
+    	if (this.mBackgroundPath != null) {
+			try {
+				final Bitmap temp = BitmapFactory.decodeStream(Wallpaper.CONTEXT.getContentResolver().openInputStream(Uri.parse(this.mBackgroundPath)));
+				final float pictureAR = temp.getWidth() / (temp.getHeight() * 1.0f);
+				final float screenAR = screenWidth / (screenHeight * 1.0f);
+				int newWidth;
+				int newHeight;
+				int x;
+				int y;
+				
+				if (pictureAR > screenAR) {
+					//wider than tall related to the screen AR
+					newHeight = screenHeight;
+					newWidth = (int)(temp.getWidth() * (screenHeight / (temp.getHeight() * 1.0f)));
+					x = (newWidth - screenWidth) / 2;
+					y = 0;
+				} else {
+					//taller than wide related to the screen AR
+					newWidth = screenWidth;
+					newHeight = (int)(temp.getHeight() * (screenWidth / (temp.getWidth() * 1.0f)));
+					x = 0;
+					y = (newHeight - screenHeight) / 2;
+				}
+				
+	    		final Bitmap scaled = Bitmap.createScaledBitmap(temp, newWidth, newHeight, false);
+	    		this.mBackground = Bitmap.createBitmap(scaled, x, y, screenWidth, screenHeight);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				Log.w(Game.TAG, "Unable to load background bitmap.");
+				this.mBackground = null;
+			}
+    	}
+    	
     	if (screenWidth > screenHeight) {
     		this.mIsLandscape = true;
     		final int temp = screenHeight;
@@ -1052,17 +1086,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	} else {
     		this.mTextLocation.x = (this.mScreenWidth - this.mDotGridPaddingLeft - this.mDotGridPaddingRight) / 2.0f;
     		this.mTextLocation.y = (this.mTheMan.getInitialPosition(this).y * this.mCellHeight);
-    	}
-    	
-    	//Background image
-    	if (this.mBackgroundPath != null) {
-			try {
-				Bitmap temp = BitmapFactory.decodeStream(Wallpaper.CONTEXT.getContentResolver().openInputStream(Uri.parse(this.mBackgroundPath)));
-	    		this.mBackground = Bitmap.createScaledBitmap(temp, this.mScreenWidth, this.mScreenHeight, false);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				Log.w(Game.TAG, "Unable to load background bitmap.");
-			}
     	}
 
     	if (Wallpaper.LOG_VERBOSE) {
