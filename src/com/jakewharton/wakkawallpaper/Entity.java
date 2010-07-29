@@ -1,6 +1,7 @@
 package com.jakewharton.wakkawallpaper;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.Log;
@@ -71,6 +72,27 @@ public abstract class Entity {
 			}
 		}
 	}
+	enum Style {
+		FILL(0, Paint.Style.FILL_AND_STROKE),
+		STROKE(1, Paint.Style.STROKE);
+		
+		public final int value;
+		public final Paint.Style style;
+		
+		private Style(final int value, final Paint.Style style) {
+			this.value = value;
+			this.style = style;
+		}
+		
+		public static Entity.Style parseInt(final int stateValue) {
+			for (Entity.Style state : Entity.Style.values()) {
+				if (state.value == stateValue) {
+					return state;
+				}
+			}
+			throw new IllegalArgumentException("Unknown Entity state value: " + stateValue);
+		}
+	}
 	
 	private static final String TAG = "WakkaWallpaper.Entity";
 	
@@ -92,11 +114,6 @@ public abstract class Entity {
 	protected Entity() {
 		this.mPosition = new Point();
 		this.mLocation = new PointF();
-		this.mDirectionCurrent = null;
-		this.mDirectionNext = null;
-		this.mSpeed = 1.0f; //100%
-		this.mCellWidth = 0;
-		this.mCellHeight = 0;
     	this.mTickCount = 0;
 	}
 	

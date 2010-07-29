@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.RectF;
-import android.graphics.Paint.Style;
 import android.util.Log;
 
 /**
@@ -69,17 +68,19 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		this.mBodyBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.mEyeBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
+		this.mEyeBackground.setStyle(Paint.Style.FILL_AND_STROKE);
 		this.mEyeForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
+		this.mEyeForeground.setStyle(Paint.Style.FILL_AND_STROKE);
 		this.mScaredBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.mScaredMouthForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.mScaredMouthForeground.setStyle(Style.STROKE);
+		this.mScaredMouthForeground.setStyle(Paint.Style.STROKE);
 		this.mScaredEyeForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.mScaredEyeForeground.setStyle(Style.FILL_AND_STROKE);
+		this.mScaredEyeForeground.setStyle(Paint.Style.FILL_AND_STROKE);
 		this.mScaredBlinkBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.mScaredBlinkMouthForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.mScaredBlinkMouthForeground.setStyle(Style.STROKE);
+		this.mScaredBlinkMouthForeground.setStyle(Paint.Style.STROKE);
 		this.mScaredBlinkEyeForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.mScaredBlinkEyeForeground.setStyle(Style.FILL_AND_STROKE);
+		this.mScaredBlinkEyeForeground.setStyle(Paint.Style.FILL_AND_STROKE);
 		
 		this.mBody = new Path[2];
 
@@ -166,7 +167,18 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			}
 		}
 		
-
+		final String color_style = Wallpaper.CONTEXT.getString(R.string.settings_color_entitystyle_key);
+		if (all || key.equals(color_style)) {
+			final Entity.Style style = Entity.Style.parseInt(Wallpaper.PREFERENCES.getInt(color_style, resources.getInteger(R.integer.color_entitystyle_default)));
+			//The eyes and mouth are always fill_and_stroke and stroke, respectively. We only change the body background rendering.
+			this.mBodyBackground.setStyle(style.style);
+			this.mScaredBackground.setStyle(style.style);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Drawing Style: " + style);
+			}
+		}
+		
     	if (Wallpaper.LOG_VERBOSE) {
     		Log.v(Ghost.TAG, "< onSharedPreferenceChanged()");
     	}

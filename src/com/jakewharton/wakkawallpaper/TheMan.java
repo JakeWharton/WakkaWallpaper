@@ -3,14 +3,12 @@ package com.jakewharton.wakkawallpaper;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
-
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
-import android.graphics.Paint.Style;
 import android.util.Log;
 
 /**
@@ -57,7 +55,6 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		super();
         
         this.mForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
-        this.mForeground.setStyle(Style.FILL_AND_STROKE);
 
         //Load all preferences or their defaults
         Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
@@ -92,6 +89,16 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(TheMan.TAG, "Mode: " + this.mMode);
+			}
+		}
+		
+		final String color_style = Wallpaper.CONTEXT.getString(R.string.settings_color_entitystyle_key);
+		if (all || key.equals(color_style)) {
+			final Entity.Style style = Entity.Style.parseInt(Wallpaper.PREFERENCES.getInt(color_style, resources.getInteger(R.integer.color_entitystyle_default)));
+			this.mForeground.setStyle(style.style);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(TheMan.TAG, "Drawing Style: " + style);
 			}
 		}
 

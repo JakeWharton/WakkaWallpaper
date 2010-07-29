@@ -211,6 +211,14 @@
     <string name="settings_color_ghost_clyde_key">color_ghost_clyde</string>
     <string name="settings_color_ghost_clyde_summary"></string>
     
+    <string name="settings_color_drawing_header">Drawing Settings</string>
+    <string name="settings_color_entitystyle">Entity Style</string>
+    <string name="settings_color_entitystyle_key">color_entitystyle</string>
+    <string name="settings_color_entitystyle_summary">The Man and Ghosts</string>
+    <string name="settings_color_dotstyle">Dot Style</string>
+    <string name="settings_color_dotstyle_key">color_dotstyle</string>
+    <string name="settings_color_dotstyle_summary">Dots and Juggerdots</string>
+    
     <string name="settings_color_reset">Reset Color Settings</string>
     <string name="settings_color_reset_key">color_reset</string>
     <string name="settings_color_reset_summary">All color settings back to default</string>

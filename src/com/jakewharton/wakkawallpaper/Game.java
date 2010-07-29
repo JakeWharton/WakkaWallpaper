@@ -414,6 +414,17 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 				Log.d(Game.TAG, "Ready Color: #" + Integer.toHexString(this.mGameOverForeground.getColor()));
 			}
 		}
+		
+		final String color_style = Wallpaper.CONTEXT.getString(R.string.settings_color_dotstyle_key);
+		if (all || key.equals(color_style)) {
+			final Entity.Style style = Entity.Style.parseInt(Wallpaper.PREFERENCES.getInt(color_style, resources.getInteger(R.integer.color_dotstyle_default)));
+			this.mDotForeground.setStyle(style.style);
+			this.mJuggerdotForeground.setStyle(style.style);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Drawing Style: " + style);
+			}
+		}
     	
         
 		// GRID //

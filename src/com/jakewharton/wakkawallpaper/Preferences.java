@@ -404,6 +404,10 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		editor.putInt(resources.getString(R.string.settings_color_ghost_inky_key), resources.getInteger(R.integer.color_ghost_inky_default));
 		//clyde
 		editor.putInt(resources.getString(R.string.settings_color_ghost_clyde_key), resources.getInteger(R.integer.color_ghost_clyde_default));
+		//entity style
+		editor.putInt(resources.getString(R.string.settings_color_entitystyle_key), resources.getInteger(R.integer.color_entitystyle_default));
+		//dot style
+		editor.putInt(resources.getString(R.string.settings_color_dotstyle_key), resources.getInteger(R.integer.color_dotstyle_default));
 		
 		editor.commit();
 	}
@@ -571,6 +575,12 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     		//clyde
     		final String color_ghost_clyde = resources.getString(R.string.settings_color_ghost_clyde_key);
     		editor.putInt(color_ghost_clyde, color.getInt(color_ghost_clyde));
+    		//entity style
+    		final String color_entitystyle = resources.getString(R.string.settings_color_entitystyle);
+    		editor.putInt(color_entitystyle, color.getInt(color_entitystyle));
+    		//dot style
+    		final String color_dotstyle = resources.getString(R.string.settings_color_dotstyle);
+    		editor.putInt(color_dotstyle, color.getInt(color_dotstyle));
     		
     		//save changes
     		editor.commit();
@@ -737,6 +747,12 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 	    	//clyde
 	    	final String color_ghost_clyde = resources.getString(R.string.settings_color_ghost_clyde_key);
 	    	color.put(color_ghost_clyde, preferences.getInt(color_ghost_clyde, resources.getInteger(R.integer.color_ghost_clyde_default)));
+    		//entity style
+    		final String color_entitystyle = resources.getString(R.string.settings_color_entitystyle);
+    		color.put(color_entitystyle, preferences.getInt(color_entitystyle, resources.getInteger(R.integer.color_entitystyle_default)));
+    		//dot style
+    		final String color_dotstyle = resources.getString(R.string.settings_color_dotstyle);
+    		color.put(color_dotstyle, preferences.getInt(color_dotstyle, resources.getInteger(R.integer.color_dotstyle_default)));
 	    	
 	    	//ALL
 	    	final JSONObject settings = new JSONObject();

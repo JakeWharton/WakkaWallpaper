@@ -375,6 +375,23 @@
 				</PreferenceCategory>
 			</PreferenceScreen>
 			<PreferenceCategory
+				android:title="@string/settings_color_drawing_header">
+				<com.jakewharton.utilities.IntegerListPreference
+					android:key="@string/settings_color_entitystyle_key"
+					android:title="@string/settings_color_entitystyle"
+					android:summary="@string/settings_color_entitystyle_summary"
+					android:defaultValue="@integer/color_entitystyle_default"
+					android:entries="@array/color_style"
+					android:entryValues="@array/color_style_values"/>
+				<com.jakewharton.utilities.IntegerListPreference
+					android:key="@string/settings_color_dotstyle_key"
+					android:title="@string/settings_color_dotstyle"
+					android:summary="@string/settings_color_dotstyle_summary"
+					android:defaultValue="@integer/color_dotstyle_default"
+					android:entries="@array/color_style"
+					android:entryValues="@array/color_style_values"/>
+			</PreferenceCategory>
+			<PreferenceCategory
 				android:key="@string/settings_reset_key"
 				android:title="@string/settings_reset">
 				<Preference

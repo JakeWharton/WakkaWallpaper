@@ -103,4 +103,7 @@
 	<integer name="color_ghost_pinky_default">0xffff00f0</integer>
 	<integer name="color_ghost_inky_default">0xff01d8ff</integer>
 	<integer name="color_ghost_clyde_default">0xffff8401</integer>
+	
+	<integer name="color_entitystyle_default">0</integer>
+	<integer name="color_dotstyle_default">0</integer>
 </resources>
