@@ -226,7 +226,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 						Log.v(TheMan.TAG, "-- Valid");
 					}
 					
-					if (game.getCell(next.position) == Game.Cell.DOT) {
+					if (game.getCell(next.position) != Game.Cell.BLANK) {
 						if (Wallpaper.LOG_VERBOSE) {
 							Log.v(TheMan.TAG, "-- Has Dot");
 						}
