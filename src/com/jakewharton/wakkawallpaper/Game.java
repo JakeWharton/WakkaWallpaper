@@ -36,18 +36,16 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		/**
 		 * Convert an integer to its corresponding Game.Mode.
 		 * 
-		 * @param value Integer
+		 * @param modeValue Integer
 		 * @return Game.Mode
 		 */
-		public static Game.Mode parseInt(final int value) {
-			switch (value) {
-				case 0:
-					return Game.Mode.ARCADE;
-				case 1:
-					return Game.Mode.ENDLESS;
-				default:
-					throw new IllegalArgumentException("Unknown Game mode value: " + value);
+		public static Game.Mode parseInt(final int modeValue) {
+			for (Game.Mode mode : Game.Mode.values()) {
+				if (mode.value == modeValue) {
+					return mode;
+				}
 			}
+			throw new IllegalArgumentException("Unknown Game mode value: " + modeValue);
 		}
 	}
 	enum State {

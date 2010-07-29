@@ -141,11 +141,21 @@
 				android:title="@string/settings_game_killscreen"
 				android:summary="@string/settings_game_killscreen_summary"
 				android:defaultValue="@bool/game_killscreen_default"/>
-			<CheckBoxPreference
-				android:key="@string/settings_game_usercontrol_key"
-				android:title="@string/settings_game_usercontrol"
-				android:summary="@string/settings_game_usercontrol_summary"
-				android:defaultValue="@bool/game_usercontrol_default"/>
+			<PreferenceCategory
+				android:title="@string/settings_game_theman_header">
+				<com.jakewharton.utilities.IntegerListPreference
+					android:key="@string/settings_game_themanmode_key"
+					android:title="@string/settings_game_themanmode"
+					android:summary="@string/settings_game_themanmode_summary"
+					android:defaultValue="@integer/game_themanmode_default"
+					android:entries="@array/game_themanmode"
+					android:entryValues="@array/game_themanmode_values"/>
+				<CheckBoxPreference
+					android:key="@string/settings_game_usercontrol_key"
+					android:title="@string/settings_game_usercontrol"
+					android:summary="@string/settings_game_usercontrol_summary"
+					android:defaultValue="@bool/game_usercontrol_default"/>
+			</PreferenceCategory>
 			<PreferenceCategory
 				android:key="@string/settings_game_ghosts_key"
 				android:title="@string/settings_game_ghosts">

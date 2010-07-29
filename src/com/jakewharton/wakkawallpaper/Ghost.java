@@ -27,18 +27,12 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 		
 		public static Ghost.Mode parseInt(final int modeValue) {
-			switch (modeValue) {
-				case 0:
-					return CHASE_AND_SCATTER;
-				case 1:
-					return CHASE_ONLY;
-				case 2:
-					return SCATTER_ONLY;
-				case 3:
-					return RANDOM_TURNS;
-				default:
-					throw new IllegalArgumentException("Unknown Ghost mode value: " + modeValue);
+			for (Ghost.Mode mode : Ghost.Mode.values()) {
+				if (mode.value == modeValue) {
+					return mode;
+				}
 			}
+			throw new IllegalArgumentException("Unknown Ghost mode value: " + modeValue);
 		}
 	}
 

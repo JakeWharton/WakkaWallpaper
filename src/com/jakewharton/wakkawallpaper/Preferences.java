@@ -306,6 +306,8 @@ public class Preferences extends PreferenceActivity {
 		editor.putInt(resources.getString(R.string.settings_game_endlessjuggerdotregen_key), resources.getInteger(R.integer.game_endlessjuggerdotregen_default));
 		//display kill screen
 		editor.putBoolean(resources.getString(R.string.settings_game_killscreen_key), resources.getBoolean(R.bool.game_killscreen_default));
+		//theman mode
+		editor.putInt(resources.getString(R.string.settings_game_themanmode_key), resources.getInteger(R.integer.game_themanmode_default));
 		//user controllable
 		editor.putBoolean(resources.getString(R.string.settings_game_usercontrol_key), resources.getBoolean(R.bool.game_usercontrol_default));
 		//ghost mode
@@ -445,6 +447,9 @@ public class Preferences extends PreferenceActivity {
     		//display kill screen
 	    	final String game_killscreen = resources.getString(R.string.settings_game_killscreen_key);
     		editor.putBoolean(game_killscreen, game.getBoolean(game_killscreen));
+    		//theman mode
+    		final String game_themanmode = resources.getString(R.string.settings_game_themanmode_key);
+    		editor.putInt(game_themanmode, game.getInt(game_themanmode));
     		//user controllable
     		final String game_usercontrol = resources.getString(R.string.settings_game_usercontrol_key);
     		editor.putBoolean(game_usercontrol, game.getBoolean(game_usercontrol));
@@ -608,6 +613,9 @@ public class Preferences extends PreferenceActivity {
 			//display kill screen
 	    	final String game_killscreen = resources.getString(R.string.settings_game_killscreen_key);
 	    	game.put(game_killscreen, preferences.getBoolean(game_killscreen, resources.getBoolean(R.bool.game_killscreen_default)));
+    		//theman mode
+    		final String game_themanmode = resources.getString(R.string.settings_game_themanmode_key);
+    		game.put(game_themanmode, preferences.getInt(game_themanmode, resources.getInteger(R.integer.game_themanmode_default)));
 	    	//user controllable
 	    	final String game_usercontrol = resources.getString(R.string.settings_game_usercontrol_key);
 	    	game.put(game_usercontrol, preferences.getBoolean(game_usercontrol, resources.getBoolean(R.bool.game_usercontrol_default)));

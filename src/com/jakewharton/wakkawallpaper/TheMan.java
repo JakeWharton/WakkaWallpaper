@@ -20,6 +20,24 @@ import android.util.Log;
  */
 public class TheMan extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum State { ALIVE, DEAD }
+	enum Mode {
+		A_STAR(0), NEAREST_DOT(1), RANDOM(2);
+		
+		public final int value;
+		
+		private Mode(final int value) {
+			this.value = value;
+		}
+		
+		public static TheMan.Mode parseInt(final int modeValue) {
+			for (TheMan.Mode mode : TheMan.Mode.values()) {
+				if (mode.value == modeValue) {
+					return mode;
+				}
+			}
+			throw new IllegalArgumentException("Unknown TheMan mode value: " + modeValue);
+		}
+	}
 	
 	private static final String TAG = "WakkaWallpaper.TheMan";
 	private static final int CHOMP_ANGLE_COUNT = 4;
@@ -27,6 +45,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	private static final int[] CHOMP_ANGLES = new int[] { 90, 45, 0, 45 };
 	
 	private TheMan.State mState;
+	private TheMan.Mode mMode;
 	private int mStateTicker;
     private final Paint mForeground;
 	private Direction mWantsToGo;
@@ -64,6 +83,15 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(TheMan.TAG, "Foreground Color: #" + Integer.toHexString(this.mForeground.getColor()));
+			}
+		}
+		
+		final String mode = Wallpaper.CONTEXT.getString(R.string.settings_game_themanmode_key);
+		if (all || key.equals(mode)) {
+			this.mMode = TheMan.Mode.parseInt(Wallpaper.PREFERENCES.getInt(mode, resources.getInteger(R.integer.game_themanmode_default)));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(TheMan.TAG, "Mode: " + this.mMode);
 			}
 		}
 
@@ -124,7 +152,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	}
 	
 	/**
-	 * Determine our next direction based on a breadth-first search.
+	 * Determine our next direction based on the mode.
 	 * 
 	 * @param game Game instance.
 	 */
@@ -135,6 +163,38 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 			return;
 		}
 		
+		//Use logic based on mode
+		switch (this.mMode) {
+			case A_STAR:
+				this.determineNextDirectionByAI(game);
+				break;
+				
+			case NEAREST_DOT:
+				this.determineNextDirectionByNearestDot(game);
+				break;
+				
+			case RANDOM:
+				this.determineNextDirectionByRandom(game);
+				break;
+		}
+		
+		//If the wants-to-go direction exists and the AI forced us to change direction then wants-to-go direction
+		//is impossible and should be cleared
+		if ((this.mWantsToGo != null) && (this.mDirectionNext != this.mDirectionCurrent)) {
+			this.mWantsToGo = null;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(TheMan.TAG, "Clearing wants-to-go direction via AI.");
+			}
+		}
+	}
+	
+	/**
+	 * Determine our next direction based on a breadth-first search.
+	 * 
+	 * @param game Game instance.
+	 */
+	private void determineNextDirectionByNearestDot(final Game game) {
 		//Breadth-first search for new next direction
 		final Queue<Vector> queue = new LinkedList<Vector>();
 		final HashSet<Integer> seen = new HashSet<Integer>();
@@ -188,18 +248,36 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 				}
 			}
 		}
-		
-		//If the wants-to-go direction exists and the AI forced us to change direction then wants-to-go direction
-		//is impossible and should be cleared
-		if ((this.mWantsToGo != null) && (this.mDirectionNext != this.mDirectionCurrent)) {
-			this.mWantsToGo = null;
-			
-			if (Wallpaper.LOG_DEBUG) {
-				Log.d(TheMan.TAG, "Clearing wants-to-go direction via AI.");
-			}
-		}
 	}
 
+	/**
+	 * Determine next direction based on a simple random number generator.
+	 * 
+	 * @param game Game instance.
+	 */
+	private void determineNextDirectionByRandom(final Game game) {
+		if (game.isIntersection(this.mPosition)) {
+			while (true) {
+				this.mDirectionNext = Entity.Direction.values()[Game.RANDOM.nextInt(Entity.Direction.values().length)];
+				
+				if (game.isValidPosition(Entity.move(this.mPosition, this.mDirectionNext)) && ((this.mDirectionCurrent == null) || (this.mDirectionNext != this.mDirectionCurrent.getOpposite()))) {
+					break;
+				}
+			}
+		} else {
+			//Not at intersection, go straight
+			this.mDirectionNext = this.mDirectionCurrent;
+		}
+	}
+	
+	/**
+	 * Determine next direction based on advanced AI.
+	 * 
+	 * @param game Game instance.
+	 */
+	private void determineNextDirectionByAI(final Game game) {
+		throw new IllegalArgumentException();
+	}
     @Override
 	public void draw(final Canvas c, final boolean isLandscape) {
 		c.save();

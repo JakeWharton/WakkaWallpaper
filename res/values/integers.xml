@@ -61,6 +61,8 @@
 	<integer name="game_bonuslifethreshold_min">5000</integer>
 	<integer name="game_bonuslifethreshold_max">100000</integer>
 	
+	<integer name="game_themanmode_default">0</integer>
+	
 	<integer name="game_ghostmode_default">0</integer>
 	
 	<integer name="game_ghostcount_default">4</integer>
