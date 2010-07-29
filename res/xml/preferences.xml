@@ -36,6 +36,7 @@
 				android:title="@string/settings_display_hudoffset"
 				android:summary="@string/settings_display_hudoffset_summary"
 				android:defaultValue="@integer/display_hudoffset_default"
+				android:dependency="@string/settings_display_showhud_key"
 				app:min="@integer/display_hudoffset_min"
 				app:max="@integer/display_hudoffset_max"/>
 			<PreferenceCategory
@@ -289,12 +290,14 @@
 						android:key="@string/settings_color_game_hudfg_key"
 						android:title="@string/settings_color_game_hudfg"
 						android:summary="@string/settings_color_game_hudfg_summary"
-						android:defaultValue="@integer/color_game_hudfg_default"/>
+						android:defaultValue="@integer/color_game_hudfg_default"
+						android:dependency="@string/settings_display_showhud_key"/>
 					<com.jakewharton.utilities.ColorPreference
 						android:key="@string/settings_color_game_hudbg_key"
 						android:title="@string/settings_color_game_hudbg"
 						android:summary="@string/settings_color_game_hudbg_summary"
-						android:defaultValue="@integer/color_game_hudbg_default"/>
+						android:defaultValue="@integer/color_game_hudbg_default"
+						android:dependency="@string/settings_display_showhud_key"/>
 					<com.jakewharton.utilities.ColorPreference
 						android:key="@string/settings_color_game_ready_key"
 						android:title="@string/settings_color_game_ready"

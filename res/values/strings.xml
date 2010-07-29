@@ -79,10 +79,10 @@
     <string name="settings_game_mode">Mode</string>
     <string name="settings_game_mode_key">game_mode</string>
     <string name="settings_game_mode_summary">Arcade or endless play</string>
-    <string name="settings_game_endlessdotregen">Endless Dot Regeneration</string>
+    <string name="settings_game_endlessdotregen">Endless Dot Regen</string>
     <string name="settings_game_endlessdotregen_key">game_endlessdotregen</string>
     <string name="settings_game_endlessdotregen_summary">Percentage of dots remaining at which to begin regeneration</string>
-    <string name="settings_game_endlessjuggerdotregen">Endless Juggerdot Regeneration</string>
+    <string name="settings_game_endlessjuggerdotregen">Endless Juggerdot Regen</string>
     <string name="settings_game_endlessjuggerdotregen_key">game_endlessjuggerdotregen</string>
     <string name="settings_game_endlessjuggerdotregen_summary">Number of juggerdots remaining at which to begin regeneration</string>
     <string name="settings_game_killscreen">Display Kill Screen</string>
@@ -100,7 +100,7 @@
     <string name="settings_game_ghostmode">Ghost Movement Mode</string>
     <string name="settings_game_ghostmode_key">game_ghostmode</string>
     <string name="settings_game_ghostmode_summary">Chase, scatter, or random</string>
-    <string name="settings_game_deadlyghosts">Are Deadly</string>
+    <string name="settings_game_deadlyghosts">Deadly</string>
     <string name="settings_game_deadlyghosts_key">game_deadlyghosts</string>
     <string name="settings_game_deadlyghosts_summary">Whether or not colliding with ghost will kill you</string>
     <string name="settings_game_ghostcount">Number of Ghosts</string>

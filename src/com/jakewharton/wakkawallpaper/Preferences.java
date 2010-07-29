@@ -28,7 +28,7 @@ import android.widget.Toast;
  * 
  * @author Jake Wharton
  */
-public class Preferences extends PreferenceActivity {
+public class Preferences extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	public static final String SHARED_NAME = "WakkaWallpaper";
 	private static final String FILE_NAME = "settings.wakkawallpaper.json";
 	private static final String MIME_TYPE = "text/plain";
@@ -151,7 +151,35 @@ public class Preferences extends PreferenceActivity {
 				return true;
 			}
 		});
+
+        //Register as a preference change listener
+        Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
+        this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
     }
+
+    /**
+     * Handle the changing of a preference.
+     */
+	public void onSharedPreferenceChanged(final SharedPreferences preferences, final String key) {
+		final boolean all = (key == null);
+		final Resources resources = this.getResources();
+		
+		final String mode = resources.getString(R.string.settings_game_mode_key);
+		if (all || key.equals(mode)) {
+			boolean enableEndless = (Game.Mode.parseInt(preferences.getInt(mode, resources.getInteger(R.integer.game_mode_default))) == Game.Mode.ENDLESS);
+			
+			this.findPreference(resources.getString(R.string.settings_game_endlessdotregen_key)).setEnabled(enableEndless);
+			this.findPreference(resources.getString(R.string.settings_game_endlessjuggerdotregen_key)).setEnabled(enableEndless);
+		}
+		
+		final String bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
+		if (all || key.equals(bgimage)) {
+			boolean imageEnabled = (preferences.getString(bgimage, null) != null);
+			
+			this.findPreference(resources.getString(R.string.settings_color_game_background_key)).setEnabled(!imageEnabled);
+			this.findPreference(resources.getString(R.string.settings_color_game_bgimageclear_key)).setEnabled(imageEnabled);
+		}
+	}
 
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
