@@ -1,16 +1,20 @@
 package com.jakewharton.wakkawallpaper;
 
+import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Random;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.util.Log;
 
 /**
@@ -126,6 +130,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private int mJuggerdotsRemaining;
     private int mEndlessDotThresholdPercent;
     private int mEndlessJuggerdotThreshold;
+    private String mBackgroundPath;
+    private Bitmap mBackground;
     
     /**
      * Create a new game adhering to the specified parameters.
@@ -183,7 +189,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		boolean hasBonusChanged = false;
         boolean hasGhostCountChanged = false;
 		boolean hasLayoutChanged = false;
-		boolean hasPaddingChanged = false;
+		boolean hasGraphicsChanged = false;
 		boolean hasModeChanged = false;
 
 		
@@ -327,7 +333,23 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	        this.mGameOverForeground.setShadowLayer(2, 0, 0, this.mGameBackground);
 			
 			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Game.TAG, "Game Background: #" + Integer.toHexString(this.mGameBackground));
+				Log.d(Game.TAG, "Background: #" + Integer.toHexString(this.mGameBackground));
+			}
+		}
+		
+		final String backgroundImage = resources.getString(R.string.settings_color_game_bgimage_key);
+		if (all || key.equals(backgroundImage)) {
+			this.mBackgroundPath = Wallpaper.PREFERENCES.getString(backgroundImage, null);
+			
+			if (this.mBackgroundPath != null) {			
+				if (Wallpaper.LOG_DEBUG) {
+					Log.d(Game.TAG, "Background Image: " + this.mBackgroundPath);
+				}
+				
+				//Trigger performResize
+				hasGraphicsChanged = true;
+			} else {
+				this.mBackground = null;
 			}
 		}
         
@@ -401,7 +423,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String dotGridPaddingLeft = resources.getString(R.string.settings_display_padding_left_key);
 		if (all || key.equals(dotGridPaddingLeft)) {
 			this.mDotGridPaddingLeft = Wallpaper.PREFERENCES.getInt(dotGridPaddingLeft, resources.getInteger(R.integer.display_padding_left_default));
-			hasPaddingChanged = true;
+			hasGraphicsChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Left: " + this.mDotGridPaddingLeft);
@@ -411,7 +433,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String dotGridPaddingRight = resources.getString(R.string.settings_display_padding_right_key);
 		if (all || key.equals(dotGridPaddingRight)) {
 			this.mDotGridPaddingRight = Wallpaper.PREFERENCES.getInt(dotGridPaddingRight, resources.getInteger(R.integer.display_padding_right_default));
-			hasPaddingChanged = true;
+			hasGraphicsChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Right: " + this.mDotGridPaddingRight);
@@ -421,7 +443,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String dotGridPaddingTop = resources.getString(R.string.settings_display_padding_top_key);
 		if (all || key.equals(dotGridPaddingTop)) {
 			this.mDotGridPaddingTop = Wallpaper.PREFERENCES.getInt(dotGridPaddingTop, resources.getInteger(R.integer.display_padding_top_default));
-			hasPaddingChanged = true;
+			hasGraphicsChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Top: " + this.mDotGridPaddingTop);
@@ -431,16 +453,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		final String dotGridPaddingBottom = resources.getString(R.string.settings_display_padding_bottom_key);
 		if (all || key.equals(dotGridPaddingBottom)) {
 			this.mDotGridPaddingBottom = Wallpaper.PREFERENCES.getInt(dotGridPaddingBottom, resources.getInteger(R.integer.display_padding_bottom_default));
-			hasPaddingChanged = true;
+			hasGraphicsChanged = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Dot Grid Padding Bottom: " + this.mDotGridPaddingBottom);
 			}
-		}
-		
-		//If any of the padding has changed we need to recalculate cell widths and heights
-		if (hasPaddingChanged) {
-			this.performResize(this.mScreenWidth, this.mScreenHeight);
 		}
 		
 		
@@ -497,7 +514,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	    	
 	    	//Create playing board
 	        this.mBoard = new Cell[this.mCellsTall][this.mCellsWide];
-	        
+		}
+		if ((hasLayoutChanged || hasGraphicsChanged) && (this.mScreenWidth > 0) && (this.mScreenHeight > 0)) {
 	        //Resize everything to fit
 	        this.performResize(this.mScreenWidth, this.mScreenHeight);
 		}
@@ -1037,6 +1055,17 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		this.mTextLocation.x = (this.mScreenWidth - this.mDotGridPaddingLeft - this.mDotGridPaddingRight) / 2.0f;
     		this.mTextLocation.y = (this.mTheMan.getInitialPosition(this).y * this.mCellHeight);
     	}
+    	
+    	//Background image
+    	if (this.mBackgroundPath != null) {
+			try {
+				Bitmap temp = BitmapFactory.decodeStream(Wallpaper.CONTEXT.getContentResolver().openInputStream(Uri.parse(this.mBackgroundPath)));
+	    		this.mBackground = Bitmap.createScaledBitmap(temp, this.mScreenWidth, this.mScreenHeight, false);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				Log.w(Game.TAG, "Unable to load background bitmap.");
+			}
+    	}
 
     	if (Wallpaper.LOG_VERBOSE) {
     		Log.v(Game.TAG, "< performResize()");
@@ -1052,7 +1081,12 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	c.save();
     	
     	//Background
-    	c.drawColor(this.mGameBackground);
+    	if (this.mBackground != null) {
+    		//Bitmap should already be sized to the screen so draw it at the origin
+    		c.drawBitmap(this.mBackground, 0, 0, null);
+    	} else {
+    		c.drawColor(this.mGameBackground);
+    	}
         
         if (this.mIsLandscape) {
         	//Perform counter-clockwise rotation

@@ -18,6 +18,7 @@ import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -30,8 +31,9 @@ import android.widget.Toast;
 public class Preferences extends PreferenceActivity {
 	public static final String SHARED_NAME = "WakkaWallpaper";
 	private static final String FILE_NAME = "settings.wakkawallpaper.json";
-	private static final int IMPORT_JSON = 1;
 	private static final String MIME_TYPE = "text/plain";
+	private static final int IMPORT_JSON = 1;
+	private static final int SELECT_BACKGROUND = 2;
 	
     @Override
     protected void onCreate(final Bundle icicle) {
@@ -132,6 +134,23 @@ public class Preferences extends PreferenceActivity {
 				return true;
 			}
 		});
+        
+        //background image
+        this.findPreference(resources.getString(R.string.settings_color_game_bgimage_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Preferences.this.startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI), Preferences.SELECT_BACKGROUND);
+				return true;
+			}
+		});
+        
+        //clear background image
+        this.findPreference(resources.getString(R.string.settings_color_game_bgimageclear_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Preferences.this.getPreferenceManager().getSharedPreferences().edit().putString(resources.getString(R.string.settings_color_game_bgimage_key), null).commit();
+				Toast.makeText(Preferences.this, R.string.settings_color_game_bgimageclear_toast, Toast.LENGTH_SHORT).show();
+				return true;
+			}
+		});
     }
 
     @Override
@@ -187,10 +206,11 @@ public class Preferences extends PreferenceActivity {
 
 	@Override
 	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-		switch (requestCode) {
-			case Preferences.IMPORT_JSON:
-				if (resultCode == Activity.RESULT_OK) {
-					final Resources resources = this.getResources();
+		if (resultCode == Activity.RESULT_OK) {
+			final Resources resources = this.getResources();
+			
+			switch (requestCode) {
+				case Preferences.IMPORT_JSON:
 					
 					(new AlertDialog.Builder(this))
 						.setMessage(resources.getString(R.string.menu_import_prompt))
@@ -202,9 +222,17 @@ public class Preferences extends PreferenceActivity {
 						})
 						.setNegativeButton(resources.getString(R.string.no), null)
 						.show();
-				}
-			default:
-				super.onActivityResult(requestCode, resultCode, data);
+					break;
+					
+				case Preferences.SELECT_BACKGROUND:
+					//Store the string value of the background image
+				    this.getPreferenceManager().getSharedPreferences().edit().putString(resources.getString(R.string.settings_color_game_bgimage_key), data.getDataString()).commit();
+				    Toast.makeText(this, R.string.settings_color_game_bgimage_toast, Toast.LENGTH_SHORT).show();
+					break;
+					
+				default:
+					super.onActivityResult(requestCode, resultCode, data);
+			}
 		}
 	}
 
@@ -310,6 +338,8 @@ public class Preferences extends PreferenceActivity {
 		
 		//background
 		editor.putInt(resources.getString(R.string.settings_color_game_background_key), resources.getInteger(R.integer.color_game_background_default));
+		//background image
+		editor.putString(resources.getString(R.string.settings_color_game_bgimage_key), null);
 		//dots
 		editor.putInt(resources.getString(R.string.settings_color_game_dot_key), resources.getInteger(R.integer.color_game_dot_default));
 		//juggerdots
@@ -454,6 +484,9 @@ public class Preferences extends PreferenceActivity {
     		//background
 	    	final String color_game_background = resources.getString(R.string.settings_color_game_background_key);
     		editor.putInt(color_game_background, color.getInt(color_game_background));
+    		//background image
+    		final String color_game_bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
+    		editor.putString(color_game_bgimage, color.getString(color_game_bgimage));
     		//dots
 	    	final String color_game_dot = resources.getString(R.string.settings_color_game_dot_key);
     		editor.putInt(color_game_dot, color.getInt(color_game_dot));
@@ -614,6 +647,9 @@ public class Preferences extends PreferenceActivity {
 			//background
 	    	final String color_game_background = resources.getString(R.string.settings_color_game_background_key);
 	    	color.put(color_game_background, preferences.getInt(color_game_background, resources.getInteger(R.integer.color_game_background_default)));
+    		//background image
+    		final String color_game_bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
+    		color.put(color_game_bgimage, preferences.getString(color_game_bgimage, null));
 			//dots
 	    	final String color_game_dot = resources.getString(R.string.settings_color_game_dot_key);
 	    	color.put(color_game_dot, preferences.getInt(color_game_dot, resources.getInteger(R.integer.color_game_dot_default)));
