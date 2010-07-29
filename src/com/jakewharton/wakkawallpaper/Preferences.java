@@ -122,7 +122,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         //instructions
         this.findPreference(resources.getString(R.string.instructions_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				Preferences.this.startActivity(new Intent(Preferences.this, Instructions.class));
+				Preferences.this.startActivity(new Intent(Preferences.this, About_Instructions.class));
 				return true;
 			}
 		});
@@ -130,7 +130,15 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         //change log
         this.findPreference(resources.getString(R.string.changelog_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				Preferences.this.startActivity(new Intent(Preferences.this, ChangeLog.class));
+				Preferences.this.startActivity(new Intent(Preferences.this, About_ChangeLog.class));
+				return true;
+			}
+		});
+        
+        //credits
+        this.findPreference(resources.getString(R.string.credits_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Preferences.this.startActivity(new Intent(Preferences.this, About_Credits.class));
 				return true;
 			}
 		});

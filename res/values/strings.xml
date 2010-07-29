@@ -237,6 +237,10 @@
     <string name="changelog_key">changelog</string>
     <string name="changelog_title">Wakka Wallpaper Change Log</string>
     <string name="changelog_summary">Summary of differences between versions</string>
+    <string name="credits">Credits</string>
+    <string name="credits_key">credits</string>
+    <string name="credits_title">Wakka Wallpaper Credits</string>
+    <string name="credits_summary">Additional attribution</string>
     
     <string name="information_header">Information</string>
     <string name="information_version">Version</string>

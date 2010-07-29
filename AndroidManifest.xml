@@ -30,11 +30,15 @@
             android:exported="true" />
         <activity
             android:label="@string/instructions_title"
-            android:name="Instructions"
+            android:name="About_Instructions"
             android:exported="false" />
         <activity
             android:label="@string/changelog_title"
-            android:name="ChangeLog"
+            android:name="About_ChangeLog"
+            android:exported="false" />
+        <activity
+            android:label="@string/credits_title"
+            android:name="About_Credits"
             android:exported="false" />
     </application>
     

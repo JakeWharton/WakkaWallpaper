@@ -7,7 +7,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.WebView;
 
-public class Instructions extends Activity {
+public class About_Instructions extends Activity {
 	private static final String FILENAME = "instructions.html";
 	private static final char NEWLINE = '\n';
 	private static final String ERROR = "Failed to load instructions from assets.";
@@ -22,20 +22,20 @@ public class Instructions extends Activity {
         
         try {
         	//Load entire about plain text from asset
-			BufferedReader about = new BufferedReader(new InputStreamReader(this.getAssets().open(Instructions.FILENAME)));
+			BufferedReader about = new BufferedReader(new InputStreamReader(this.getAssets().open(About_Instructions.FILENAME)));
 			String data;
 			while ((data = about.readLine()) != null) {
 				content.append(data);
-				content.append(Instructions.NEWLINE);
+				content.append(About_Instructions.NEWLINE);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			content.append(Instructions.ERROR);
+			content.append(About_Instructions.ERROR);
 		}
 		
 		//Put text into layout
         final WebView view = new WebView(this);
-		view.loadData(content.toString(), Instructions.MIME_TYPE, Instructions.ENCODING);
+		view.loadData(content.toString(), About_Instructions.MIME_TYPE, About_Instructions.ENCODING);
 		
 		this.setContentView(view);
     }

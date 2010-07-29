@@ -428,6 +428,10 @@
 					android:key="@string/changelog_key"
 					android:title="@string/changelog"
 					android:summary="@string/changelog_summary"/>
+				<Preference
+					android:key="@string/credits_key"
+					android:title="@string/credits"
+					android:summary="@string/credits_summary"/>
 			</PreferenceCategory>
 		</PreferenceScreen>
 		<PreferenceScreen

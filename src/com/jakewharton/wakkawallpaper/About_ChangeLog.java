@@ -8,7 +8,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.WebView;
 
-public class ChangeLog extends Activity {
+public class About_ChangeLog extends Activity {
 	private static final String FILENAME = "changelog.html";
 	private static final char NEWLINE = '\n';
 	private static final String ERROR = "Failed to load change log from assets.";
@@ -23,20 +23,20 @@ public class ChangeLog extends Activity {
         
         try {
         	//Load entire about plain text from asset
-			BufferedReader about = new BufferedReader(new InputStreamReader(this.getAssets().open(ChangeLog.FILENAME)));
+			BufferedReader about = new BufferedReader(new InputStreamReader(this.getAssets().open(About_ChangeLog.FILENAME)));
 			String data;
 			while ((data = about.readLine()) != null) {
 				content.append(data);
-				content.append(ChangeLog.NEWLINE);
+				content.append(About_ChangeLog.NEWLINE);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			content.append(ChangeLog.ERROR);
+			content.append(About_ChangeLog.ERROR);
 		}
 		
 		//Put text into layout
         final WebView view = new WebView(this);
-		view.loadData(content.toString(), ChangeLog.MIME_TYPE, ChangeLog.ENCODING);
+		view.loadData(content.toString(), About_ChangeLog.MIME_TYPE, About_ChangeLog.ENCODING);
 		
 		this.setContentView(view);
     }
