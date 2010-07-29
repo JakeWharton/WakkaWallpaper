@@ -2,9 +2,12 @@ package com.jakewharton.wakkawallpaper;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 
 /**
@@ -14,18 +17,27 @@ import android.util.Log;
  */
 public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum Type {
-		CHERRY(100), STRAWBERRY(300), PEACH(500), APPLE(700), GRAPES(1000), GALAXIAN(2000), BELL(3000), KEY(5000);
+		CHERRY(100, new Rect(0, 0, 12, 14)),
+		STRAWBERRY(300, new Rect(1, 20, 12, 34)),
+		PEACH(500, new Rect(0, 40, 12, 54)),
+		APPLE(700, new Rect(0, 60, 12, 74)),
+		GRAPES(1000, new Rect(40, 0, 52, 14)),
+		GALAXIAN(2000, new Rect(40, 20, 52, 34)),
+		BELL(3000, new Rect(40, 40, 52, 54)),
+		KEY(5000, new Rect(40, 60, 52, 74));
 		
 		public final int points;
+		public final Rect sprite;
 		
-		private Type(int points) {
+		private Type(final int points, final Rect sprite) {
 			this.points = points;
+			this.sprite = sprite;
 		}
 	}
 	
 	private static final String TAG = "WakkaWallpaper.Fruit";
 	
-	private Type mType;
+	private Fruit.Type mType;
 	private long mCreated;
 	private boolean mIsVisible;
 	private int mVisibleLength;
@@ -34,22 +46,22 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	private int mThresholdFirst;
 	private int mThresholdSecond;
 	private int mNumberDisplayed;
-	private final Paint mTempColor;
+	private final Bitmap mFruits;
+	private final RectF mCellSize;
 	private Point[] mPositions;
 	
 	/**
 	 * Initialize a new fruit adhering to the parameters.
-	 * 
-	 * @param startingPositionX X coordinate of the position of the fruit.
-	 * @param startingPositionY Y coordinate of the position of the fruit.
-	 * @param type Type value representing the type of fruit.
-	 * @param visible The length (in milliseconds) that the fruit will be visible on screen.
 	 */
 	public Fruit() {
 		super();
 		
-		this.mTempColor = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.mTempColor.setColor(0xffff6666);
+		this.mCellSize = new RectF(0, 0, 0, 0);
+		
+		//Load the fruit sprites
+		final BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inScaled = false;
+		this.mFruits = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.fruits, options);
 
         //Load all preferences or their defaults
         Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
@@ -162,6 +174,10 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
     			this.mPositions[(i * dotRows) + j] = new Point(i * dotsCol, j * dotsRow);
     		}
     	}
+    	
+    	//Create cell size rectangle for drawing
+    	this.mCellSize.right = game.getCellWidth();
+    	this.mCellSize.bottom = game.getCellHeight();
     }
 	
 	@Override
@@ -192,33 +208,8 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 				c.rotate(90, this.mCellWidthOverTwo, this.mCellHeightOverTwo);
 			}
 			
-			switch (this.mType) {
-				case CHERRY:
-					break;
-					
-				case STRAWBERRY:
-					break;
-					
-				case PEACH:
-					break;
-					
-				case APPLE:
-					break;
-					
-				case GRAPES:
-					break;
-					
-				case GALAXIAN:
-					break;
-					
-				case BELL:
-					break;
-					
-				case KEY:
-					break;
-			}
-			
-			c.drawCircle(this.mCellWidthOverTwo, this.mCellHeightOverTwo, this.mCellWidthOverTwo, this.mTempColor);
+			//two to four daily servings...
+			c.drawBitmap(this.mFruits, this.mType.sprite, this.mCellSize, null);
 			
 			c.restore();
 		}
@@ -248,33 +239,33 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	 * @param level The level you wish to get fruit for.
 	 * @return The Type of fruit for the level.
 	 */
-	private static Type getForLevel(final int level) {
+	private static Fruit.Type getForLevel(final int level) {
 		if (level <= 0) {
 			throw new IllegalArgumentException("Level number must be greater than zero.");
 		}
 		
 		switch (level) {
 			case 1:
-				return Type.CHERRY;
+				return Fruit.Type.CHERRY;
 			case 2:
-				return Type.STRAWBERRY;
+				return Fruit.Type.STRAWBERRY;
 			case 3:
 			case 4:
-				return Type.PEACH;
+				return Fruit.Type.PEACH;
 			case 5:
 			case 6:
-				return Type.APPLE;
+				return Fruit.Type.APPLE;
 			case 7:
 			case 8:
-				return Type.GRAPES;
+				return Fruit.Type.GRAPES;
 			case 9:
 			case 10:
-				return Type.GALAXIAN;
+				return Fruit.Type.GALAXIAN;
 			case 11:
 			case 12:
-				return Type.BELL;
+				return Fruit.Type.BELL;
 			default:
-				return Type.KEY;
+				return Fruit.Type.KEY;
 		}
 	}
 }
