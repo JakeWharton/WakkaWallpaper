@@ -13,6 +13,7 @@ public class Vector {
 	public final Point position;
 	public final Direction direction;
 	public final Direction initialDirection;
+	public final int step;
 	
 	/**
 	 * Creates a Vector at a position setting both the direction and initial direction the same value.
@@ -21,7 +22,7 @@ public class Vector {
 	 * @param direction Direction of the Vector.
 	 */
 	public Vector(final Point position, final Direction direction) {
-		this(position, direction, null);
+		this(position, direction, null, 0);
 	}
 	
 	/**
@@ -31,10 +32,11 @@ public class Vector {
 	 * @param direction Direction of Vector.
 	 * @param initialDirection Initial direction of Vector.
 	 */
-	private Vector(final Point position, final Direction direction, final Direction initialDirection) {
+	private Vector(final Point position, final Direction direction, final Direction initialDirection, final int step) {
 		this.position = position;
 		this.direction = direction;
 		this.initialDirection = initialDirection;
+		this.step = step;
 	}
 	
 	public Vector[] getPossibleMoves() {
@@ -43,13 +45,13 @@ public class Vector {
 		
 		if (this.direction != null) {
 			//favor the same direction
-			moves[i++] = new Vector(Entity.move(this.position, this.direction), this.direction, (this.initialDirection == null) ? this.direction : this.initialDirection);
+			moves[i++] = new Vector(Entity.move(this.position, this.direction), this.direction, (this.initialDirection == null) ? this.direction : this.initialDirection, this.step + 1);
 		}
 		
 		//add other three directions (four when this.mDirection is null)
 		for (Direction direction : Direction.values()) {
 			if (direction != this.direction) {
-				moves[i++] = new Vector(Entity.move(this.position, direction), direction, (this.initialDirection == null) ? direction : this.initialDirection);
+				moves[i++] = new Vector(Entity.move(this.position, direction), direction, (this.initialDirection == null) ? direction : this.initialDirection, this.step + 1);
 			}
 		}
 		
