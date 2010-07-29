@@ -210,28 +210,28 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		
 		while (!queue.isEmpty()) {
 			current = queue.remove();
-			seen.add(game.hashPosition(current.getPosition()));
+			seen.add(game.hashPosition(current.position));
 			
 			if (Wallpaper.LOG_VERBOSE) {
-				Log.v(TheMan.TAG, "With Current: (" + current.getPosition().x + "," + current.getPosition().y + ") " + current.getDirection());
+				Log.v(TheMan.TAG, "With Current: (" + current.position.x + "," + current.position.y + ") " + current.direction);
 			}
 			
 			for (Vector next : current.getPossibleMoves()) {
 				if (Wallpaper.LOG_VERBOSE) {
-					Log.v(TheMan.TAG, "- Checking: (" + next.getPosition().x + "," + next.getPosition().y + ") " + next.getDirection());
+					Log.v(TheMan.TAG, "- Checking: (" + next.position.x + "," + next.position.y + ") " + next.direction);
 				}
 				
-				if (game.isValidPosition(next.getPosition()) && !seen.contains(game.hashPosition(next.getPosition())) && !game.isGhostAtPosition(next.getPosition())) {
+				if (game.isValidPosition(next.position) && !seen.contains(game.hashPosition(next.position)) && !game.isGhostAtPosition(next.position)) {
 					if (Wallpaper.LOG_VERBOSE) {
 						Log.v(TheMan.TAG, "-- Valid");
 					}
 					
-					if (game.getCell(next.getPosition()) == Game.Cell.DOT) {
+					if (game.getCell(next.position) == Game.Cell.DOT) {
 						if (Wallpaper.LOG_VERBOSE) {
 							Log.v(TheMan.TAG, "-- Has Dot");
 						}
 						
-						this.mDirectionNext = next.getInitialDirection();
+						this.mDirectionNext = next.initialDirection;
 						queue.clear(); //break out of while
 						break; //break out of for
 					} else {
