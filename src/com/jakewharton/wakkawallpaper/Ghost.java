@@ -15,7 +15,8 @@ import android.util.Log;
  * @author Jake Wharton
  */
 public abstract class Ghost extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
-	enum State { CHASE, SCATTER, FRIGHTENED, EATEN }
+	enum State { ALIVE, FRIGHTENED, EATEN }
+	enum Strategy { CHASE, SCATTER, RANDOM }
 	enum Mode {
 		CHASE_AND_SCATTER(0), CHASE_ONLY(1), SCATTER_ONLY(2), RANDOM_TURNS(3);
 		
@@ -37,9 +38,17 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 
 	private static final String TAG = "WakkaWallpaper.Ghost";
 	private static final int FLEE_LENGTH_BLINK = 5000;
-	private static final int FLEE_LENGTH = 7000;
+	private static final int FRIGHTENED_LENGTH = 7000;
+	private static final int[][] CHASE_AND_SCATTER_TIMES = new int[][] {
+		new int[] { -7000, 20000, -7000, 20000, -5000, 20000, -5000, 0 },
+		new int[] { -7000, 20000, -7000, 20000, -5000, 1033000, -17, 0 },
+		new int[] { -7000, 20000, -7000, 20000, -5000, 1033000, -17, 0 },
+		new int[] { -7000, 20000, -7000, 20000, -5000, 1033000, -17, 0 },
+		new int[] { -5000, 20000, -5000, 20000, -5000, 1037000, -17, 0 },
+	};
 	
 	protected Ghost.State mState;
+	protected Ghost.Strategy mStrategy;
 	protected Ghost.Mode mMode;
 	protected final Paint mBodyBackground;
 	private final Paint mEyeBackground;
@@ -56,7 +65,10 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	private float mCellHeightOverThree;
 	private float mCellWidthOverSeven;
 	private float mCellWidthOverFourteen;
-	private long mStateChanged;
+	private long mStateTimer;
+	private int mModePointer;
+	private long mModeTimer;
+	private long mModeLastTime;
 	
     /**
      * Create a new ghost.
@@ -234,12 +246,36 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 
     @Override
 	public void tick(Game game) {
-    	if ((this.mState == Ghost.State.FRIGHTENED) && ((System.currentTimeMillis() - this.mStateChanged) > Ghost.FLEE_LENGTH)) {
-    		if (this.mMode == Ghost.Mode.SCATTER_ONLY) {
-    			this.mState = Ghost.State.SCATTER;
+    	if ((this.mState == Ghost.State.FRIGHTENED) && ((System.currentTimeMillis() - this.mStateTimer) > Ghost.FRIGHTENED_LENGTH)) {
+    		this.setState(game, Ghost.State.ALIVE);
+    	}
+    	
+    	if ((this.mMode == Ghost.Mode.CHASE_AND_SCATTER) && (this.mState == Ghost.State.ALIVE)) {
+    		if (this.mModeTimer <= 0) {
+        		
+        		int levelPointer = game.getLevel() - 1;
+        		if (levelPointer >= Ghost.CHASE_AND_SCATTER_TIMES.length) {
+        			levelPointer = Ghost.CHASE_AND_SCATTER_TIMES.length - 1;
+        		}
+        		final int[] levelTimes = Ghost.CHASE_AND_SCATTER_TIMES[levelPointer];
+
+        		this.mModePointer += 1;
+        		if (this.mModePointer >= levelTimes.length) {
+        			this.mModePointer = levelTimes.length - 1;
+        		}
+        		final int value = levelTimes[this.mModePointer];
+        		
+        		this.mStrategy = (value < 0) ? Ghost.Strategy.SCATTER : Ghost.Strategy.CHASE;
+        		this.mModeTimer = Math.abs(value);
+        		
+        		if (Wallpaper.LOG_DEBUG) {
+        			Log.d(Ghost.TAG, "Switching ghosts strategy to " + this.mStrategy + " for " + this.mModeTimer + "ms");
+        		}
     		} else {
-    			this.mState = Ghost.State.CHASE;
-    			this.mStateChanged = System.currentTimeMillis();
+    			//tick mode timer
+    			final long timer = System.currentTimeMillis();
+    			this.mModeTimer -= timer - this.mModeLastTime;
+    			this.mModeLastTime = timer;
     		}
     	}
     	
@@ -268,8 +304,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 		
 		switch (this.mState) {
-			case CHASE:
-			case SCATTER:
+			case ALIVE:
 				c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mBodyBackground);
 				
 				//fall through to eyes only case
@@ -283,7 +318,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				break;
 				
 			case FRIGHTENED:
-				final long timeDiff = System.currentTimeMillis() - this.mStateChanged;
+				final long timeDiff = System.currentTimeMillis() - this.mStateTimer;
 				if (((timeDiff) < Ghost.FLEE_LENGTH_BLINK) || (this.mTickCount % 2 == 0)) {
 					//draw normal scared
 					c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mScaredBackground);
@@ -335,7 +370,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 		
 		//Set the timestamp for timed states
-		this.mStateChanged = System.currentTimeMillis();
+		this.mStateTimer = System.currentTimeMillis();
 	}
 	
 	@Override
@@ -348,30 +383,35 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		//Set initial ghost position
 		this.setPosition(this.getInitialPosition(game));
 		
-		//Set initial state based on mode
-		this.setState(game, this.getInitialState());
-		
-		//Since mDirectionNext will have been set by the state change, copy it to mDirectionCurrent in case of an immediate state change
-		this.mDirectionCurrent = this.mDirectionNext;
-	}
-	
-	/**
-	 * Get initial state based on mode.
-	 * 
-	 * @return Ghost.State
-	 */
-	private Ghost.State getInitialState() {
+		//Set initial strategy based on mode
 		switch (this.mMode) {
-			case CHASE_AND_SCATTER:
 			case CHASE_ONLY:
-			case RANDOM_TURNS:
-				return Ghost.State.CHASE;
-				
+				this.mStrategy = Ghost.Strategy.CHASE;
+				break;
+
+			case CHASE_AND_SCATTER:
 			case SCATTER_ONLY:
-				return Ghost.State.SCATTER;
+				this.mStrategy = Ghost.Strategy.SCATTER;
+				break;
+				
+			case RANDOM_TURNS:
+				this.mStrategy = Ghost.Strategy.RANDOM;
+				break;
 				
 			default:
 				throw new IllegalArgumentException("Unknown ghost mode: " + this.mMode);
+		}
+		
+		//Breathe life into ghost
+		this.setState(game, Ghost.State.ALIVE);
+		
+		//Since mDirectionNext will have been set by the state change, copy it to mDirectionCurrent in case of an immediate state change
+		this.mDirectionCurrent = this.mDirectionNext;
+		
+		if (this.mMode == Ghost.Mode.CHASE_AND_SCATTER) {
+			//This will be bumped up to zero based on the timer being less than zero
+			this.mModePointer = -1;
+			this.mModeTimer = -1;
 		}
 	}
 	
@@ -389,6 +429,25 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 */
 	protected void determineNextDirection(final Game game, boolean isStateChange) {
 		switch (this.mState) {
+			case ALIVE:
+				switch (this.mStrategy) {
+					case CHASE:
+						this.determineNextDirectionByLineOfSight(game, this.getChasingTarget(game), isStateChange);
+						break;
+						
+					case SCATTER:
+						this.determineNextDirectionByLineOfSight(game, this.getScatterTarget(game), isStateChange);
+						break;
+						
+					case RANDOM:
+						this.determineNextDirectionByRandomness(game, isStateChange);
+						break;
+						
+					default:
+						throw new IllegalArgumentException("Unknown Ghost strategy: " + this.mStrategy);
+				}
+				break;
+				
 			case EATEN:
 				final Point initialPosition = this.getInitialPosition(game);
 				if ((this.mPosition.x == initialPosition.x) && (this.mPosition.y == initialPosition.y)) {
@@ -396,22 +455,10 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 						Log.d(Ghost.TAG, this.getClass().getSimpleName() + " has reached initial position. Reverting to initial ghost state.");
 					}
 					
-					this.setState(game, this.getInitialState());
+					this.setState(game, Ghost.State.ALIVE);
 				} else {
 					this.determineNextDirectionByLineOfSight(game, initialPosition, isStateChange);
 				}
-				break;
-			
-			case CHASE:
-				if (this.mMode == Ghost.Mode.RANDOM_TURNS) {
-					this.determineNextDirectionByRandomness(game, isStateChange);
-				} else {
-					this.determineNextDirectionByLineOfSight(game, this.getChasingTarget(game), isStateChange);
-				}
-				break;
-				
-			case SCATTER:
-				this.determineNextDirectionByLineOfSight(game, this.getScatterTarget(game), isStateChange);
 				break;
 				
 			case FRIGHTENED:
