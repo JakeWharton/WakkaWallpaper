@@ -558,7 +558,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		double shortestDistance = Double.MAX_VALUE;
 		this.mDirectionNext = null;
 		
-		for (Direction direction : Direction.values()) {
+		for (final Direction direction : Direction.values()) {
 			if ((this.mDirectionCurrent == null) || (direction != this.mDirectionCurrent.getOpposite())) {
 				nextPoint = Entity.move(this.mPosition, direction);
 				nextDistance = Math.sqrt(Math.pow(nextPoint.x - target.x, 2) + Math.pow(nextPoint.y - target.y, 2));
