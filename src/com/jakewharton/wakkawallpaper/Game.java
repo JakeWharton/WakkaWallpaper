@@ -48,7 +48,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		 * @return Game.Mode
 		 */
 		public static Game.Mode parseInt(final int modeValue) {
-			for (Game.Mode mode : Game.Mode.values()) {
+			for (final Game.Mode mode : Game.Mode.values()) {
 				if (mode.value == modeValue) {
 					return mode;
 				}
@@ -61,7 +61,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		
 		public final int length;
 		
-		private State(int length) {
+		private State(final int length) {
 			this.length = length;
 		}
 	}
@@ -297,12 +297,12 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	if (hasGhostCountChanged) {
 	    	this.mGhosts = new Ghost[this.mGhostCount];
 	    	int i = 0;
-	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Inky(); }
-	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Pinky(); }
-	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Blinky(); }
+	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Blinky(); } //Blink MUST be first for Inky to properly calculate moves
 	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Clyde(); }
+	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Pinky(); }
+	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Inky(); }
 	    	
-	    	for (Ghost ghost : this.mGhosts) {
+	    	for (final Ghost ghost : this.mGhosts) {
 	    		ghost.performResize(this);
 	    	}
     	}
@@ -552,7 +552,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * @param position Point
      * @return Cell value.
      */
-    public Cell getCell(final Point position) {
+    public Game.Cell getCell(final Point position) {
     	return this.mBoard[position.y][position.x];
     }
     
@@ -562,7 +562,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * @param position Position to change.
      * @param newCell New cell value.
      */
-    public void setCell(final Point position, Cell newCell) {
+    public void setCell(final Point position, final Game.Cell newCell) {
     	this.mBoard[position.y][position.x] = newCell; 
     }
     
@@ -696,12 +696,13 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      */
     public boolean isIntersection(final Point position) {
     	int directions = 0;
-    	for (Entity.Direction direction : Entity.Direction.values()) {
+    	for (final Entity.Direction direction : Entity.Direction.values()) {
     		if (this.isValidPosition(Entity.move(position, direction))) {
     			directions += 1;
     		}
     	}
     	
+    	//TODO: this is wrong. should be >2 but then the nextRandomDirection methods fail on a corner
     	return (directions > 1);
     }
     
@@ -712,7 +713,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * @return Whether or not a ghost exists on the position.
      */
     public boolean isGhostAtPosition(final Point position) {
-    	for (Ghost ghost : this.mGhosts) {
+    	for (final Ghost ghost : this.mGhosts) {
     		if ((ghost.getPosition().x == position.x) && (ghost.getPosition().y == position.y) && (ghost.getState() == Ghost.State.HUNTING)) {
     			return true;
     		}
@@ -759,14 +760,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         	
         	if ((this.mMode == Game.Mode.ENDLESS) && (this.mDotsRemaining < (this.mDotsTotal * this.mEndlessDotThresholdPercent / 100.0f))) {
         		//regen dot randomly
-        		while (true) {
-        			final Point dotPoint = new Point(Game.RANDOM.nextInt(this.mCellsWide), Game.RANDOM.nextInt(this.mCellsTall));
-        			if (this.isValidPosition(dotPoint) && (this.getCell(dotPoint) == Game.Cell.BLANK)) {
-        				this.setCell(dotPoint, Game.Cell.DOT);
-        				break;
-        			}
-        		}
-        		
+        		this.setCell(this.getRandomBlankCell(), Game.Cell.DOT);
         		this.mDotsRemaining += 1;
         	}
     	} else if (cell == Cell.JUGGERDOT) {
@@ -779,16 +773,23 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         	
         	if ((this.mMode == Game.Mode.ENDLESS) && (this.mJuggerdotsRemaining < this.mEndlessJuggerdotThreshold)) {
         		//regen juggerdot randomly
-        		while (true) {
-        			final Point dotPoint = new Point(Game.RANDOM.nextInt(this.mCellsWide), Game.RANDOM.nextInt(this.mCellsTall));
-        			if (this.isValidPosition(dotPoint) && (this.getCell(dotPoint) == Game.Cell.BLANK)) {
-        				this.setCell(dotPoint, Game.Cell.JUGGERDOT);
-        				break;
-        			}
-        		}
-        		
+        		this.setCell(this.getRandomBlankCell(), Game.Cell.JUGGERDOT);
         		this.mJuggerdotsRemaining += 1;
         	}
+    	}
+    }
+    
+    /**
+     * Find a random blank and valid cell position on the board
+     * 
+     * @return Blank cell position
+     */
+    private Point getRandomBlankCell() {
+    	while (true) {
+    		final Point cell = new Point(Game.RANDOM.nextInt(this.mCellsWide), Game.RANDOM.nextInt(this.mCellsTall));
+    		if (this.isValidPosition(cell) && (this.getCell(cell) == Game.Cell.BLANK)) {
+				return cell;
+			}
     	}
     }
     
@@ -806,7 +807,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * Check to see if The Man has collided with a ghost.
      */
     public void checkGhosts() {
-    	for (Ghost ghost : this.mGhosts) {
+    	for (final Ghost ghost : this.mGhosts) {
     		if (this.mTheMan.isCollidingWith(ghost)) {
     			switch (ghost.getState()) {
 					case HUNTING:
@@ -846,7 +847,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * @param state New state.
      */
     private void switchGhostsState(final Ghost.State state) {
-    	for (Ghost ghost : this.mGhosts) {
+    	for (final Ghost ghost : this.mGhosts) {
     		ghost.setState(this, state);
     	}
     	if (state == Ghost.State.FRIGHTENED) {
@@ -939,7 +940,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	//Initialize entities
     	this.mTheMan.newLevel(this);
     	this.mFruit.newLevel(this);
-    	for (Ghost ghost : this.mGhosts) {
+    	for (final Ghost ghost : this.mGhosts) {
     		ghost.newLevel(this);
     	}
     	
@@ -953,7 +954,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      */
     private void newLife() {
     	this.mTheMan.newLife(this);
-    	for (Ghost ghost : this.mGhosts) {
+    	for (final Ghost ghost : this.mGhosts) {
     		ghost.newLife(this);
     	}
     }
@@ -1010,7 +1011,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	    	this.mTheMan.tick(this);
 	    	
 	    	//Ghosts are only ticked when playing
-	    	for (Ghost ghost : this.mGhosts) {
+	    	for (final Ghost ghost : this.mGhosts) {
 	    		ghost.tick(this);
 	    	}
     	}
@@ -1092,7 +1093,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	//Resize entities
     	this.mFruit.performResize(this);
     	this.mTheMan.performResize(this);
-    	for (Ghost ghost : this.mGhosts) {
+    	for (final Ghost ghost : this.mGhosts) {
     		ghost.performResize(this);
     	}
     	
@@ -1174,7 +1175,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
     	//Draw the ghosts if we are ready or playing
     	if ((this.mState == Game.State.READY) || (this.mState == Game.State.PLAYING)) {
-	    	for (Ghost ghost : this.mGhosts) {
+	    	for (final Ghost ghost : this.mGhosts) {
 	    		ghost.draw(c, this.mIsLandscape);
 	    	}
     	}

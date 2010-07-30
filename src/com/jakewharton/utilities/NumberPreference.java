@@ -17,7 +17,7 @@ public class NumberPreference extends DialogPreference implements SeekBar.OnSeek
 	private int mMin;
 	private int mValue = 0;
 
-	public NumberPreference(Context context, AttributeSet attrs) {
+	public NumberPreference(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		this.setPersistent(true);
 
@@ -30,39 +30,38 @@ public class NumberPreference extends DialogPreference implements SeekBar.OnSeek
 	}
 
 	@Override
-	protected void onBindDialogView(View v) {
-		super.onBindDialogView(v);
+	protected void onBindDialogView(final View view) {
+		super.onBindDialogView(view);
 		
-		TextView dialogMessage = (TextView)v.findViewById(R.id.dialogMessage);
-		dialogMessage.setText(this.getDialogMessage());
+		((TextView)view.findViewById(R.id.dialogMessage)).setText(this.getDialogMessage());
 
-		this.mValueText = (TextView)v.findViewById(R.id.actualValue);
+		this.mValueText = (TextView)view.findViewById(R.id.actualValue);
 
-		this.mSeekBar = (SeekBar)v.findViewById(R.id.myBar);
+		this.mSeekBar = (SeekBar)view.findViewById(R.id.myBar);
 		this.mSeekBar.setOnSeekBarChangeListener(this);
 		this.mSeekBar.setMax(this.mMax - this.mMin);
 		this.mSeekBar.setProgress(this.mValue - this.mMin);
 
-		String t = String.valueOf(this.mValue);
+		final String t = String.valueOf(this.mValue);
 		this.mValueText.setText(this.mSuffix == null ? t : t.concat(this.mSuffix));
 	}
 
 	@Override
-	protected Object onGetDefaultValue(TypedArray a, int index) {
+	protected Object onGetDefaultValue(final TypedArray a, final int index) {
 		return a.getInt(index, 0);
 	}
 
 	@Override
-	protected void onSetInitialValue(boolean restore, Object defaultValue) {
+	protected void onSetInitialValue(final boolean restore, final Object defaultValue) {
 		this.mValue = this.getPersistedInt(defaultValue == null ? 0 : (Integer)defaultValue);
 	}
 
 	@Override
-	protected void onDialogClosed(boolean positiveResult) {
+	protected void onDialogClosed(final boolean positiveResult) {
 		super.onDialogClosed(positiveResult);
 
 		if (positiveResult) {
-			int value = this.mSeekBar.getProgress() + this.mMin;
+			final int value = this.mSeekBar.getProgress() + this.mMin;
 			if (this.callChangeListener(value)) {
 				this.setValue(value);
 			}
@@ -79,25 +78,25 @@ public class NumberPreference extends DialogPreference implements SeekBar.OnSeek
 		this.persistInt(value);
 	}
 
-	public void setMax(int max) {
+	public void setMax(final int max) {
 		this.mMax = max;
 		if (this.mValue > this.mMax) {
 			this.setValue(this.mMax);
 		}
 	}
 
-	public void setMin(int min) {
+	public void setMin(final int min) {
 		if (min < this.mMax) {
 			this.mMin = min;
 		}
 	}
 
-	public void onProgressChanged(SeekBar seek, int value, boolean fromTouch) {
-		String t = String.valueOf(value + this.mMin);
+	public void onProgressChanged(final SeekBar seek, final int value, final boolean fromTouch) {
+		final String t = String.valueOf(value + this.mMin);
 		this.mValueText.setText(this.mSuffix == null ? t : t.concat(this.mSuffix));
 	}
 
-	public void onStartTrackingTouch(SeekBar seek) {}
+	public void onStartTrackingTouch(final SeekBar seek) {}
 
-	public void onStopTrackingTouch(SeekBar seek) {}
+	public void onStopTrackingTouch(final SeekBar seek) {}
 }

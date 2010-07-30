@@ -18,7 +18,6 @@ package com.jakewharton.utilities;
 
 import com.jakewharton.wakkawallpaper.R;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.preference.Preference;
 import android.util.AttributeSet;
@@ -28,25 +27,25 @@ import android.widget.ImageView;
 public class IconPreference extends Preference {
     private Drawable mIcon;
 
-    public IconPreference(Context context, AttributeSet attrs) {
+    public IconPreference(final Context context, final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public IconPreference(Context context, AttributeSet attrs, int defStyle) {
+    public IconPreference(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         
         this.setLayoutResource(R.layout.icon_preference);
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IconPreferenceScreen, defStyle, 0);
-        mIcon = a.getDrawable(R.styleable.IconPreferenceScreen_icon);
+        
+        this.mIcon = context.obtainStyledAttributes(attrs, R.styleable.IconPreferenceScreen, defStyle, 0).getDrawable(R.styleable.IconPreferenceScreen_icon);
     }
 
     @Override
-    public void onBindView(View view) {
+    public void onBindView(final View view) {
         super.onBindView(view);
         
-        ImageView imageView = (ImageView)view.findViewById(R.id.icon);
-        if (imageView != null && mIcon != null) {
-            imageView.setImageDrawable(mIcon);
+        final ImageView imageView = (ImageView)view.findViewById(R.id.icon);
+        if ((imageView != null) && (this.mIcon != null)) {
+            imageView.setImageDrawable(this.mIcon);
         }
     }
 
@@ -55,7 +54,7 @@ public class IconPreference extends Preference {
      *
      * @param icon The icon for this Preference
      */
-    public void setIcon(Drawable icon) {
+    public void setIcon(final Drawable icon) {
         if (((icon == null) && (this.mIcon != null)) || ((icon != null) && (!icon.equals(this.mIcon)))) {
             this.mIcon = icon;
             this.notifyChanged();

@@ -34,7 +34,7 @@ public abstract class Entity {
 		 * @param nextDirection The next direction.
 		 * @return Angle.
 		 */
-		public int getAngle(final Direction nextDirection) {
+		public int getAngle(final Entity.Direction nextDirection) {
 			if ((nextDirection == null) || (this == nextDirection) || (this.getOpposite() == nextDirection)) {
 				return this.angle;
 			} else {
@@ -42,10 +42,10 @@ public abstract class Entity {
 				int angle2 = nextDirection.angle;
 				
 				//Special case NORTH and EAST since (270+0)/2 is not what we want
-				if ((this == Direction.NORTH) && (nextDirection == Direction.EAST)) {
-					angle2 += Direction.DEGREES_IN_CIRCLE;
-				} else if ((this == Direction.EAST) && (nextDirection == Direction.NORTH)) {
-					angle1 += Direction.DEGREES_IN_CIRCLE;
+				if ((this == Entity.Direction.NORTH) && (nextDirection == Entity.Direction.EAST)) {
+					angle2 += Entity.Direction.DEGREES_IN_CIRCLE;
+				} else if ((this == Entity.Direction.EAST) && (nextDirection == Entity.Direction.NORTH)) {
+					angle1 += Entity.Direction.DEGREES_IN_CIRCLE;
 				}
 				
 				return (angle1 + angle2) / 2;
@@ -57,18 +57,18 @@ public abstract class Entity {
 		 * 
 		 * @return Opposite direction.
 		 */
-		public Direction getOpposite() {
+		public Entity.Direction getOpposite() {
 			switch (this) {
 				case NORTH:
-					return Direction.SOUTH;
+					return Entity.Direction.SOUTH;
 				case SOUTH:
-					return Direction.NORTH;
+					return Entity.Direction.NORTH;
 				case EAST:
-					return Direction.WEST;
+					return Entity.Direction.WEST;
 				case WEST:
-					return Direction.EAST;
+					return Entity.Direction.EAST;
 				default:
-					return null;
+					throw new IllegalStateException("This is impossible.");
 			}
 		}
 	}
@@ -85,7 +85,7 @@ public abstract class Entity {
 		}
 		
 		public static Entity.Style parseInt(final int stateValue) {
-			for (Entity.Style state : Entity.Style.values()) {
+			for (final Entity.Style state : Entity.Style.values()) {
 				if (state.value == stateValue) {
 					return state;
 				}
@@ -98,9 +98,9 @@ public abstract class Entity {
 	
 	protected final Point mPosition;
 	protected final PointF mLocation;
-	protected Direction mDirectionLast;
-	protected Direction mDirectionCurrent;
-	protected Direction mDirectionNext;
+	protected Entity.Direction mDirectionLast;
+	protected Entity.Direction mDirectionCurrent;
+	protected Entity.Direction mDirectionNext;
 	protected float mSpeed;
 	protected float mCellWidth;
 	protected float mCellHeight;
@@ -164,7 +164,7 @@ public abstract class Entity {
 	 * 
 	 * @return Position.
 	 */
-	public Direction getDirection() {
+	public Entity.Direction getDirection() {
 		return this.mDirectionCurrent;
 	}
 	
@@ -310,7 +310,7 @@ public abstract class Entity {
 	 * @param direction Direction in which to move the point.
 	 * @return New point coordinates.
 	 */
-	protected static Point move(final Point point, final Direction direction) {
+	protected static Point move(final Point point, final Entity.Direction direction) {
 		return Entity.move(point, direction, 1);
 	}
 	
@@ -322,7 +322,7 @@ public abstract class Entity {
 	 * @param setps Number of steps to move point.
 	 * @return New point coordinates.
 	 */
-	protected static Point move(final Point point, final Direction direction, final int steps) {
+	protected static Point move(final Point point, final Entity.Direction direction, final int steps) {
     	final Point newPoint = new Point(point);
     	if (direction != null) {
 	    	switch (direction) {

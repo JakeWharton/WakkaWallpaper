@@ -46,7 +46,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	private TheMan.Mode mMode;
 	private int mStateTicker;
     private final Paint mForeground;
-	private Direction mWantsToGo;
+	private Entity.Direction mWantsToGo;
     
 	/**
 	 * Create instance of "The Man"
@@ -112,7 +112,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
      * 
      * @param direction Desired direction.
      */
-    public void setWantsToGo(final Direction direction) {
+    public void setWantsToGo(final Entity.Direction direction) {
     	this.mWantsToGo = direction;
     	
     	if (Wallpaper.LOG_DEBUG) {
@@ -121,7 +121,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
     }
 
 	@Override
-	public void tick(Game game) {
+	public void tick(final Game game) {
 		//Only tick if we are alive
 		if (this.mState == TheMan.State.ALIVE) {
 			super.tick(game);
@@ -145,7 +145,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	 * 
 	 * @param state New state.
 	 */
-	public void setState(TheMan.State state) {
+	public void setState(final TheMan.State state) {
 		this.mState = state;
 		this.mStateTicker = 0;
 	}
@@ -216,7 +216,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 				Log.v(TheMan.TAG, "With Current: (" + current.position.x + "," + current.position.y + ") " + current.direction);
 			}
 			
-			for (Vector next : current.getPossibleMoves()) {
+			for (final Vector next : current.getPossibleMoves()) {
 				if (Wallpaper.LOG_VERBOSE) {
 					Log.v(TheMan.TAG, "- Checking: (" + next.position.x + "," + next.position.y + ") " + next.direction);
 				}
@@ -248,7 +248,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		//Temporary last ditch effort: pick a random direction
 		if (this.mDirectionNext == null) {
 			while (true) {
-				Direction direction = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
+				final Entity.Direction direction = Entity.Direction.values()[Game.RANDOM.nextInt(Entity.Direction.values().length)];
 				if (game.isValidPosition(Entity.move(this.mPosition, direction))) {
 					this.mDirectionNext = direction;
 					break;
@@ -283,6 +283,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	 * @param game Game instance.
 	 */
 	private void determineNextDirectionByAI(final Game game) {
+		//TODO: program this
 		this.determineNextDirectionByNearestDot(game);
 	}
 	
@@ -337,7 +338,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		//Randomize next direction
 		boolean valid = false;
 		while (!valid) {
-			this.mDirectionNext = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
+			this.mDirectionNext = Entity.Direction.values()[Game.RANDOM.nextInt(Entity.Direction.values().length)];
 			valid = game.isValidPosition(Entity.move(this.mPosition, this.mDirectionNext));
 		}
 	}

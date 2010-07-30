@@ -49,7 +49,7 @@ public class Vector {
 		}
 		
 		//add other three directions (four when this.mDirection is null)
-		for (Direction direction : Direction.values()) {
+		for (final Direction direction : Direction.values()) {
 			if (direction != this.direction) {
 				moves[i++] = new Vector(Entity.move(this.position, direction), direction, (this.initialDirection == null) ? direction : this.initialDirection, this.step + 1);
 			}

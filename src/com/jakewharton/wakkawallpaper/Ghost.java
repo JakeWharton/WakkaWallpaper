@@ -27,7 +27,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 		
 		public static Ghost.Mode parseInt(final int modeValue) {
-			for (Ghost.Mode mode : Ghost.Mode.values()) {
+			for (final Ghost.Mode mode : Ghost.Mode.values()) {
 				if (mode.value == modeValue) {
 					return mode;
 				}
@@ -442,7 +442,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * @param game Game instance
 	 * @param isStateChange Whether or not this change is the result of a state change
 	 */
-	protected void determineNextDirection(final Game game, boolean isStateChange) {
+	protected void determineNextDirection(final Game game, final boolean isStateChange) {
 		switch (this.mState) {
 			case HUNTING:
 				switch (this.mStrategy) {
@@ -490,22 +490,19 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	protected void determineNextFrightenedDirection(final Game game) {
 		if (game.isIntersection(this.mPosition)) {
 			//Try a random direction
-			Direction nextDirection = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
+			this.mDirectionNext = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
 			
-			if (!game.isValidPosition(Entity.move(this.mPosition, nextDirection)) || (nextDirection == this.mDirectionCurrent.getOpposite())) {
+			if (!game.isValidPosition(Entity.move(this.mPosition, this.mDirectionNext)) || (this.mDirectionNext == this.mDirectionCurrent.getOpposite())) {
 				//If the random direction was not valid, iterate over all possible directions looking for a valid one
-				for (Direction direction : Direction.values()) {
+				for (final Direction direction : Direction.values()) {
 					//See if the direction is a valid position and not the opposite of our current direction
 					if (game.isValidPosition(Entity.move(this.mPosition, direction)) && (direction != this.mDirectionCurrent.getOpposite())) {
-						//Save and exit the loop
-						nextDirection = direction;
+						//Exit the loop
+						this.mDirectionNext = direction;
 						break;
 					}
 				}
 			}
-			
-			//Store new direction
-			this.mDirectionNext = nextDirection;
 		} else {
 			//Not at intersection, go straight
 			this.mDirectionNext = this.mDirectionCurrent;
@@ -521,9 +518,9 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 */
 	protected void determineNextDirectionByLineOfSight(final Game game, final Point target, final boolean isStateChange) {
 		Point nextPoint;
-		Direction nextDirection = null;
 		double nextDistance;
 		double shortestDistance = Double.MAX_VALUE;
+		this.mDirectionNext = null;
 		
 		for (Direction direction : Direction.values()) {
 			if (isStateChange || (this.mDirectionCurrent == null) || (direction != this.mDirectionCurrent.getOpposite())) {
@@ -531,14 +528,14 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				nextDistance = Math.sqrt(Math.pow(nextPoint.x - target.x, 2) + Math.pow(nextPoint.y - target.y, 2));
 				
 				if (game.isValidPosition(nextPoint) && (nextDistance < shortestDistance)) {
-					nextDirection = direction;
+					this.mDirectionNext = direction;
 					shortestDistance = nextDistance; 
 				}
 			}
 		}
 		
 		if (Wallpaper.LOG_DEBUG) {
-			if (nextDirection == null) {
+			if (this.mDirectionNext == null) {
 				Log.w(Ghost.TAG, this.getClass().getSimpleName() + "'s next direction is null. This will result in a fatal error.");
 				Log.w(Ghost.TAG, "Target: (" + target.x + ", " + target.y + ")");
 				Log.w(Ghost.TAG, "State Changed: " + isStateChange);
@@ -546,8 +543,6 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				Log.w(Ghost.TAG, "Mode: " + this.mMode);
 			}
 		}
-		
-		this.mDirectionNext = nextDirection;
 	}
 	
 	/**

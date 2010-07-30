@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.preference.DialogPreference;
 import android.text.Editable;
@@ -24,18 +23,17 @@ public class ColorPreference extends DialogPreference {
 		private static final int CENTER_RADIUS = 32;
 		private static final float PI = 3.1415926f;
 		
-		private Paint mPaint;
-		private Paint mCenterPaint;
+		private final Paint mPaint;
+		private final Paint mCenterPaint;
 		private final int[] mColors;
 
-		ColorPickerView(Context c, int color) {
+		ColorPickerView(final Context c, final int color) {
 			super(c);
 			
 			this.mColors = new int[] { 0xFFFF0000, 0xFFFF00FF, 0xFF0000FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFFFF00, 0xFFFFFFFF, 0xFF808080, 0xFF000000, 0xFFFF0000 };
-			Shader s = new SweepGradient(0, 0, this.mColors, null);
 
 			this.mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-			this.mPaint.setShader(s);
+			this.mPaint.setShader(new SweepGradient(0, 0, this.mColors, null));
 			this.mPaint.setStyle(Paint.Style.STROKE);
 			this.mPaint.setStrokeWidth(32);
 
@@ -45,8 +43,8 @@ public class ColorPreference extends DialogPreference {
 		}
 
 		@Override
-		protected void onDraw(Canvas canvas) {
-			float r = CENTER_X - this.mPaint.getStrokeWidth() * 0.5f;
+		protected void onDraw(final Canvas canvas) {
+			final float r = CENTER_X - this.mPaint.getStrokeWidth() * 0.5f;
 
 			canvas.translate(CENTER_X, CENTER_X);
 
@@ -55,20 +53,20 @@ public class ColorPreference extends DialogPreference {
 		}
 
 		@Override
-		protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
 			this.setMeasuredDimension(CENTER_X * 2, CENTER_Y * 2);
 		}
 
-		public void setCenterColor(int color) {
+		public void setCenterColor(final int color) {
 			this.mCenterPaint.setColor(color);
 			this.invalidate();
 		}
 
-		private int ave(int s, int d, float p) {
+		private int ave(final int s, final int d, final float p) {
 			return s + Math.round(p * (d - s));
 		}
 
-		private int interpColor(int colors[], float unit) {
+		private int interpColor(final int colors[], final float unit) {
 			if (unit <= 0) {
 				return colors[0];
 			}
@@ -77,34 +75,34 @@ public class ColorPreference extends DialogPreference {
 			}
 
 			float p = unit * (colors.length - 1);
-			int i = (int)p;
+			final int i = (int)p;
 			p -= i;
 
 			// now p is just the fractional part [0...1) and i is the index
-			int c0 = colors[i];
-			int c1 = colors[i + 1];
-			int r = ave(Color.red(c0), Color.red(c1), p);
-			int g = ave(Color.green(c0), Color.green(c1), p);
-			int b = ave(Color.blue(c0), Color.blue(c1), p);
+			final int c0 = colors[i];
+			final int c1 = colors[i + 1];
+			final int r = ave(Color.red(c0), Color.red(c1), p);
+			final int g = ave(Color.green(c0), Color.green(c1), p);
+			final int b = ave(Color.blue(c0), Color.blue(c1), p);
 
 			return Color.argb(255, r, g, b);
 		}
 
 		@Override
-		public boolean onTouchEvent(MotionEvent event) {
-			float x = event.getX() - CENTER_X;
-			float y = event.getY() - CENTER_Y;
+		public boolean onTouchEvent(final MotionEvent event) {
+			final float x = event.getX() - CENTER_X;
+			final float y = event.getY() - CENTER_Y;
 
 			switch (event.getAction()) {
 				case MotionEvent.ACTION_MOVE:
 					if (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) > ColorPickerView.CENTER_RADIUS) {
-						float angle = (float)Math.atan2(y, x);
+						final float angle = (float)Math.atan2(y, x);
 						// need to turn angle [-PI ... PI] into unit [0....1]
 						float unit = angle / (2 * PI);
 						if (unit < 0) {
 							unit += 1;
 						}
-						int color = interpColor(this.mColors, unit);
+						final int color = this.interpColor(this.mColors, unit);
 						this.mCenterPaint.setColor(color);
 						ColorPreference.this.mTempValue = color;
 						ColorPreference.this.mEditText.setText(ColorPreference.convertToARGB(color));
@@ -121,23 +119,21 @@ public class ColorPreference extends DialogPreference {
 	private int mValue;
 	private int mTempValue;
 	
-	private TextWatcher mEditTextListener = new TextWatcher() {
-		public void afterTextChanged(Editable s) {}
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
+	private final TextWatcher mEditTextListener = new TextWatcher() {
+		public void afterTextChanged(final Editable s) {}
+		public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {}
+		public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
 			try {
-				String s2 = s.toString().replace("#", "");
+				final String s2 = s.toString().replace("#", "");
 				if (s2.length() == 6) {
-					int color = ColorPreference.convertToColorInt(s2);
-					ColorPreference.this.mColorPickerView.setCenterColor(color);
+					ColorPreference.this.mColorPickerView.setCenterColor(ColorPreference.convertToColorInt(s2));
 				}
-			} catch (NumberFormatException e) {}
+			} catch (final NumberFormatException e) {}
 		}
 	};
 
-	public ColorPreference(Context context, AttributeSet attrs) {
+	public ColorPreference(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
-		
 		this.setPersistent(true);
 	}
 
@@ -151,7 +147,7 @@ public class ColorPreference extends DialogPreference {
 		final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		layoutParams.setMargins(10, 0, 10, 5);
 
-		this.mColorPickerView = new ColorPickerView(getContext(), this.mValue);
+		this.mColorPickerView = new ColorPickerView(this.getContext(), this.mValue);
 		layout.addView(this.mColorPickerView, layoutParams);
 
 		this.mEditText = new EditText(context);
@@ -163,17 +159,17 @@ public class ColorPreference extends DialogPreference {
 	}
 
 	@Override
-	protected Object onGetDefaultValue(TypedArray a, int index) {
+	protected Object onGetDefaultValue(final TypedArray a, final int index) {
 		return a.getInt(index, 0);
 	}
 
 	@Override
-	protected void onSetInitialValue(boolean restore, Object defaultValue) {
+	protected void onSetInitialValue(final boolean restore, final Object defaultValue) {
 		this.mValue = this.getPersistedInt(defaultValue == null ? 0 : (Integer)defaultValue);
 	}
 
 	@Override
-	protected void onDialogClosed(boolean positiveResult) {
+	protected void onDialogClosed(final boolean positiveResult) {
 		super.onDialogClosed(positiveResult);
 
 		if (positiveResult) {
@@ -183,13 +179,12 @@ public class ColorPreference extends DialogPreference {
 		}
 	}
 
-	public void setValue(int value) {
+	public void setValue(final int value) {
 		this.mValue = value;
 		this.persistInt(value);
 	}
 	
-	
-	private static String convertToARGB(int color) {
+	private static String convertToARGB(final int color) {
 		String alpha = Integer.toHexString(Color.alpha(color));
 		String red = Integer.toHexString(Color.red(color));
 		String green = Integer.toHexString(Color.green(color));
@@ -210,9 +205,12 @@ public class ColorPreference extends DialogPreference {
 
 		return "#" + red + green + blue;
 	}
-	private static int convertToColorInt(String argb) throws NumberFormatException {
-
-		int alpha = -1, red = -1, green = -1, blue = -1;
+	
+	private static int convertToColorInt(final String argb) throws NumberFormatException {
+		int alpha = -1;
+		int red = -1;
+		int green = -1;
+		int blue = -1;
 
 		if (argb.length() == 6) {
 			alpha = 255;
