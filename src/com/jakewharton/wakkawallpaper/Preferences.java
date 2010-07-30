@@ -34,6 +34,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 	private static final String MIME_TYPE = "text/plain";
 	private static final int IMPORT_JSON = 1;
 	private static final int SELECT_BACKGROUND = 2;
+	private static final String FILENAME_CHANGELOG = "changelog.html";
+	private static final String FILENAME_CREDITS = "credits.html";
+	private static final String FILENAME_INSTRUCTIONS = "instructions.html";
 	
     @Override
     protected void onCreate(final Bundle icicle) {
@@ -122,7 +125,10 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         //instructions
         this.findPreference(resources.getString(R.string.instructions_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				Preferences.this.startActivity(new Intent(Preferences.this, About_Instructions.class));
+				final Intent intent = new Intent(Preferences.this, About.class);
+				intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_INSTRUCTIONS);
+				intent.putExtra(About.EXTRA_TITLE, resources.getString(R.string.instructions_title));
+				Preferences.this.startActivity(intent);
 				return true;
 			}
 		});
@@ -130,7 +136,10 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         //change log
         this.findPreference(resources.getString(R.string.changelog_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				Preferences.this.startActivity(new Intent(Preferences.this, About_ChangeLog.class));
+				final Intent intent = new Intent(Preferences.this, About.class);
+				intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_CHANGELOG);
+				intent.putExtra(About.EXTRA_TITLE, resources.getString(R.string.changelog_title));
+				Preferences.this.startActivity(intent);
 				return true;
 			}
 		});
@@ -138,7 +147,10 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         //credits
         this.findPreference(resources.getString(R.string.credits_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				Preferences.this.startActivity(new Intent(Preferences.this, About_Credits.class));
+				final Intent intent = new Intent(Preferences.this, About.class);
+				intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_CREDITS);
+				intent.putExtra(About.EXTRA_TITLE, resources.getString(R.string.credits_title));
+				Preferences.this.startActivity(intent);
 				return true;
 			}
 		});

@@ -8,10 +8,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.WebView;
 
-public class About_ChangeLog extends Activity {
-	private static final String FILENAME = "changelog.html";
+public class About extends Activity {
+	public static final String EXTRA_FILENAME = "filename";
+	public static final String EXTRA_TITLE = "title";
 	private static final char NEWLINE = '\n';
-	private static final String ERROR = "Failed to load change log from assets.";
+	private static final String ERROR = "Failed to load the file from assets.";
 	private static final String MIME_TYPE = "text/html";
 	private static final String ENCODING = "utf8";
 	
@@ -23,20 +24,22 @@ public class About_ChangeLog extends Activity {
         
         try {
         	//Load entire about plain text from asset
-			BufferedReader about = new BufferedReader(new InputStreamReader(this.getAssets().open(About_ChangeLog.FILENAME)));
+			BufferedReader about = new BufferedReader(new InputStreamReader(this.getAssets().open(this.getIntent().getStringExtra(About.EXTRA_FILENAME))));
 			String data;
 			while ((data = about.readLine()) != null) {
 				content.append(data);
-				content.append(About_ChangeLog.NEWLINE);
+				content.append(About.NEWLINE);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			content.append(About_ChangeLog.ERROR);
+			content.append(About.ERROR);
 		}
+		
+		this.setTitle(this.getIntent().getStringExtra(About.EXTRA_TITLE));
 		
 		//Put text into layout
         final WebView view = new WebView(this);
-		view.loadData(content.toString(), About_ChangeLog.MIME_TYPE, About_ChangeLog.ENCODING);
+		view.loadData(content.toString(), About.MIME_TYPE, About.ENCODING);
 		
 		this.setContentView(view);
     }
