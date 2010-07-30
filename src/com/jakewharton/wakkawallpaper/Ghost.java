@@ -269,7 +269,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
         		this.mModeTimer = Math.abs(value);
         		
         		if (Wallpaper.LOG_DEBUG) {
-        			Log.d(Ghost.TAG, "Switching ghosts strategy to " + this.mStrategy + " for " + this.mModeTimer + "ms");
+        			Log.d(Ghost.TAG, "Switching " + this.getClass().getSimpleName() +" strategy to " + this.mStrategy + " for " + this.mModeTimer + "ms");
         		}
     		} else {
     			//tick mode timer
@@ -359,7 +359,22 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			return;
 		}
 		
+		//This takes care of the mode timer when switching between states
+		if (this.mMode == Ghost.Mode.CHASE_AND_SCATTER) {
+			if (state == Ghost.State.FRIGHTENED) {
+				//Going in to frightened mode so remove the time spend from the last tick until the state change
+				this.mModeTimer -= System.currentTimeMillis() - this.mModeLastTime;
+			} else if (state == Ghost.State.HUNTING) {
+				//Going in to hunting mode so reset the last timer to right now
+				this.mModeLastTime = System.currentTimeMillis();
+			}
+		}
+		
 		this.mState = state;
+		
+		if (Wallpaper.LOG_DEBUG) {
+			Log.d(Ghost.TAG, "Switching " + this.getClass().getSimpleName() + " state to " + state);
+		}
 		
 		if (state == Ghost.State.FRIGHTENED) {
 			//reverse direction immediately if frightened
@@ -409,9 +424,9 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		this.mDirectionCurrent = this.mDirectionNext;
 		
 		if (this.mMode == Ghost.Mode.CHASE_AND_SCATTER) {
-			//This will be bumped up to zero based on the timer being less than zero
+			//This will be bumped up to zero based on the timer being expired
 			this.mModePointer = -1;
-			this.mModeTimer = -1;
+			this.mModeTimer = 0;
 		}
 	}
 	
@@ -452,7 +467,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				final Point initialPosition = this.getInitialPosition(game);
 				if ((this.mPosition.x == initialPosition.x) && (this.mPosition.y == initialPosition.y)) {
 					if (Wallpaper.LOG_DEBUG) {
-						Log.d(Ghost.TAG, this.getClass().getSimpleName() + " has reached initial position. Reverting to initial ghost state.");
+						Log.d(Ghost.TAG, this.getClass().getSimpleName() + " has reached initial position. Going on the hunt.");
 					}
 					
 					this.setState(game, Ghost.State.HUNTING);
