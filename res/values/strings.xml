@@ -95,7 +95,8 @@
     <string name="settings_game_theman_header">The Man</string>
     <string name="settings_game_themanmode">The Man Movement Mode</string>
     <string name="settings_game_themanmode_key">game_themanmode</string>
-    <string name="settings_game_themanmode_summary">Intelligent AI, nearest dot, or random</string>
+    <string name="settings_game_themanmode_summary">Nearest dot or random turns</string>
+    <!--string name="settings_game_themanmode_summary">Intelligent AI, nearest dot, or random turns</string-->
     <string name="settings_game_usercontrol">User Control</string>
     <string name="settings_game_usercontrol_key">game_usercontrol</string>
     <string name="settings_game_usercontrol_summary">Allow touches on the screen to influence The Man\'s direction</string>

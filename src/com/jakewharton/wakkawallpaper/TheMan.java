@@ -19,7 +19,7 @@ import android.util.Log;
 public class TheMan extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum State { ALIVE, DEAD }
 	enum Mode {
-		AI(0), NEAREST_DOT(1), RANDOM(2);
+		/*AI(0),*/ NEAREST_DOT(1), RANDOM(2);
 		
 		public final int value;
 		
@@ -172,9 +172,9 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		
 		//Use logic based on mode
 		switch (this.mMode) {
-			case AI:
+			/*case AI:
 				this.determineNextDirectionByAI(game);
-				break;
+				break;*/
 				
 			case NEAREST_DOT:
 				this.determineNextDirectionByNearestDot(game);
@@ -221,12 +221,19 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 					Log.v(TheMan.TAG, "- Checking: (" + next.position.x + "," + next.position.y + ") " + next.direction);
 				}
 				
-				if (game.isValidPosition(next.position) && !seen.contains(game.hashPosition(next.position)) && !game.isGhostAtPosition(next.position)) {
+				if (game.isValidPosition(next.position) && !seen.contains(game.hashPosition(next.position))) {
 					if (Wallpaper.LOG_VERBOSE) {
 						Log.v(TheMan.TAG, "-- Valid");
 					}
 					
-					if (game.getCell(next.position) != Game.Cell.BLANK) {
+					final Ghost ghostA = game.getGhostAtPosition(next.position);
+					final Ghost ghostB = game.getGhostAtPosition(Entity.move(next.position, next.direction));
+					if (((ghostA != null) && (ghostA.getState() == Ghost.State.HUNTING)) || ((ghostB != null) && (ghostB.getState() == Ghost.State.HUNTING))) {
+						//If there's a hunting ghost in the next position or the one after, immediately disgard
+						continue;
+					}
+					
+					if ((game.getCell(next.position) != Game.Cell.BLANK) || (game.getFruitAtPosition(next.position) != null)) {
 						if (Wallpaper.LOG_VERBOSE) {
 							Log.v(TheMan.TAG, "-- Has Dot");
 						}
@@ -277,15 +284,87 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		}
 	}
 	
-	/**
-	 * Determine next direction based on advanced AI.
-	 * 
-	 * @param game Game instance.
-	 */
-	private void determineNextDirectionByAI(final Game game) {
-		//TODO: program this
-		this.determineNextDirectionByNearestDot(game);
-	}
+	/*private void determineNextDirectionByAI(final Game game) {
+		final HashSet<Integer> seen = new HashSet<Integer>();
+		final Queue<Vector> queue = new LinkedList<Vector>();
+		queue.add(new Vector(this.mPosition, this.mDirectionCurrent));
+		final Map<Entity.Direction, Integer> weights = new HashMap<Entity.Direction, Integer>();
+		Vector current;
+		
+		//Initialize direction scores
+		weights.put(Entity.Direction.NORTH, 0);
+		weights.put(Entity.Direction.SOUTH, 0);
+		weights.put(Entity.Direction.EAST, 0);
+		weights.put(Entity.Direction.WEST, 0);
+		
+		//BFS to a max depth of 10
+		while (!queue.isEmpty()) {
+			current = queue.remove();
+			seen.add(game.hashPosition(current.position));
+			
+			if (Wallpaper.LOG_VERBOSE) {
+				Log.v(TheMan.TAG, "With Current: (" + current.position.x + "," + current.position.y + ") " + current.direction);
+			}
+			
+			//Do not go past 10 steps into the future.
+			if (current.step == 10) {
+				continue;
+			}
+			
+			for (final Vector next : current.getPossibleMoves()) {
+				if (Wallpaper.LOG_VERBOSE) {
+					Log.v(TheMan.TAG, "- Checking: (" + next.position.x + "," + next.position.y + ") " + next.direction);
+				}
+				
+				if (game.isValidPosition(next.position) && !seen.contains(game.hashPosition(next.position))) {
+					if (Wallpaper.LOG_VERBOSE) {
+						Log.v(TheMan.TAG, "-- Valid");
+					}
+					
+					int weight = weights.get(next.initialDirection);
+					
+					final Game.Cell cell = game.getCell(next.position);
+					if (cell != Game.Cell.BLANK) {
+						weight += cell.value;
+					}
+					
+					final Ghost ghost = game.getGhostAtPosition(next.position); 
+					if (ghost != null) {
+						if (ghost.getState() == Ghost.State.HUNTING) {
+							weight -= 500; //Fear ghosts
+						} else if (ghost.getState() == Ghost.State.FRIGHTENED) {
+							weight += 200;
+						}
+					}
+					
+					final Fruit fruit = game.getFruitAtPosition(next.position);
+					if (fruit != null) {
+						weight += fruit.getValue();
+					}
+					
+					weights.put(next.initialDirection, weight);
+					queue.add(next);
+				}
+			}
+		}
+		
+		this.mDirectionNext = null;
+		while (this.mDirectionNext == null) {
+			int best = Integer.MIN_VALUE;
+			Entity.Direction direction = null;
+			for (Map.Entry<Entity.Direction, Integer> entry : weights.entrySet()) {
+				if (entry.getValue() > best) {
+					direction = entry.getKey();
+				}
+			}
+			
+			if (game.isValidPosition(Entity.move(this.mPosition, direction))) {
+				this.mDirectionNext = direction;
+			} else {
+				weights.remove(direction);
+			}
+		}
+	}*/
 	
     @Override
 	public void draw(final Canvas c, final boolean isLandscape) {

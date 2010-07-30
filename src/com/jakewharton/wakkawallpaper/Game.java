@@ -707,18 +707,25 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     }
     
     /**
-     * Test if a Point has a ghost on it.
+     * Get a ghost at a certain position or null.
      * 
      * @param position Position to check.
-     * @return Whether or not a ghost exists on the position.
+     * @return The ghost at that position or null.
      */
-    public boolean isGhostAtPosition(final Point position) {
+    public Ghost getGhostAtPosition(final Point position) {
     	for (final Ghost ghost : this.mGhosts) {
-    		if ((ghost.getPosition().x == position.x) && (ghost.getPosition().y == position.y) && (ghost.getState() == Ghost.State.HUNTING)) {
-    			return true;
+    		if ((ghost.getPosition().x == position.x) && (ghost.getPosition().y == position.y)) {
+    			return ghost;
     		}
     	}
-    	return false;
+    	return null;
+    }
+    
+    public Fruit getFruitAtPosition(final Point position) {
+    	if ((this.mFruit.getPosition().x == position.x) && (this.mFruit.getPosition().y == position.y) && this.mFruit.isVisible()) {
+    		return this.mFruit;
+    	}
+    	return null;
     }
     
     /**

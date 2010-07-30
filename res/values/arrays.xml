@@ -11,12 +11,12 @@
 	</string-array>
 	
 	<string-array name="game_themanmode">
-		<item>Intelligent AI</item>
+		<!--item>Intelligent AI</item-->
 		<item>Nearest dot or fruit</item>
 		<item>Random turns</item>
 	</string-array>
 	<string-array name="game_themanmode_values">
-		<item>0</item>
+		<!--item>0</item-->
 		<item>1</item>
 		<item>2</item>
 	</string-array>
