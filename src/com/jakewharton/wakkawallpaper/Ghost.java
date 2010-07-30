@@ -15,7 +15,7 @@ import android.util.Log;
  * @author Jake Wharton
  */
 public abstract class Ghost extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
-	enum State { ALIVE, FRIGHTENED, EATEN }
+	enum State { HUNTING, FRIGHTENED, EATEN }
 	enum Strategy { CHASE, SCATTER, RANDOM }
 	enum Mode {
 		CHASE_AND_SCATTER(0), CHASE_ONLY(1), SCATTER_ONLY(2), RANDOM_TURNS(3);
@@ -247,10 +247,10 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
     @Override
 	public void tick(Game game) {
     	if ((this.mState == Ghost.State.FRIGHTENED) && ((System.currentTimeMillis() - this.mStateTimer) > Ghost.FRIGHTENED_LENGTH)) {
-    		this.setState(game, Ghost.State.ALIVE);
+    		this.setState(game, Ghost.State.HUNTING);
     	}
     	
-    	if ((this.mMode == Ghost.Mode.CHASE_AND_SCATTER) && (this.mState == Ghost.State.ALIVE)) {
+    	if ((this.mMode == Ghost.Mode.CHASE_AND_SCATTER) && (this.mState == Ghost.State.HUNTING)) {
     		if (this.mModeTimer <= 0) {
         		
         		int levelPointer = game.getLevel() - 1;
@@ -304,7 +304,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 		
 		switch (this.mState) {
-			case ALIVE:
+			case HUNTING:
 				c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mBodyBackground);
 				
 				//fall through to eyes only case
@@ -403,7 +403,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 		
 		//Breathe life into ghost
-		this.setState(game, Ghost.State.ALIVE);
+		this.setState(game, Ghost.State.HUNTING);
 		
 		//Since mDirectionNext will have been set by the state change, copy it to mDirectionCurrent in case of an immediate state change
 		this.mDirectionCurrent = this.mDirectionNext;
@@ -429,7 +429,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 */
 	protected void determineNextDirection(final Game game, boolean isStateChange) {
 		switch (this.mState) {
-			case ALIVE:
+			case HUNTING:
 				switch (this.mStrategy) {
 					case CHASE:
 						this.determineNextDirectionByLineOfSight(game, this.getChasingTarget(game), isStateChange);
@@ -455,7 +455,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 						Log.d(Ghost.TAG, this.getClass().getSimpleName() + " has reached initial position. Reverting to initial ghost state.");
 					}
 					
-					this.setState(game, Ghost.State.ALIVE);
+					this.setState(game, Ghost.State.HUNTING);
 				} else {
 					this.determineNextDirectionByLineOfSight(game, initialPosition, isStateChange);
 				}

@@ -713,7 +713,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      */
     public boolean isGhostAtPosition(final Point position) {
     	for (Ghost ghost : this.mGhosts) {
-    		if ((ghost.getPosition().x == position.x) && (ghost.getPosition().y == position.y) && (ghost.getState() == Ghost.State.ALIVE)) {
+    		if ((ghost.getPosition().x == position.x) && (ghost.getPosition().y == position.y) && (ghost.getState() == Ghost.State.HUNTING)) {
     			return true;
     		}
     	}
@@ -809,7 +809,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	for (Ghost ghost : this.mGhosts) {
     		if (this.mTheMan.isCollidingWith(ghost)) {
     			switch (ghost.getState()) {
-					case ALIVE:
+					case HUNTING:
 				    	if (this.mIsGhostDeadly && (this.mTheMan.getState() == TheMan.State.ALIVE)) {
 				    		//Kill "The Man"
 				    		this.mLives -= 1;
