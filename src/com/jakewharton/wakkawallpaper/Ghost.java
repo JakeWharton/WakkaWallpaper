@@ -351,37 +351,39 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * Change ghost state. This will trigger the locating of a new next direction.
 	 * 
 	 * @param game Game instance
-	 * @param state Next ghost state
+	 * @param stateTo Next ghost state
 	 */
-	public void setState(final Game game, final Ghost.State state) {
+	public void setState(final Game game, final Ghost.State stateTo) {
 		//We cannot be re-eaten or frightened when eaten
-		if ((this.mState == Ghost.State.EATEN) && ((state == Ghost.State.EATEN) || (state == Ghost.State.FRIGHTENED))) {
+		if ((this.mState == Ghost.State.EATEN) && ((stateTo == Ghost.State.EATEN) || (stateTo == Ghost.State.FRIGHTENED))) {
 			return;
 		}
 		
 		//This takes care of the mode timer when switching between states
 		if (this.mMode == Ghost.Mode.CHASE_AND_SCATTER) {
-			if (state == Ghost.State.FRIGHTENED) {
+			if (stateTo == Ghost.State.FRIGHTENED) {
 				//Going in to frightened mode so remove the time spend from the last tick until the state change
 				this.mModeTimer -= System.currentTimeMillis() - this.mModeLastTime;
-			} else if (state == Ghost.State.HUNTING) {
+			} else if (stateTo == Ghost.State.HUNTING) {
 				//Going in to hunting mode so reset the last timer to right now
 				this.mModeLastTime = System.currentTimeMillis();
 			}
 		}
 		
-		this.mState = state;
+		final Ghost.State stateFrom = this.mState;
+		this.mState = stateTo;
 		
 		if (Wallpaper.LOG_DEBUG) {
-			Log.d(Ghost.TAG, "Switching " + this.getClass().getSimpleName() + " state to " + state);
+			Log.d(Ghost.TAG, "Switching " + this.getClass().getSimpleName() + " state to " + stateTo);
 		}
 		
-		if (state == Ghost.State.FRIGHTENED) {
+		if (stateTo == Ghost.State.FRIGHTENED) {
 			//reverse direction immediately if frightened
 			this.mDirectionNext = this.mDirectionCurrent.getOpposite();
 		} else {
 			//otherwise get new next direction
-			this.determineNextDirection(game, true);
+			final boolean isStateChange = !((stateFrom == Ghost.State.FRIGHTENED) && (stateTo == Ghost.State.HUNTING));
+			this.determineNextDirection(game, isStateChange);
 		}
 		
 		//Set the timestamp for timed states
