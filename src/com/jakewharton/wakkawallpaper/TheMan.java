@@ -283,8 +283,9 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	 * @param game Game instance.
 	 */
 	private void determineNextDirectionByAI(final Game game) {
-		throw new IllegalArgumentException();
+		this.determineNextDirectionByNearestDot(game);
 	}
+	
     @Override
 	public void draw(final Canvas c, final boolean isLandscape) {
 		c.save();
