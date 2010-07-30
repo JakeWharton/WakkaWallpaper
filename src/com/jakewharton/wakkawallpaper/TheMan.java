@@ -19,7 +19,7 @@ import android.util.Log;
 public class TheMan extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum State { ALIVE, DEAD }
 	enum Mode {
-		A_STAR(0), NEAREST_DOT(1), RANDOM(2);
+		AI(0), NEAREST_DOT(1), RANDOM(2);
 		
 		public final int value;
 		
@@ -172,7 +172,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		
 		//Use logic based on mode
 		switch (this.mMode) {
-			case A_STAR:
+			case AI:
 				this.determineNextDirectionByAI(game);
 				break;
 				
