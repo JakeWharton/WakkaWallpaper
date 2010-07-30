@@ -37,7 +37,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	}
 
 	private static final String TAG = "WakkaWallpaper.Ghost";
-	private static final int FLEE_LENGTH_BLINK = 5000;
+	private static final int FRIGHTENED_LENGTH_BLINK = 5000;
 	private static final int FRIGHTENED_LENGTH = 7000;
 	private static final int[][] CHASE_AND_SCATTER_TIMES = new int[][] {
 		new int[] { -7000, 20000, -7000, 20000, -5000, 20000, -5000, 0 },
@@ -309,7 +309,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				
 				//fall through to eyes only case
 			case EATEN:
-				Point eyeOffset = Entity.move(new Point(0, 0), this.mDirectionCurrent);
+				final Point eyeOffset = Entity.move(new Point(0, 0), this.mDirectionCurrent);
 				
 				c.drawCircle(this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverSeven, this.mEyeBackground);
 				c.drawCircle(2.0f * this.mCellWidthOverThree, this.mCellHeightOverThree, this.mCellWidthOverSeven, this.mEyeBackground);
@@ -319,7 +319,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				
 			case FRIGHTENED:
 				final long timeDiff = System.currentTimeMillis() - this.mStateTimer;
-				if (((timeDiff) < Ghost.FLEE_LENGTH_BLINK) || (this.mTickCount % 2 == 0)) {
+				if ((timeDiff < Ghost.FRIGHTENED_LENGTH_BLINK) || (this.mTickCount % 2 == 0)) {
 					//draw normal scared
 					c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mScaredBackground);
 					c.drawPath(this.mScaredMouth, this.mScaredMouthForeground);
