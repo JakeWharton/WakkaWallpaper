@@ -37,14 +37,34 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	}
 
 	private static final String TAG = "WakkaWallpaper.Ghost";
-	private static final int FRIGHTENED_LENGTH_BLINK = 5000;
-	private static final int FRIGHTENED_LENGTH = 7000;
+	private static final int FRIGHTENED_LENGTH_BLINK = 1000;
+	private static final int[] FRIGHTENED_LENGTH = new int[] {
+		/* Level 1   */ 6000,
+		/* Level 2   */ 5000,
+		/* Level 3   */ 4000,
+		/* Level 4   */ 3000,
+		/* Level 5   */ 2000,
+		/* Level 6   */ 5000,
+		/* Level 7   */ 2000,
+		/* Level 8   */ 2000,
+		/* Level 9   */ 1000,
+		/* Level 10  */ 5000,
+		/* Level 11  */ 2000,
+		/* Level 12  */ 1000,
+		/* Level 13  */ 1000,
+		/* Level 14  */ 3000,
+		/* Level 15  */ 1000,
+		/* Level 16  */ 1000,
+		/* Level 17  */ 0,
+		/* Level 18  */ 1000,
+		/* Level 19+ */ 0,
+	};
 	private static final int[][] CHASE_AND_SCATTER_TIMES = new int[][] {
-		new int[] { -7000, 20000, -7000, 20000, -5000, 20000, -5000, 0 },
-		new int[] { -7000, 20000, -7000, 20000, -5000, 1033000, -17, 0 },
-		new int[] { -7000, 20000, -7000, 20000, -5000, 1033000, -17, 0 },
-		new int[] { -7000, 20000, -7000, 20000, -5000, 1033000, -17, 0 },
-		new int[] { -5000, 20000, -5000, 20000, -5000, 1037000, -17, 0 },
+		/* Level 1  */ new int[] { -7000, 20000, -7000, 20000, -5000, 20000, -5000, 0 },
+		/* Level 2  */ new int[] { -7000, 20000, -7000, 20000, -5000, 1033000, -17, 0 },
+		/* Level 3  */ new int[] { -7000, 20000, -7000, 20000, -5000, 1033000, -17, 0 },
+		/* Level 4  */ new int[] { -7000, 20000, -7000, 20000, -5000, 1033000, -17, 0 },
+		/* Level 5+ */ new int[] { -5000, 20000, -5000, 20000, -5000, 1037000, -17, 0 },
 	};
 	
 	protected Ghost.State mState;
@@ -66,9 +86,10 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	private float mCellHeightOverThree;
 	private float mCellWidthOverSeven;
 	private float mCellWidthOverFourteen;
-	private long mStateTimer;
+	private int mStateTimer;
+	private long mStateLastTime;
 	private int mModePointer;
-	private long mModeTimer;
+	private int mModeTimer;
 	private long mModeLastTime;
 	
     /**
@@ -247,8 +268,14 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 
     @Override
 	public void tick(Game game) {
-    	if ((this.mState == Ghost.State.FRIGHTENED) && ((System.currentTimeMillis() - this.mStateTimer) > Ghost.FRIGHTENED_LENGTH)) {
-    		this.setState(game, Ghost.State.HUNTING);
+    	if (this.mState == Ghost.State.FRIGHTENED) {
+    		if (this.mStateTimer <= 0) {
+    			this.setState(game, Ghost.State.HUNTING);
+    		} else {
+    			final long time = System.currentTimeMillis();
+    			this.mStateTimer -= time - this.mStateLastTime;
+    			this.mStateLastTime = time;
+    		}
     	}
 
 		this.mStrategyLast = this.mStrategyCurrent;
@@ -276,9 +303,9 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
         		}
     		} else {
     			//tick mode timer
-    			final long timer = System.currentTimeMillis();
-    			this.mModeTimer -= timer - this.mModeLastTime;
-    			this.mModeLastTime = timer;
+    			final long time = System.currentTimeMillis();
+    			this.mModeTimer -= time - this.mModeLastTime;
+    			this.mModeLastTime = time;
     		}
     	}
     	
@@ -321,8 +348,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				break;
 				
 			case FRIGHTENED:
-				final long timeDiff = System.currentTimeMillis() - this.mStateTimer;
-				if ((timeDiff < Ghost.FRIGHTENED_LENGTH_BLINK) || (this.mTickCount % 2 == 0)) {
+				if ((this.mStateTimer > Ghost.FRIGHTENED_LENGTH_BLINK) || (this.mTickCount % 2 == 0)) {
 					//draw normal scared
 					c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mScaredBackground);
 					c.drawPath(this.mScaredMouth, this.mScaredMouthForeground);
@@ -354,41 +380,45 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * Change ghost state. This will trigger the locating of a new next direction.
 	 * 
 	 * @param game Game instance
-	 * @param stateTo Next ghost state
+	 * @param state Next ghost state
 	 */
-	public void setState(final Game game, final Ghost.State stateTo) {
+	public void setState(final Game game, final Ghost.State state) {
 		//We cannot be re-eaten or frightened when eaten
-		if ((this.mState == Ghost.State.EATEN) && ((stateTo == Ghost.State.EATEN) || (stateTo == Ghost.State.FRIGHTENED))) {
+		if ((this.mState == Ghost.State.EATEN) && ((state == Ghost.State.EATEN) || (state == Ghost.State.FRIGHTENED))) {
 			return;
 		}
 		
 		//This takes care of the mode timer when switching between states
 		if (this.mMode == Ghost.Mode.CHASE_AND_SCATTER) {
-			if (stateTo == Ghost.State.FRIGHTENED) {
+			if (state == Ghost.State.FRIGHTENED) {
 				//Going in to frightened mode so remove the time spend from the last tick until the state change
 				this.mModeTimer -= System.currentTimeMillis() - this.mModeLastTime;
-			} else if (stateTo == Ghost.State.HUNTING) {
+			} else if (state == Ghost.State.HUNTING) {
 				//Going in to hunting mode so reset the last timer to right now
 				this.mModeLastTime = System.currentTimeMillis();
 			}
 		}
 		
-		this.mState = stateTo;
+		this.mState = state;
 		
 		if (Wallpaper.LOG_DEBUG) {
-			Log.d(Ghost.TAG, "Switching " + this.getClass().getSimpleName() + " state to " + stateTo);
+			Log.d(Ghost.TAG, "Switching " + this.getClass().getSimpleName() + " state to " + state);
 		}
 		
-		if (stateTo == Ghost.State.FRIGHTENED) {
+		if (state == Ghost.State.FRIGHTENED) {
 			//reverse direction immediately if frightened
 			this.mDirectionNext = this.mDirectionCurrent.getOpposite();
+			
+			int levelPointer = game.getLevel() - 1;
+			if (levelPointer > Ghost.FRIGHTENED_LENGTH.length) {
+				levelPointer = Ghost.FRIGHTENED_LENGTH.length - 1;
+			}
+			this.mStateTimer = Ghost.FRIGHTENED_LENGTH[levelPointer];
+			this.mStateLastTime = System.currentTimeMillis();
 		} else {
 			//otherwise get new next direction
 			this.determineNextDirection(game);
 		}
-		
-		//Set the timestamp for timed states
-		this.mStateTimer = System.currentTimeMillis();
 	}
 	
 	@Override
