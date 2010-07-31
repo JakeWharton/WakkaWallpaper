@@ -39,6 +39,8 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 	private static final String FILENAME_CHANGELOG = "changelog.html";
 	private static final String FILENAME_CREDITS = "credits.html";
 	private static final String FILENAME_INSTRUCTIONS = "instructions.html";
+	private static final String FILENAME_TODO = "todo.html";
+	private static final String FILENAME_AI = "ai.html";
 	
     @Override
     protected void onCreate(final Bundle icicle) {
@@ -156,6 +158,23 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 			}
 		});
         
+        //todo
+        this.findPreference(resources.getString(R.string.todo_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Preferences.this.viewTodo();
+				return true;
+			}
+		});
+        
+        //ai
+        this.findPreference(resources.getString(R.string.ai_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Preferences.this.viewAI();
+				return true;
+			}
+		});
+        
+        
         //background image
         this.findPreference(resources.getString(R.string.settings_color_game_bgimage_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
@@ -245,6 +264,26 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		final Intent intent = new Intent(this, About.class);
 		intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_CREDITS);
 		intent.putExtra(About.EXTRA_TITLE, this.getResources().getString(R.string.credits_title));
+		this.startActivity(intent);
+    }
+    
+    /**
+     * Open todo
+     */
+    private void viewTodo() {
+		final Intent intent = new Intent(this, About.class);
+		intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_TODO);
+		intent.putExtra(About.EXTRA_TITLE, this.getResources().getString(R.string.todo_title));
+		this.startActivity(intent);
+    }
+    
+    /**
+     * Open ai
+     */
+    private void viewAI() {
+		final Intent intent = new Intent(this, About.class);
+		intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_AI);
+		intent.putExtra(About.EXTRA_TITLE, this.getResources().getString(R.string.ai_title));
 		this.startActivity(intent);
     }
 

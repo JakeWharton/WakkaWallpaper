@@ -251,6 +251,14 @@
     <string name="credits_key">credits</string>
     <string name="credits_title">Wakka Wallpaper Credits</string>
     <string name="credits_summary">Additional attribution</string>
+    <string name="todo">To Do / Requests</string>
+    <string name="todo_key">todo</string>
+    <string name="todo_title"> Wakka Wallpaper To Do and Requests</string>
+    <string name="todo_summary">List of features pending implementation</string>
+    <string name="ai">Artificial Intelligence</string>
+    <string name="ai_key">ai</string>
+    <string name="ai_title">Wakka Wallpaper AI</string>
+    <string name="ai_summary">Help with the open source AI</string>
     
     <string name="information_header">Information</string>
     <string name="information_version">Version</string>

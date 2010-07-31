@@ -432,6 +432,14 @@
 					android:key="@string/credits_key"
 					android:title="@string/credits"
 					android:summary="@string/credits_summary"/>
+				<Preference
+					android:key="@string/todo_key"
+					android:title="@string/todo"
+					android:summary="@string/todo_summary"/>
+				<Preference
+					android:key="@string/ai_key"
+					android:title="@string/ai"
+					android:summary="@string/ai_summary"/>
 			</PreferenceCategory>
 		</PreferenceScreen>
 		<PreferenceScreen
