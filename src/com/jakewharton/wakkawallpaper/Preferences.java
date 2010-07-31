@@ -11,12 +11,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnClickListener;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.provider.MediaStore;
 import android.view.Menu;
@@ -42,9 +44,11 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     protected void onCreate(final Bundle icicle) {
         super.onCreate(icicle);
         
-        this.getPreferenceManager().setSharedPreferencesName(Preferences.SHARED_NAME);
+        final PreferenceManager manager = this.getPreferenceManager();
+        manager.setSharedPreferencesName(Preferences.SHARED_NAME);
         this.addPreferencesFromResource(R.xml.preferences);
         
+        final SharedPreferences preferences = manager.getSharedPreferences();
         final Resources resources = this.getResources();
         
         //reset display
@@ -131,10 +135,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         //instructions
         this.findPreference(resources.getString(R.string.instructions_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				final Intent intent = new Intent(Preferences.this, About.class);
-				intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_INSTRUCTIONS);
-				intent.putExtra(About.EXTRA_TITLE, resources.getString(R.string.instructions_title));
-				Preferences.this.startActivity(intent);
+				Preferences.this.viewInstructions();
 				return true;
 			}
 		});
@@ -142,10 +143,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         //change log
         this.findPreference(resources.getString(R.string.changelog_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				final Intent intent = new Intent(Preferences.this, About.class);
-				intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_CHANGELOG);
-				intent.putExtra(About.EXTRA_TITLE, resources.getString(R.string.changelog_title));
-				Preferences.this.startActivity(intent);
+				Preferences.this.viewChangelog();
 				return true;
 			}
 		});
@@ -153,10 +151,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         //credits
         this.findPreference(resources.getString(R.string.credits_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				final Intent intent = new Intent(Preferences.this, About.class);
-				intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_CREDITS);
-				intent.putExtra(About.EXTRA_TITLE, resources.getString(R.string.credits_title));
-				Preferences.this.startActivity(intent);
+				Preferences.this.viewCredits();
 				return true;
 			}
 		});
@@ -181,6 +176,76 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         //Register as a preference change listener
         Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
         this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
+        
+        //Check previously installed version
+        final int thisVersion = resources.getInteger(R.integer.version_code);
+        final int defaultVersion = resources.getInteger(R.integer.version_code_default);
+        final int previousVersion = preferences.getInt(resources.getString(R.string.version_code_key), defaultVersion);
+        if (previousVersion == defaultVersion) {
+        	//First install
+        	
+        	//Store this version
+        	this.getPreferenceManager().getSharedPreferences().edit().putInt(resources.getString(R.string.version_code_key), thisVersion).commit();
+        	//Show hello
+        	(new AlertDialog.Builder(this))
+        		.setTitle(resources.getString(R.string.welcome))
+        		.setMessage(resources.getString(R.string.welcome_firstrun))
+        		.setCancelable(true)
+        		.setPositiveButton(resources.getString(R.string.yes), new OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						Preferences.this.viewInstructions();
+					}
+				})
+				.setNegativeButton(resources.getString(R.string.no), null)
+				.show();
+        } else if (previousVersion < thisVersion) {
+        	//First run after upgrade
+        	
+        	//Store this version
+        	this.getPreferenceManager().getSharedPreferences().edit().putInt(resources.getString(R.string.version_code_key), thisVersion).commit();
+        	//Show hello
+        	(new AlertDialog.Builder(this))
+        		.setTitle(resources.getString(R.string.welcome))
+        		.setMessage(resources.getString(R.string.welcome_upgrade))
+        		.setCancelable(true)
+        		.setPositiveButton(resources.getString(R.string.yes), new OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						Preferences.this.viewChangelog();
+					}
+				})
+				.setNegativeButton(resources.getString(R.string.no), null)
+				.show();
+        }
+    }
+    
+    /**
+     * Open change log.
+     */
+    private void viewChangelog() {
+		final Intent intent = new Intent(this, About.class);
+		intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_CHANGELOG);
+		intent.putExtra(About.EXTRA_TITLE, this.getResources().getString(R.string.changelog_title));
+		this.startActivity(intent);
+    }
+    
+    /**
+     * Open instructions.
+     */
+    private void viewInstructions() {
+		final Intent intent = new Intent(this, About.class);
+		intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_INSTRUCTIONS);
+		intent.putExtra(About.EXTRA_TITLE, this.getResources().getString(R.string.instructions_title));
+		this.startActivity(intent);
+    }
+    
+    /**
+     * Open credits
+     */
+    private void viewCredits() {
+		final Intent intent = new Intent(this, About.class);
+		intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_CREDITS);
+		intent.putExtra(About.EXTRA_TITLE, this.getResources().getString(R.string.credits_title));
+		this.startActivity(intent);
     }
 
     /**
