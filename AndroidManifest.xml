@@ -3,7 +3,7 @@
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.jakewharton.wakkawallpaper"
-	android:versionCode="@integer/version_code"
+	android:versionCode="1"
 	android:versionName="@string/version_name">
     
     <application
