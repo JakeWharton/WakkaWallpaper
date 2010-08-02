@@ -10,6 +10,7 @@
     <string name="welcome">Welcome!</string>
     <string name="welcome_firstrun">Thanks for installing WakkaWallpaper!\n\nWould you like to read the brief instructions?</string>
     <string name="welcome_upgrade">Thanks for upgrading WakkaWallpaper!\n\nWould you like to read the change log?</string>
+    <string name="welcome_picker_toast">Choose \"Wakka Wallpaper\" from the list.</string>
     
     <string name="yes">Yes</string>
     <string name="no">No</string>
