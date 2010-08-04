@@ -559,160 +559,269 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     		final JSONObject settings = new JSONObject(json.toString());
     		
     		//DISPLAY
-    		final JSONObject display = settings.getJSONObject(resources.getString(R.string.settings_display_key));
-    		//fps
-	        final String display_fps = resources.getString(R.string.settings_display_fps_key);
-    		editor.putInt(display_fps, display.getInt(display_fps));
-    		//juggerdot blink
-    		final String display_juggerdotblink = resources.getString(R.string.settings_display_juggerdotblink_key);
-    		editor.putInt(display_juggerdotblink, display.getInt(display_juggerdotblink));
-    		//show hud
-			final String display_showhud = resources.getString(R.string.settings_display_showhud_key);
-    		editor.putBoolean(display_showhud, display.getBoolean(display_showhud));
-    		//icon rows
-	        final String display_iconrows = resources.getString(R.string.settings_display_iconrows_key);
-    		editor.putInt(display_iconrows, display.getInt(display_iconrows));
-    		//icon cols
-	        final String display_iconcols = resources.getString(R.string.settings_display_iconcols_key);
-    		editor.putInt(display_iconcols, display.getInt(display_iconcols));
-    		//icon row spacing
-	        final String display_rowspacing = resources.getString(R.string.settings_display_rowspacing_key);
-    		editor.putInt(display_rowspacing, display.getInt(display_rowspacing));
-    		//icon col spacing
-	        final String display_colspacing = resources.getString(R.string.settings_display_colspacing_key); 
-    		editor.putInt(display_colspacing, display.getInt(display_colspacing));
-    		//hud offset
-    		final String display_hudoffset = resources.getString(R.string.settings_display_hudoffset_key);
-    		editor.putInt(display_hudoffset, display.getInt(display_hudoffset));
-    		//padding top
-	        final String display_paddingtop = resources.getString(R.string.settings_display_padding_top_key);
-    		editor.putInt(display_paddingtop, display.getInt(display_paddingtop));
-    		//padding bottom
-	        final String display_paddingbottom = resources.getString(R.string.settings_display_padding_bottom_key);
-    		editor.putInt(display_paddingbottom, display.getInt(display_paddingbottom));
-    		//padding left
-	        final String display_paddingleft = resources.getString(R.string.settings_display_padding_left_key);
-    		editor.putInt(display_paddingleft, display.getInt(display_paddingleft));
-    		//padding right
-	        final String display_paddingright = resources.getString(R.string.settings_display_padding_right_key);
-    		editor.putInt(display_paddingright, display.getInt(display_paddingright));
+    		final String display_key = resources.getString(R.string.settings_display_key);
+    		if (settings.has(display_key)) {
+	    		final JSONObject display = settings.getJSONObject(display_key);
+	    		
+	    		//fps
+		        final String display_fps = resources.getString(R.string.settings_display_fps_key);
+		        if (display.has(display_fps)) {
+		        	editor.putInt(display_fps, display.getInt(display_fps));
+		        }
+	    		//juggerdot blink
+	    		final String display_juggerdotblink = resources.getString(R.string.settings_display_juggerdotblink_key);
+	    		if (display.has(display_juggerdotblink)) {
+	    			editor.putInt(display_juggerdotblink, display.getInt(display_juggerdotblink));
+	    		}
+	    		//show hud
+				final String display_showhud = resources.getString(R.string.settings_display_showhud_key);
+				if (display.has(display_showhud)) {
+					editor.putBoolean(display_showhud, display.getBoolean(display_showhud));
+				}
+	    		//icon rows
+		        final String display_iconrows = resources.getString(R.string.settings_display_iconrows_key);
+		        if (display.has(display_iconrows)) {
+		        	editor.putInt(display_iconrows, display.getInt(display_iconrows));
+		        }
+	    		//icon cols
+		        final String display_iconcols = resources.getString(R.string.settings_display_iconcols_key);
+		        if (display.has(display_iconcols)) {
+		        	editor.putInt(display_iconcols, display.getInt(display_iconcols));
+		        }
+	    		//icon row spacing
+		        final String display_rowspacing = resources.getString(R.string.settings_display_rowspacing_key);
+		        if (display.has(display_rowspacing)) {
+		        	editor.putInt(display_rowspacing, display.getInt(display_rowspacing));
+		        }
+	    		//icon col spacing
+		        final String display_colspacing = resources.getString(R.string.settings_display_colspacing_key);
+		        if (display.has(display_colspacing)) {
+		        	editor.putInt(display_colspacing, display.getInt(display_colspacing));
+		        }
+	    		//hud offset
+	    		final String display_hudoffset = resources.getString(R.string.settings_display_hudoffset_key);
+	    		if (display.has(display_hudoffset)) {
+	    			editor.putInt(display_hudoffset, display.getInt(display_hudoffset));
+	    		}
+	    		//padding top
+		        final String display_paddingtop = resources.getString(R.string.settings_display_padding_top_key);
+		        if (display.has(display_paddingtop)) {
+		        	editor.putInt(display_paddingtop, display.getInt(display_paddingtop));
+		        }
+	    		//padding bottom
+		        final String display_paddingbottom = resources.getString(R.string.settings_display_padding_bottom_key);
+		        if (display.has(display_paddingbottom)) {
+		        	editor.putInt(display_paddingbottom, display.getInt(display_paddingbottom));
+		        }
+	    		//padding left
+		        final String display_paddingleft = resources.getString(R.string.settings_display_padding_left_key);
+		        if (display.has(display_paddingleft)) {
+		        	editor.putInt(display_paddingleft, display.getInt(display_paddingleft));
+		        }
+	    		//padding right
+		        final String display_paddingright = resources.getString(R.string.settings_display_padding_right_key);
+		        if (display.has(display_paddingright)) {
+		        	editor.putInt(display_paddingright, display.getInt(display_paddingright));
+		        }
+    		}
     		
     		//GAME
-    		final JSONObject game = settings.getJSONObject(resources.getString(R.string.settings_game_key));
-    		//mode
-    		final String game_mode = resources.getString(R.string.settings_game_mode_key);
-    		editor.putInt(game_mode, game.getInt(game_mode));
-    		//endless dot threshold
-    		final String game_endlessdotregen = resources.getString(R.string.settings_game_endlessdotregen_key);
-    		editor.putInt(game_endlessdotregen, game.getInt(game_endlessdotregen));
-    		//endless jugger threshold
-    		final String game_endlessjuggerdotregen = resources.getString(R.string.settings_game_endlessjuggerdotregen_key);
-    		editor.putInt(game_endlessjuggerdotregen, game.getInt(game_endlessjuggerdotregen));
-    		//display kill screen
-	    	final String game_killscreen = resources.getString(R.string.settings_game_killscreen_key);
-    		editor.putBoolean(game_killscreen, game.getBoolean(game_killscreen));
-    		//theman mode
-    		final String game_themanmode = resources.getString(R.string.settings_game_themanmode_key);
-    		editor.putInt(game_themanmode, game.getInt(game_themanmode));
-    		//user controllable
-    		final String game_usercontrol = resources.getString(R.string.settings_game_usercontrol_key);
-    		editor.putBoolean(game_usercontrol, game.getBoolean(game_usercontrol));
-    		//ghost mode
-    		final String game_ghostmode = resources.getString(R.string.settings_game_ghostmode_key);
-    		editor.putInt(game_ghostmode, game.getInt(game_ghostmode));
-    		//ghosts are deadly
-			final String game_deadlyghosts = resources.getString(R.string.settings_game_deadlyghosts_key);
-    		editor.putBoolean(game_deadlyghosts, game.getBoolean(game_deadlyghosts));
-    		//ghost count
-			final String game_ghostcount = resources.getString(R.string.settings_game_ghostcount_key);
-    		editor.putInt(game_ghostcount, game.getInt(game_ghostcount));
-    		//bonus allowed
-			final String game_bonuslife = resources.getString(R.string.settings_game_bonuslife_key);
-    		editor.putBoolean(game_bonuslife, game.getBoolean(game_bonuslife));
-    		//bonus threshold
-			final String game_bonuslifethreshold = resources.getString(R.string.settings_game_bonuslifethreshold_key);
-    		editor.putInt(game_bonuslifethreshold, game.getInt(game_bonuslifethreshold));
-    		//fruit enabled
-			final String game_fruitenabled = resources.getString(R.string.settings_game_fruitenabled_key);
-    		editor.putBoolean(game_fruitenabled, game.getBoolean(game_fruitenabled));
-    		//fruit one threshold
-			final String game_fruitonethreshold = resources.getString(R.string.settings_game_fruitonethreshold_key);
-    		editor.putInt(game_fruitonethreshold, game.getInt(game_fruitonethreshold));
-    		//fruit two threshold
-			final String game_fruittwothreshold = resources.getString(R.string.settings_game_fruittwothreshold_key); 
-    		editor.putInt(game_fruittwothreshold, game.getInt(game_fruittwothreshold));
-    		//fruit visible lower
-			final String game_fruitvisiblelower = resources.getString(R.string.settings_game_fruitvisiblelower_key);
-    		editor.putInt(game_fruitvisiblelower, game.getInt(game_fruitvisiblelower));
-    		//fruit visible upper
-			final String game_fruitvisibleupper = resources.getString(R.string.settings_game_fruitvisibleupper_key);
-    		editor.putInt(game_fruitvisibleupper, game.getInt(game_fruitvisibleupper));
+    		final String game_key = resources.getString(R.string.settings_game_key);
+    		if (settings.has(game_key)) {
+	    		final JSONObject game = settings.getJSONObject(game_key);
+	    		
+	    		//mode
+	    		final String game_mode = resources.getString(R.string.settings_game_mode_key);
+	    		if (game.has(game_mode)) {
+	    			editor.putInt(game_mode, game.getInt(game_mode));
+	    		}
+	    		//endless dot threshold
+	    		final String game_endlessdotregen = resources.getString(R.string.settings_game_endlessdotregen_key);
+	    		if (game.has(game_endlessdotregen)) {
+	    			editor.putInt(game_endlessdotregen, game.getInt(game_endlessdotregen));
+	    		}
+	    		//endless jugger threshold
+	    		final String game_endlessjuggerdotregen = resources.getString(R.string.settings_game_endlessjuggerdotregen_key);
+	    		if (game.has(game_endlessjuggerdotregen)) {
+	    			editor.putInt(game_endlessjuggerdotregen, game.getInt(game_endlessjuggerdotregen));
+	    		}
+	    		//display kill screen
+		    	final String game_killscreen = resources.getString(R.string.settings_game_killscreen_key);
+		    	if (game.has(game_killscreen)) {
+		    		editor.putBoolean(game_killscreen, game.getBoolean(game_killscreen));
+		    	}
+	    		//theman mode
+	    		final String game_themanmode = resources.getString(R.string.settings_game_themanmode_key);
+	    		if (game.has(game_themanmode)) {
+	    			editor.putInt(game_themanmode, game.getInt(game_themanmode));
+	    		}
+	    		//user controllable
+	    		final String game_usercontrol = resources.getString(R.string.settings_game_usercontrol_key);
+	    		if (game.has(game_usercontrol)) {
+	    			editor.putBoolean(game_usercontrol, game.getBoolean(game_usercontrol));
+	    		}
+	    		//ghost mode
+	    		final String game_ghostmode = resources.getString(R.string.settings_game_ghostmode_key);
+	    		if (game.has(game_ghostmode)) {
+	    			editor.putInt(game_ghostmode, game.getInt(game_ghostmode));
+	    		}
+	    		//ghosts are deadly
+				final String game_deadlyghosts = resources.getString(R.string.settings_game_deadlyghosts_key);
+				if (game.has(game_deadlyghosts)) {
+					editor.putBoolean(game_deadlyghosts, game.getBoolean(game_deadlyghosts));
+				}
+	    		//ghost count
+				final String game_ghostcount = resources.getString(R.string.settings_game_ghostcount_key);
+				if (game.has(game_ghostcount)) {
+					editor.putInt(game_ghostcount, game.getInt(game_ghostcount));
+				}
+	    		//bonus allowed
+				final String game_bonuslife = resources.getString(R.string.settings_game_bonuslife_key);
+				if (game.has(game_bonuslife)) {
+					editor.putBoolean(game_bonuslife, game.getBoolean(game_bonuslife));
+				}
+	    		//bonus threshold
+				final String game_bonuslifethreshold = resources.getString(R.string.settings_game_bonuslifethreshold_key);
+				if (game.has(game_bonuslifethreshold)) {
+					editor.putInt(game_bonuslifethreshold, game.getInt(game_bonuslifethreshold));
+				}
+	    		//fruit enabled
+				final String game_fruitenabled = resources.getString(R.string.settings_game_fruitenabled_key);
+				if (game.has(game_fruitenabled)) {
+					editor.putBoolean(game_fruitenabled, game.getBoolean(game_fruitenabled));
+				}
+	    		//fruit one threshold
+				final String game_fruitonethreshold = resources.getString(R.string.settings_game_fruitonethreshold_key);
+				if (game.has(game_fruitonethreshold)) {
+					editor.putInt(game_fruitonethreshold, game.getInt(game_fruitonethreshold));
+				}
+	    		//fruit two threshold
+				final String game_fruittwothreshold = resources.getString(R.string.settings_game_fruittwothreshold_key);
+				if (game.has(game_fruittwothreshold)) {
+					editor.putInt(game_fruittwothreshold, game.getInt(game_fruittwothreshold));
+				}
+	    		//fruit visible lower
+				final String game_fruitvisiblelower = resources.getString(R.string.settings_game_fruitvisiblelower_key);
+				if (game.has(game_fruitvisiblelower)) {
+					editor.putInt(game_fruitvisiblelower, game.getInt(game_fruitvisiblelower));
+				}
+	    		//fruit visible upper
+				final String game_fruitvisibleupper = resources.getString(R.string.settings_game_fruitvisibleupper_key);
+				if (game.has(game_fruitvisibleupper)) {
+					editor.putInt(game_fruitvisibleupper, game.getInt(game_fruitvisibleupper));
+				}
+    		}
     		
     		//COLORS
-    		final JSONObject color = settings.getJSONObject(resources.getString(R.string.settings_color_key));
-    		//background
-	    	final String color_game_background = resources.getString(R.string.settings_color_game_background_key);
-    		editor.putInt(color_game_background, color.getInt(color_game_background));
-    		//background image
-    		final String color_game_bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
-    		editor.putString(color_game_bgimage, color.getString(color_game_bgimage));
-    		//dots
-	    	final String color_game_dot = resources.getString(R.string.settings_color_game_dot_key);
-    		editor.putInt(color_game_dot, color.getInt(color_game_dot));
-    		//juggerdots
-	    	final String color_game_juggerdot = resources.getString(R.string.settings_color_game_juggerdot_key);
-    		editor.putInt(color_game_juggerdot, color.getInt(color_game_juggerdot));
-    		//hud foreground
-	    	final String color_game_hudfg = resources.getString(R.string.settings_color_game_hudfg_key);
-    		editor.putInt(color_game_hudfg, color.getInt(color_game_hudfg));
-    		//hud background
-	    	final String color_game_hudbg = resources.getString(R.string.settings_color_game_hudbg_key);
-    		editor.putInt(color_game_hudbg, color.getInt(color_game_hudbg));
-    		//ready color
-	    	final String color_game_ready = resources.getString(R.string.settings_color_game_ready_key);
-    		editor.putInt(color_game_ready, color.getInt(color_game_ready));
-    		//game over color
-	    	final String color_game_gameover = resources.getString(R.string.settings_color_game_gameover_key);
-    		editor.putInt(color_game_gameover, color.getInt(color_game_gameover));
-    		//"The Man"
-	    	final String color_theman = resources.getString(R.string.settings_color_theman_key);
-    		editor.putInt(color_theman, color.getInt(color_theman));
-    		//eye background
-	    	final String color_ghost_eyebg = resources.getString(R.string.settings_color_ghost_eyebg_key);
-    		editor.putInt(color_ghost_eyebg, color.getInt(color_ghost_eyebg));
-    		//eye foreground
-	    	final String color_ghost_eyefg = resources.getString(R.string.settings_color_ghost_eyefg_key);
-    		editor.putInt(color_ghost_eyefg, color.getInt(color_ghost_eyefg));
-    		//scared body
-	    	final String color_ghost_scaredbg = resources.getString(R.string.settings_color_ghost_scaredbg_key);
-    		editor.putInt(color_ghost_scaredbg, color.getInt(color_ghost_scaredbg));
-    		//scared eyes
-	    	final String color_ghost_scaredfg = resources.getString(R.string.settings_color_ghost_scaredfg_key);
-    		editor.putInt(color_ghost_scaredfg, color.getInt(color_ghost_scaredfg));
-    		//scared blinking body
-	    	final String color_ghost_scaredblinkbg = resources.getString(R.string.settings_color_ghost_scaredblinkbg_key);
-    		editor.putInt(color_ghost_scaredblinkbg, color.getInt(color_ghost_scaredblinkbg));
-    		//scared blinking eyes
-	    	final String color_ghost_scaredblinkfg = resources.getString(R.string.settings_color_ghost_scaredblinkfg_key);
-    		editor.putInt(color_ghost_scaredblinkfg, color.getInt(color_ghost_scaredblinkfg));
-    		//blinky
-    		final String color_ghost_blinky = resources.getString(R.string.settings_color_ghost_blinky_key);
-    		editor.putInt(color_ghost_blinky, color.getInt(color_ghost_blinky));
-    		//pinky
-    		final String color_ghost_pinky = resources.getString(R.string.settings_color_ghost_pinky_key);
-    		editor.putInt(color_ghost_pinky, color.getInt(color_ghost_pinky));
-    		//inky
-    		final String color_ghost_inky = resources.getString(R.string.settings_color_ghost_inky_key);
-    		editor.putInt(color_ghost_inky, color.getInt(color_ghost_inky));
-    		//clyde
-    		final String color_ghost_clyde = resources.getString(R.string.settings_color_ghost_clyde_key);
-    		editor.putInt(color_ghost_clyde, color.getInt(color_ghost_clyde));
-    		//entity style
-    		final String color_entitystyle = resources.getString(R.string.settings_color_entitystyle);
-    		editor.putInt(color_entitystyle, color.getInt(color_entitystyle));
-    		//dot style
-    		final String color_dotstyle = resources.getString(R.string.settings_color_dotstyle);
-    		editor.putInt(color_dotstyle, color.getInt(color_dotstyle));
+    		final String color_key = resources.getString(R.string.settings_color_key);
+    		if (settings.has(color_key)) {
+	    		final JSONObject color = settings.getJSONObject(color_key);
+	    		//background
+		    	final String color_game_background = resources.getString(R.string.settings_color_game_background_key);
+		    	if (color.has(color_game_background)) {
+		    		editor.putInt(color_game_background, color.getInt(color_game_background));
+		    	}
+	    		//background image
+	    		final String color_game_bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
+	    		if (color.has(color_game_bgimage)) {
+	    			editor.putString(color_game_bgimage, color.getString(color_game_bgimage));
+	    		}
+	    		//dots
+		    	final String color_game_dot = resources.getString(R.string.settings_color_game_dot_key);
+		    	if (color.has(color_game_dot)) {
+		    		editor.putInt(color_game_dot, color.getInt(color_game_dot));
+		    	}
+	    		//juggerdots
+		    	final String color_game_juggerdot = resources.getString(R.string.settings_color_game_juggerdot_key);
+		    	if (color.has(color_game_juggerdot)) {
+		    		editor.putInt(color_game_juggerdot, color.getInt(color_game_juggerdot));
+		    	}
+	    		//hud foreground
+		    	final String color_game_hudfg = resources.getString(R.string.settings_color_game_hudfg_key);
+		    	if (color.has(color_game_hudfg)) {
+		    		editor.putInt(color_game_hudfg, color.getInt(color_game_hudfg));
+		    	}
+	    		//hud background
+		    	final String color_game_hudbg = resources.getString(R.string.settings_color_game_hudbg_key);
+		    	if (color.has(color_game_hudbg)) {
+		    		editor.putInt(color_game_hudbg, color.getInt(color_game_hudbg));
+		    	}
+	    		//ready color
+		    	final String color_game_ready = resources.getString(R.string.settings_color_game_ready_key);
+		    	if (color.has(color_game_ready)) {
+		    		editor.putInt(color_game_ready, color.getInt(color_game_ready));
+		    	}
+	    		//game over color
+		    	final String color_game_gameover = resources.getString(R.string.settings_color_game_gameover_key);
+		    	if (color.has(color_game_gameover)) {
+		    		editor.putInt(color_game_gameover, color.getInt(color_game_gameover));
+		    	}
+	    		//"The Man"
+		    	final String color_theman = resources.getString(R.string.settings_color_theman_key);
+		    	if (color.has(color_theman)) {
+		    		editor.putInt(color_theman, color.getInt(color_theman));
+		    	}
+	    		//eye background
+		    	final String color_ghost_eyebg = resources.getString(R.string.settings_color_ghost_eyebg_key);
+		    	if (color.has(color_ghost_eyebg)) {
+		    		editor.putInt(color_ghost_eyebg, color.getInt(color_ghost_eyebg));
+		    	}
+	    		//eye foreground
+		    	final String color_ghost_eyefg = resources.getString(R.string.settings_color_ghost_eyefg_key);
+		    	if (color.has(color_ghost_eyefg)) {
+		    		editor.putInt(color_ghost_eyefg, color.getInt(color_ghost_eyefg));
+		    	}
+	    		//scared body
+		    	final String color_ghost_scaredbg = resources.getString(R.string.settings_color_ghost_scaredbg_key);
+		    	if (color.has(color_ghost_scaredbg)) {
+		    		editor.putInt(color_ghost_scaredbg, color.getInt(color_ghost_scaredbg));
+		    	}
+	    		//scared eyes
+		    	final String color_ghost_scaredfg = resources.getString(R.string.settings_color_ghost_scaredfg_key);
+		    	if (color.has(color_ghost_scaredfg)) {
+		    		editor.putInt(color_ghost_scaredfg, color.getInt(color_ghost_scaredfg));
+		    	}
+	    		//scared blinking body
+		    	final String color_ghost_scaredblinkbg = resources.getString(R.string.settings_color_ghost_scaredblinkbg_key);
+		    	if (color.has(color_ghost_scaredblinkbg)) {
+		    		editor.putInt(color_ghost_scaredblinkbg, color.getInt(color_ghost_scaredblinkbg));
+		    	}
+	    		//scared blinking eyes
+		    	final String color_ghost_scaredblinkfg = resources.getString(R.string.settings_color_ghost_scaredblinkfg_key);
+		    	if (color.has(color_ghost_scaredblinkfg)) {
+		    		editor.putInt(color_ghost_scaredblinkfg, color.getInt(color_ghost_scaredblinkfg));
+		    	}
+	    		//blinky
+	    		final String color_ghost_blinky = resources.getString(R.string.settings_color_ghost_blinky_key);
+	    		if (color.has(color_ghost_blinky)) {
+	    			editor.putInt(color_ghost_blinky, color.getInt(color_ghost_blinky));
+	    		}
+	    		//pinky
+	    		final String color_ghost_pinky = resources.getString(R.string.settings_color_ghost_pinky_key);
+	    		if (color.has(color_ghost_pinky)) {
+	    			editor.putInt(color_ghost_pinky, color.getInt(color_ghost_pinky));
+	    		}
+	    		//inky
+	    		final String color_ghost_inky = resources.getString(R.string.settings_color_ghost_inky_key);
+	    		if (color.has(color_ghost_inky)) {
+		    		editor.putInt(color_ghost_inky, color.getInt(color_ghost_inky));
+	    		}
+	    		//clyde
+	    		final String color_ghost_clyde = resources.getString(R.string.settings_color_ghost_clyde_key);
+	    		if (color.has(color_ghost_clyde)) {
+	    			editor.putInt(color_ghost_clyde, color.getInt(color_ghost_clyde));
+	    		}
+	    		//entity style
+	    		final String color_entitystyle = resources.getString(R.string.settings_color_entitystyle);
+	    		if (color.has(color_entitystyle)) {
+	    			editor.putInt(color_entitystyle, color.getInt(color_entitystyle));
+	    		}
+	    		//dot style
+	    		final String color_dotstyle = resources.getString(R.string.settings_color_dotstyle);
+	    		if (color.has(color_dotstyle)) {
+	    			editor.putInt(color_dotstyle, color.getInt(color_dotstyle));
+	    		}
+    		}
     		
     		//save changes
     		editor.commit();
