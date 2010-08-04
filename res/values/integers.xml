@@ -30,11 +30,11 @@
 	
 	<integer name="display_iconrows_default">4</integer>
 	<integer name="display_iconrows_min">3</integer>
-	<integer name="display_iconrows_max">6</integer>
+	<integer name="display_iconrows_max">8</integer>
 	
 	<integer name="display_iconcols_default">4</integer>
 	<integer name="display_iconcols_min">3</integer>
-	<integer name="display_iconcols_max">6</integer>
+	<integer name="display_iconcols_max">8</integer>
 	
 	<integer name="display_rowspacing_default">6</integer>
 	<integer name="display_rowspacing_min">4</integer>
