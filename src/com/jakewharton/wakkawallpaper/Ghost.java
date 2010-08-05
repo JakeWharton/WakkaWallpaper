@@ -207,6 +207,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			//The eyes and mouth are always fill_and_stroke and stroke, respectively. We only change the body background rendering.
 			this.mBodyBackground.setStyle(style.style);
 			this.mScaredBackground.setStyle(style.style);
+			this.mScaredBlinkBackground.setStyle(style.style);
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Ghost.TAG, "Drawing Style: " + style);
