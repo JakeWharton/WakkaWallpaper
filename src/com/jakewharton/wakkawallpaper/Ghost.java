@@ -232,6 +232,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		shapeOne.lineTo(0.9f * this.mCellWidth, this.mCellHeight);
 		shapeOne.lineTo(this.mCellWidth, 0.9f * this.mCellHeight);
 		shapeOne.arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+		shapeOne.lineTo(0, 0.75f * this.mCellHeight);
 		this.mBody[0] = shapeOne;
 
 		final float widthOverSix = this.mCellWidth / 6.0f;
@@ -245,6 +246,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		shapeTwo.lineTo(5 * widthOverSix, 0.8f * this.mCellHeight);
 		shapeTwo.lineTo(this.mCellWidth, this.mCellHeight);
 		shapeTwo.arcTo(new RectF(0, 0, this.mCellWidth, 0.75f * this.mCellHeight), 0, -180);
+		shapeTwo.lineTo(0, 0.75f * this.mCellHeight);
 		this.mBody[1] = shapeTwo;
 		
 		final float widthOverEight = this.mCellWidth / 8.0f;
