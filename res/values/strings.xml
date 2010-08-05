@@ -50,7 +50,13 @@
     <string name="settings_display_showhud">Show HUD</string>
     <string name="settings_display_showhud_key">display_showhud</string>
     <string name="settings_display_showhud_summary">Toggle the heads-up display for lives and score</string>
+    <string name="settings_display_hudoffset">HUD Offset</string>
+    <string name="settings_display_hudoffset_key">display_hudoffset</string>
+    <string name="settings_display_hudoffset_summary">Offset from bottom of screen</string>
     <string name="settings_display_layout">Layout</string>
+    <string name="settings_display_showwalls">Show Walls</string>
+    <string name="settings_display_showwalls_key">display_showwalls</string>
+    <string name="settings_display_showwalls_summary">Draw walls around the icons</string>
     <string name="settings_display_iconrows">Icon Rows</string>
     <string name="settings_display_iconrows_key">display_iconrows</string>
     <string name="settings_display_iconrows_summary">Number of icon rows on your home screen</string>
@@ -63,9 +69,6 @@
     <string name="settings_display_colspacing">Icon Column Cell Spacing</string>
     <string name="settings_display_colspacing_key">display_colspacing</string>
     <string name="settings_display_colspacing_summary">Number of cells in an icon column</string>
-    <string name="settings_display_hudoffset">HUD Offset</string>
-    <string name="settings_display_hudoffset_key">display_hudoffset</string>
-    <string name="settings_display_hudoffset_summary">Offset from bottom of screen</string>
     <string name="settings_display_reset">Reset Display Settings</string>
     <string name="settings_display_reset_key">display_reset</string>
     <string name="settings_display_reset_summary">All display settings back to default</string>
@@ -153,6 +156,9 @@
     <string name="settings_color_game_background">Background Color</string>
     <string name="settings_color_game_background_key">color_game_background</string>
     <string name="settings_color_game_background_summary"></string>
+    <string name="settings_color_game_walls">Wall Color</string>
+    <string name="settings_color_game_walls_key">color_game_walls</string>
+    <string name="settings_color_game_walls_summary"></string>
     <string name="settings_color_game_bgimage">Background Image</string>
     <string name="settings_color_game_bgimage_key">color_game_bgimage</string>
     <string name="settings_color_game_bgimage_toast">Background image successfully set.</string>

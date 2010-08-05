@@ -41,6 +41,11 @@
 				app:max="@integer/display_hudoffset_max"/>
 			<PreferenceCategory
 				android:title="@string/settings_display_layout">
+				<CheckBoxPreference
+					android:key="@string/settings_display_showwalls_key"
+					android:title="@string/settings_display_showwalls"
+					android:summary="@string/settings_display_showwalls_summary"
+					android:defaultValue="@bool/display_showwalls_default"/>
 				<com.jakewharton.utilities.NumberPreference
 					android:key="@string/settings_display_iconrows_key"
 					android:title="@string/settings_display_iconrows"
@@ -262,6 +267,12 @@
 						android:title="@string/settings_color_game_background"
 						android:summary="@string/settings_color_game_background_summary"
 						android:defaultValue="@integer/color_game_background_default"/>
+					<com.jakewharton.utilities.ColorPreference
+						android:key="@string/settings_color_game_walls_key"
+						android:title="@string/settings_color_game_walls"
+						android:summary="@string/settings_color_game_walls_summary"
+						android:defaultValue="@integer/color_game_walls_default"
+						android:dependency="@string/settings_display_showwalls_key"/>
 					<Preference
 						android:key="@string/settings_color_game_bgimage_key"
 						android:title="@string/settings_color_game_bgimage"

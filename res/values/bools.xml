@@ -2,6 +2,7 @@
 
 <resources>
 	<bool name="display_showhud_default">true</bool>
+	<bool name="display_showwalls_default">false</bool>
 	
 	<bool name="game_bonuslife_default">true</bool>
 	<bool name="game_killscreen_default">true</bool>

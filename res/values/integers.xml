@@ -88,6 +88,7 @@
 	<integer name="game_fruitvisibleupper_max">15000</integer>
 	
 	<integer name="color_game_background_default">0xff000040</integer>
+	<integer name="color_game_walls_default">0xff6161a1</integer>
 	<integer name="color_game_dot_default">0xff6161a1</integer>
 	<integer name="color_game_juggerdot_default">0xff6161a1</integer>
 	<integer name="color_game_hudfg_default">0xff8181c1</integer>

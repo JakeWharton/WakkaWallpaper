@@ -114,6 +114,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private final Paint mDotForeground;
     private final Paint mJuggerdotForeground;
     private int mGameBackground;
+    private final Paint mWallsForeground;
+    private boolean mIsDisplayingWalls;
     private int mBonusLifeThreshold;
     private boolean mIsDisplayingHud;
     private final Paint mHudForeground;
@@ -151,6 +153,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     	
         //Create Paints
+    	this.mWallsForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
+    	this.mWallsForeground.setStyle(Paint.Style.STROKE);
+    	this.mWallsForeground.setStrokeWidth(2);
         this.mDotForeground = new Paint(Paint.ANTI_ALIAS_FLAG); 
         this.mJuggerdotForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mHudForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -234,6 +239,15 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Juggerdot Blink: " + this.mJuggerdotBlinkInterval);
+			}
+		}
+		
+		final String showWalls = resources.getString(R.string.settings_display_showwalls_key);
+		if (all || key.equals(showWalls)) {
+			this.mIsDisplayingWalls = Wallpaper.PREFERENCES.getBoolean(showWalls, resources.getBoolean(R.bool.display_showwalls_default));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Is Displaying Walls: " + this.mIsDisplayingWalls);
 			}
 		}
 		
@@ -338,6 +352,15 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Background: #" + Integer.toHexString(this.mGameBackground));
+			}
+		}
+		
+		final String wallsForeground = resources.getString(R.string.settings_color_game_walls_key);
+		if (all || key.equals(wallsForeground)) {
+			this.mWallsForeground.setColor(Wallpaper.PREFERENCES.getInt(wallsForeground, resources.getInteger(R.integer.color_game_walls_default)));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Walls Foreground: #" + Integer.toHexString(this.mWallsForeground.getColor()));
 			}
 		}
 		
@@ -1150,20 +1173,48 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         
         for (int y = 0; y < this.mCellsTall; y++) {
         	for (int x = 0; x < this.mCellsWide; x++) {
-        		if (this.mBoard[y][x] == Cell.DOT) {
+        		final Game.Cell cell = this.mBoard[y][x];
+        		if (cell == Cell.DOT) {
             		final float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.75f) / 2);
             		final float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.75f) / 2);
             		final float right = left + (this.mCellWidth * 0.25f);
             		final float bottom = top + (this.mCellHeight * 0.25f);
             		
             		c.drawOval(new RectF(left, top, right, bottom), this.mDotForeground);
-        		} else if ((this.mBoard[y][x] == Cell.JUGGERDOT) && (this.mTickCount % this.mJuggerdotBlinkLength < this.mJuggerdotBlinkInterval)) {
+        		} else if ((cell == Cell.JUGGERDOT) && (this.mTickCount % this.mJuggerdotBlinkLength < this.mJuggerdotBlinkInterval)) {
             		final float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.25f) / 2);
             		final float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.25f) / 2);
             		final float right = left + (this.mCellWidth * 0.75f);
             		final float bottom = top + (this.mCellHeight * 0.75f);
 
             		c.drawOval(new RectF(left, top, right, bottom), this.mJuggerdotForeground);
+        		}
+        	}
+        }
+        
+        if (this.mIsDisplayingWalls) {
+			final float mCellWidthOverEight = this.mCellWidth / 8.0f;
+			final float mCellHeightOverEight = this.mCellHeight / 8.0f;
+			final float rxOuter = this.mCellWidth / 2.0f;
+			final float ryOuter = this.mCellHeight / 2.0f;
+			final float rxInner = rxOuter - mCellWidthOverEight;
+			final float ryInner = ryOuter - mCellHeightOverEight;
+			
+        	for (int y = 0; y < this.mIconRows; y++) {
+        		for (int x = 0; x < this.mIconCols; x++) {
+        			float left = (((x * (this.mCellColumnSpacing + 1)) + 1) * this.mCellWidth) + 1;
+        			float top = (((y * (this.mCellRowSpacing + 1)) + 1) * this.mCellHeight) + 1;
+        			float right = (left + (this.mCellColumnSpacing * this.mCellWidth)) - 3;
+        			float bottom = (top + (this.mCellRowSpacing * this.mCellHeight)) - 3;
+        			
+        			c.drawRoundRect(new RectF(left, top, right, bottom), rxOuter, ryOuter, this.mWallsForeground);
+        			
+        			left += mCellWidthOverEight;
+        			top += mCellHeightOverEight;
+        			right -= mCellWidthOverEight;
+        			bottom -= mCellHeightOverEight;
+        			
+        			c.drawRoundRect(new RectF(left, top, right, bottom), rxInner, ryInner, this.mWallsForeground);
         		}
         	}
         }

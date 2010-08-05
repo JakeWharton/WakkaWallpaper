@@ -432,6 +432,10 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		editor.putInt(resources.getString(R.string.settings_display_juggerdotblink_key), resources.getInteger(R.integer.display_juggerdotblink_default));
 		//show hud
 		editor.putBoolean(resources.getString(R.string.settings_display_showhud_key), resources.getBoolean(R.bool.display_showhud_default));
+		//hud offset
+		editor.putInt(resources.getString(R.string.settings_display_hudoffset_key), resources.getInteger(R.integer.display_hudoffset_default));
+		//show walls
+		editor.putBoolean(resources.getString(R.string.settings_display_showwalls_key), resources.getBoolean(R.bool.display_showwalls_default));
 		//icon rows
 		editor.putInt(resources.getString(R.string.settings_display_iconrows_key), resources.getInteger(R.integer.display_iconrows_default));
 		//icon cols
@@ -440,8 +444,6 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		editor.putInt(resources.getString(R.string.settings_display_rowspacing_key), resources.getInteger(R.integer.display_rowspacing_default));
 		//icon col spacing
 		editor.putInt(resources.getString(R.string.settings_display_colspacing_key), resources.getInteger(R.integer.display_colspacing_default));
-		//hud offset
-		editor.putInt(resources.getString(R.string.settings_display_hudoffset_key), resources.getInteger(R.integer.display_hudoffset_default));
 		//padding top
 		editor.putInt(resources.getString(R.string.settings_display_padding_top_key), resources.getInteger(R.integer.display_padding_top_default));
 		//padding bottom
@@ -500,6 +502,8 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		
 		//background
 		editor.putInt(resources.getString(R.string.settings_color_game_background_key), resources.getInteger(R.integer.color_game_background_default));
+		//walls
+		editor.putInt(resources.getString(R.string.settings_color_game_walls_key), resources.getInteger(R.integer.color_game_walls_default));
 		//background image
 		editor.putString(resources.getString(R.string.settings_color_game_bgimage_key), null);
 		//dots
@@ -578,6 +582,16 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 				if (display.has(display_showhud)) {
 					editor.putBoolean(display_showhud, display.getBoolean(display_showhud));
 				}
+	    		//hud offset
+	    		final String display_hudoffset = resources.getString(R.string.settings_display_hudoffset_key);
+	    		if (display.has(display_hudoffset)) {
+	    			editor.putInt(display_hudoffset, display.getInt(display_hudoffset));
+	    		}
+	    		//show walls
+	    		final String display_showwalls = resources.getString(R.string.settings_display_showwalls_key);
+	    		if (display.has(display_showwalls)) {
+	    			editor.putBoolean(display_showwalls, display.getBoolean(display_showwalls));
+	    		}
 	    		//icon rows
 		        final String display_iconrows = resources.getString(R.string.settings_display_iconrows_key);
 		        if (display.has(display_iconrows)) {
@@ -598,11 +612,6 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		        if (display.has(display_colspacing)) {
 		        	editor.putInt(display_colspacing, display.getInt(display_colspacing));
 		        }
-	    		//hud offset
-	    		final String display_hudoffset = resources.getString(R.string.settings_display_hudoffset_key);
-	    		if (display.has(display_hudoffset)) {
-	    			editor.putInt(display_hudoffset, display.getInt(display_hudoffset));
-	    		}
 	    		//padding top
 		        final String display_paddingtop = resources.getString(R.string.settings_display_padding_top_key);
 		        if (display.has(display_paddingtop)) {
@@ -720,6 +729,11 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		    	final String color_game_background = resources.getString(R.string.settings_color_game_background_key);
 		    	if (color.has(color_game_background)) {
 		    		editor.putInt(color_game_background, color.getInt(color_game_background));
+		    	}
+		    	//wall
+		    	final String color_game_walls = resources.getString(R.string.settings_color_game_walls_key);
+		    	if (color.has(color_game_walls)) {
+		    		editor.putInt(color_game_walls, color.getInt(color_game_walls));
 		    	}
 	    		//background image
 	    		final String color_game_bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
@@ -850,15 +864,18 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 			//show hud
 			final String display_showhud = resources.getString(R.string.settings_display_showhud_key);
 	        display.put(display_showhud, preferences.getBoolean(display_showhud, resources.getBoolean(R.bool.display_showhud_default)));
+    		//hud offset
+    		final String display_hudoffset = resources.getString(R.string.settings_display_hudoffset_key);
+    		display.put(display_hudoffset, preferences.getInt(display_hudoffset, resources.getInteger(R.integer.display_hudoffset_default)));
+    		//show walls
+    		final String display_showwalls = resources.getString(R.string.settings_display_showwalls_key);
+    		display.put(display_showwalls, preferences.getBoolean(display_showwalls, resources.getBoolean(R.bool.display_showwalls_default)));
 			//icon rows
 	        final String display_iconrows = resources.getString(R.string.settings_display_iconrows_key);
 	        display.put(display_iconrows, preferences.getInt(display_iconrows, resources.getInteger(R.integer.display_iconrows_default)));
 			//icon cols
 	        final String display_iconcols = resources.getString(R.string.settings_display_iconcols_key);
 	        display.put(display_iconcols, preferences.getInt(display_iconcols, resources.getInteger(R.integer.display_iconcols_default)));
-    		//hud offset
-    		final String display_hudoffset = resources.getString(R.string.settings_display_hudoffset_key);
-    		display.put(display_hudoffset, preferences.getInt(display_hudoffset, resources.getInteger(R.integer.display_hudoffset_default)));
 			//icon row spacing
 	        final String display_rowspacing = resources.getString(R.string.settings_display_rowspacing_key);
 	        display.put(display_rowspacing, preferences.getInt(display_rowspacing, resources.getInteger(R.integer.display_rowspacing_default)));
@@ -934,6 +951,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 			//background
 	    	final String color_game_background = resources.getString(R.string.settings_color_game_background_key);
 	    	color.put(color_game_background, preferences.getInt(color_game_background, resources.getInteger(R.integer.color_game_background_default)));
+	    	//walls
+	    	final String color_game_walls = resources.getString(R.string.settings_color_game_walls_key);
+	    	color.put(color_game_walls, preferences.getInt(color_game_walls, resources.getInteger(R.integer.color_game_walls_default)));
     		//background image
     		final String color_game_bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
     		color.put(color_game_bgimage, preferences.getString(color_game_bgimage, null));
