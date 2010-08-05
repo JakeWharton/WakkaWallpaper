@@ -207,7 +207,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         	this.getPreferenceManager().getSharedPreferences().edit().putInt(resources.getString(R.string.version_code_key), thisVersion).commit();
         	//Show hello
         	(new AlertDialog.Builder(this))
-        		.setTitle(resources.getString(R.string.welcome))
+        		.setTitle(resources.getString(R.string.title))
         		.setMessage(resources.getString(R.string.welcome_firstrun))
         		.setCancelable(true)
         		.setPositiveButton(resources.getString(R.string.yes), new OnClickListener() {
@@ -224,7 +224,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         	this.getPreferenceManager().getSharedPreferences().edit().putInt(resources.getString(R.string.version_code_key), thisVersion).commit();
         	//Show hello
         	(new AlertDialog.Builder(this))
-        		.setTitle(resources.getString(R.string.welcome))
+        		.setTitle(resources.getString(R.string.title))
         		.setMessage(resources.getString(R.string.welcome_upgrade))
         		.setCancelable(true)
         		.setPositiveButton(resources.getString(R.string.yes), new OnClickListener() {

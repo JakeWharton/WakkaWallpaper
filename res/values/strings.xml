@@ -4,12 +4,11 @@
     <string name="title">Wakka Wallpaper</string>
     <string name="author">Jake Wharton</string>
     <string name="description">Creates a grid of dots that border your icons for some om nom nom.</string>
-    <string name="version_name">1.0.0 RC1</string>
+    <string name="version_name">1.0.0 RC2</string>
     <string name="version_code_key">version</string>
     
-    <string name="welcome">Welcome!</string>
-    <string name="welcome_firstrun">Thanks for installing WakkaWallpaper!\n\nWould you like to read the brief instructions?</string>
-    <string name="welcome_upgrade">Thanks for upgrading WakkaWallpaper!\n\nWould you like to read the change log?</string>
+    <string name="welcome_firstrun">Thanks for installing!\n\nWould you like to read the instructions?</string>
+    <string name="welcome_upgrade">Thanks for upgrading!\n\nWould you like to read the change log?</string>
     <string name="welcome_picker_toast">Choose \"Wakka Wallpaper\" from the list.</string>
     
     <string name="yes">Yes</string>
@@ -242,7 +241,7 @@
     
     <string name="about">About</string>
     <string name="about_key">about</string>
-    <string name="about_summary">Instructions and change log</string>
+    <string name="about_summary">Instructions, change log, credits...</string>
     <string name="about_header_key">about_header</string>
     <string name="about_header_summary">An Android live wallpaper which simulates a popular 1980\'s arcade game.</string>
     <string name="about_contents">Contents</string>
