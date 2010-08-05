@@ -454,6 +454,16 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 				Log.d(Game.TAG, "Drawing Style: " + style);
 			}
 		}
+		final String entityStyle = Wallpaper.CONTEXT.getString(R.string.settings_color_entitystyle_key);
+		if (all || key.equals(entityStyle)) {
+			final Entity.Style style = Entity.Style.parseInt(Wallpaper.PREFERENCES.getInt(entityStyle, resources.getInteger(R.integer.color_entitystyle_default)));
+			
+			this.mTheManForeground.setStyle(style.style);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "TheMan HUD Style: " + style);
+			}
+		}
     	
         
 		// GRID //
