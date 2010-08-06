@@ -276,6 +276,16 @@
     <string name="ai_title">Wakka Wallpaper AI</string>
     <string name="ai_summary">Help with the open source AI</string>
     
+    <string name="about_aroundtheweb_header">Around The Web</string>
+    <string name="xda">XDA Developers</string>
+    <string name="xda_key">xda</string>
+    <string name="xda_href">http://forum.xda-developers.com/showthread.php?t=741957</string>
+    <string name="xda_summary">Official thread of development information</string>
+    <string name="facebook">Facebook Page</string>
+    <string name="facebook_key">facebook</string>
+    <string name="facebook_href">http://facebook.com/pages/Wakka-Wallpaper/149238845086426</string>
+    <string name="facebook_summary">\"Like\" the official Facebook page and post your screenshots</string>
+    
     <string name="information_header">Information</string>
     <string name="information_version">Version</string>
     <string name="information_version_key">information_version</string>

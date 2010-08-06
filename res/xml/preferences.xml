@@ -472,6 +472,17 @@
 					android:title="@string/ai"
 					android:summary="@string/ai_summary"/>
 			</PreferenceCategory>
+			<PreferenceCategory
+				android:title="@string/about_aroundtheweb_header">
+				<Preference
+					android:key="@string/facebook_key"
+					android:title="@string/facebook"
+					android:summary="@string/facebook_summary"/>
+				<Preference
+					android:key="@string/xda_key"
+					android:title="@string/xda"
+					android:summary="@string/xda_summary"/>
+			</PreferenceCategory>
 		</PreferenceScreen>
 		<PreferenceScreen
 			android:key="@string/information_author_key"

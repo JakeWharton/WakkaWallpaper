@@ -174,6 +174,21 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 			}
 		});
         
+        //facebook
+        this.findPreference(resources.getString(R.string.facebook_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Preferences.this.viewFacebook();
+				return true;
+			}
+		});
+        
+        //xda
+        this.findPreference(resources.getString(R.string.xda_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Preferences.this.viewXda();
+				return true;
+			}
+		});
         
         //background image
         this.findPreference(resources.getString(R.string.settings_color_game_bgimage_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -284,6 +299,26 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		final Intent intent = new Intent(this, About.class);
 		intent.putExtra(About.EXTRA_FILENAME, Preferences.FILENAME_AI);
 		intent.putExtra(About.EXTRA_TITLE, this.getResources().getString(R.string.ai_title));
+		this.startActivity(intent);
+    }
+    
+    /**
+     * Open Facebook
+     */
+    private void viewFacebook() {
+    	final Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setData(Uri.parse(this.getResources().getString(R.string.facebook_href)));
+		
+		this.startActivity(intent);
+    }
+    
+    /**
+     * Open XDA
+     */
+    private void viewXda() {
+    	final Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setData(Uri.parse(this.getResources().getString(R.string.xda_href)));
+		
 		this.startActivity(intent);
     }
 
@@ -400,7 +435,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		intent.putExtra(Intent.EXTRA_EMAIL, new String[] { resources.getString(R.string.information_contact_email_data) });
 		intent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.title));
 		
-		Preferences.this.startActivity(intent);
+		this.startActivity(intent);
     }
     
     private void infoTwitter() {
@@ -408,7 +443,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		final Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setData(Uri.parse(resources.getString(R.string.information_contact_twitter_data)));
 		
-		Preferences.this.startActivity(intent);
+		this.startActivity(intent);
     }
     
     private void infoWeb() {
@@ -416,7 +451,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     	final Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setData(Uri.parse(resources.getString(R.string.information_contact_website_data)));
 		
-		Preferences.this.startActivity(intent);
+		this.startActivity(intent);
     }
     
     private void loadDisplayDefaults() {
