@@ -304,10 +304,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		
 		final String bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
 		if (all || key.equals(bgimage)) {
-			final boolean imageEnabled = (preferences.getString(bgimage, null) != null);
-			
-			this.findPreference(resources.getString(R.string.settings_color_game_background_key)).setEnabled(!imageEnabled);
-			this.findPreference(resources.getString(R.string.settings_color_game_bgimageclear_key)).setEnabled(imageEnabled);
+			this.findPreference(resources.getString(R.string.settings_color_game_bgimageclear_key)).setEnabled(preferences.getString(bgimage, null) != null);
 		}
 	}
 

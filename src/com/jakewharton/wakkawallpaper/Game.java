@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Random;
-
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -1242,12 +1241,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     public void draw(final Canvas c) {
     	c.save();
     	
-    	//Background
+    	//Clear the screen in case of transparency in the image
+		c.drawColor(this.mGameBackground);
     	if (this.mBackground != null) {
     		//Bitmap should already be sized to the screen so draw it at the origin
     		c.drawBitmap(this.mBackground, 0, 0, null);
-    	} else {
-    		c.drawColor(this.mGameBackground);
     	}
         
         if (this.mIsLandscape) {
