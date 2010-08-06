@@ -100,6 +100,16 @@
     <string name="settings_game_killscreen">Display Kill Screen</string>
     <string name="settings_game_killscreen_key">game_killscreen</string>
     <string name="settings_game_killscreen_summary">Randomly display the infamous kill screen</string>
+    <string name="settings_game_wrapping_header">Edge Wrapping</string>
+    <string name="settings_game_wrappingmode">Wrapping Mode</string>
+    <string name="settings_game_wrappingmode_key">game_wrappingmode</string>
+    <string name="settings_game_wrappingmode_summary">All edges or just middle row</string>
+    <string name="settings_game_wrappingtheman">The Man Wrapping</string>
+    <string name="settings_game_wrappingtheman_key">game_wrappingtheman</string>
+    <string name="settings_game_wrappingtheman_summary">Whether or not The Man can wrap around board edges</string>
+    <string name="settings_game_wrappingghosts">Ghost Wrapping</string>
+    <string name="settings_game_wrappingghosts_key">game_wrappingghosts</string>
+    <string name="settings_game_wrappingghosts_summary">Whether or not ghosts can wrap around board edges</string>
     <string name="settings_game_theman_header">The Man</string>
     <string name="settings_game_themanmode">The Man Movement Mode</string>
     <string name="settings_game_themanmode_key">game_themanmode</string>

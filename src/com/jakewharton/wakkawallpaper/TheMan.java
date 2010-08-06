@@ -41,12 +41,14 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	private static final int CHOMP_ANGLE_COUNT = 4;
 	private static final int DEATH_ANGLE_GROWTH = 30;
 	private static final int[] CHOMP_ANGLES = new int[] { 90, 45, 0, 45 };
+	private static final int WANTS_TO_GO_MAX_LENGTH = 5000;
 	
 	private TheMan.State mState;
 	private TheMan.Mode mMode;
 	private int mStateTicker;
     private final Paint mForeground;
 	private Entity.Direction mWantsToGo;
+	private long mWantsToGoTimer;
     
 	/**
 	 * Create instance of "The Man"
@@ -101,6 +103,15 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 				Log.d(TheMan.TAG, "Drawing Style: " + style);
 			}
 		}
+		
+		final String wrapping = resources.getString(R.string.settings_game_wrappingtheman_key);
+		if (all || key.equals(wrapping)) {
+			this.mIsWrapping= Wallpaper.PREFERENCES.getBoolean(wrapping, resources.getBoolean(R.bool.game_wrappingtheman_default));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(TheMan.TAG, "Is Wrapping: " + this.mIsWrapping);
+			}
+		}
 
 		if (Wallpaper.LOG_VERBOSE) {
 			Log.v(TheMan.TAG, "< onSharedPreferenceChanged()");
@@ -114,6 +125,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
      */
     public void setWantsToGo(final Entity.Direction direction) {
     	this.mWantsToGo = direction;
+    	this.mWantsToGoTimer = System.currentTimeMillis();
     	
     	if (Wallpaper.LOG_DEBUG) {
     		Log.d(TheMan.TAG, "Wants To Go: " + direction.toString());
@@ -165,9 +177,15 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	 */
 	private void determineNextDirection(final Game game) {
 		//Try the user direction first
-		if ((this.mWantsToGo != null) && game.isValidPosition(Entity.move(this.mPosition, this.mWantsToGo))) {
-			this.mDirectionNext = this.mWantsToGo;
-			return;
+		if ((this.mWantsToGo != null) && game.isValidPosition(this, Entity.move(this.mPosition, this.mWantsToGo))) {
+			if (this.mIsWrapping && ((System.currentTimeMillis() - this.mWantsToGoTimer) > TheMan.WANTS_TO_GO_MAX_LENGTH)) {
+				//When wrapping, only allow The Man to follow the user direction for a maximum amount of time
+				this.mWantsToGo = null;
+			} else {
+				//Follow user direction and GTFO
+				this.mDirectionNext = this.mWantsToGo;
+				return;
+			}
 		}
 		
 		//Use logic based on mode
@@ -221,7 +239,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 					Log.v(TheMan.TAG, "- Checking: (" + next.position.x + "," + next.position.y + ") " + next.direction);
 				}
 				
-				if (game.isValidPosition(next.position) && !seen.contains(game.hashPosition(next.position))) {
+				if (game.isValidPosition(this, next.position) && !seen.contains(game.hashPosition(next.position))) {
 					if (Wallpaper.LOG_VERBOSE) {
 						Log.v(TheMan.TAG, "-- Valid");
 					}
@@ -256,7 +274,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		if (this.mDirectionNext == null) {
 			while (true) {
 				final Entity.Direction direction = Entity.Direction.values()[Game.RANDOM.nextInt(Entity.Direction.values().length)];
-				if (game.isValidPosition(Entity.move(this.mPosition, direction))) {
+				if (game.isValidPosition(this, Entity.move(this.mPosition, direction))) {
 					this.mDirectionNext = direction;
 					break;
 				}
@@ -274,7 +292,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 			while (true) {
 				this.mDirectionNext = Entity.Direction.values()[Game.RANDOM.nextInt(Entity.Direction.values().length)];
 				
-				if (game.isValidPosition(Entity.move(this.mPosition, this.mDirectionNext)) && ((this.mDirectionCurrent == null) || (this.mDirectionNext != this.mDirectionCurrent.getOpposite()))) {
+				if (game.isValidPosition(this, Entity.move(this.mPosition, this.mDirectionNext)) && ((this.mDirectionCurrent == null) || (this.mDirectionNext != this.mDirectionCurrent.getOpposite()))) {
 					break;
 				}
 			}
@@ -418,7 +436,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		boolean valid = false;
 		while (!valid) {
 			this.mDirectionNext = Entity.Direction.values()[Game.RANDOM.nextInt(Entity.Direction.values().length)];
-			valid = game.isValidPosition(Entity.move(this.mPosition, this.mDirectionNext));
+			valid = game.isValidPosition(this, Entity.move(this.mPosition, this.mDirectionNext));
 		}
 	}
 	

@@ -9,4 +9,6 @@
 	<bool name="game_deadlyghosts_default">true</bool>
 	<bool name="game_fruitenabled_default">true</bool>
 	<bool name="game_usercontrol_default">true</bool>
+	<bool name="game_wrappingtheman_default">false</bool>
+	<bool name="game_wrappingghosts_default">false</bool>
 </resources>

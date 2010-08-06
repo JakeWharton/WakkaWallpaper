@@ -58,6 +58,9 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		
 		this.mCellSize = new RectF(0, 0, 0, 0);
 		
+		//We are fruit. We can't wrap.
+		this.mIsWrapping = false;
+		
 		//Load the fruit sprites
 		final BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inScaled = false;

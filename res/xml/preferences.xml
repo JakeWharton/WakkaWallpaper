@@ -148,6 +148,26 @@
 				android:summary="@string/settings_game_killscreen_summary"
 				android:defaultValue="@bool/game_killscreen_default"/>
 			<PreferenceCategory
+				android:title="@string/settings_game_wrapping_header">
+				<com.jakewharton.utilities.IntegerListPreference
+					android:key="@string/settings_game_wrappingmode_key"
+					android:title="@string/settings_game_wrappingmode"
+					android:summary="@string/settings_game_wrappingmode_summary"
+					android:defaultValue="@integer/game_wrappingmode_default"
+					android:entries="@array/game_wrappingmode"
+					android:entryValues="@array/game_wrappingmode_values"/>
+				<CheckBoxPreference
+					android:key="@string/settings_game_wrappingtheman_key"
+					android:title="@string/settings_game_wrappingtheman"
+					android:summary="@string/settings_game_wrappingtheman_summary"
+					android:defaultValue="@bool/game_wrappingtheman_default"/>
+				<CheckBoxPreference
+					android:key="@string/settings_game_wrappingghosts_key"
+					android:title="@string/settings_game_wrappingghosts"
+					android:summary="@string/settings_game_wrappingghosts_summary"
+					android:defaultValue="@bool/game_wrappingghosts_default"/>
+			</PreferenceCategory>
+			<PreferenceCategory
 				android:title="@string/settings_game_theman_header">
 				<com.jakewharton.utilities.IntegerListPreference
 					android:key="@string/settings_game_themanmode_key"

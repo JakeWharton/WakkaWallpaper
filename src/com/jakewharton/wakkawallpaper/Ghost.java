@@ -214,6 +214,15 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			}
 		}
 		
+		final String wrapping = resources.getString(R.string.settings_game_wrappingghosts_key);
+		if (all || key.equals(wrapping)) {
+			this.mIsWrapping= Wallpaper.PREFERENCES.getBoolean(wrapping, resources.getBoolean(R.bool.game_wrappingghosts_default));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Is Wrapping: " + this.mIsWrapping);
+			}
+		}
+		
     	if (Wallpaper.LOG_VERBOSE) {
     		Log.v(Ghost.TAG, "< onSharedPreferenceChanged()");
     	}
@@ -532,11 +541,11 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			//Try a random direction
 			this.mDirectionNext = Direction.values()[Game.RANDOM.nextInt(Direction.values().length)];
 			
-			if (!game.isValidPosition(Entity.move(this.mPosition, this.mDirectionNext)) || (this.mDirectionNext == this.mDirectionCurrent.getOpposite())) {
+			if (!game.isValidPosition(this, Entity.move(this.mPosition, this.mDirectionNext)) || (this.mDirectionNext == this.mDirectionCurrent.getOpposite())) {
 				//If the random direction was not valid, iterate over all possible directions looking for a valid one
 				for (final Direction direction : Direction.values()) {
 					//See if the direction is a valid position and not the opposite of our current direction
-					if (game.isValidPosition(Entity.move(this.mPosition, direction)) && (direction != this.mDirectionCurrent.getOpposite())) {
+					if (game.isValidPosition(this, Entity.move(this.mPosition, direction)) && (direction != this.mDirectionCurrent.getOpposite())) {
 						//Exit the loop
 						this.mDirectionNext = direction;
 						break;
@@ -566,7 +575,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				nextPoint = Entity.move(this.mPosition, direction);
 				nextDistance = Math.sqrt(Math.pow(nextPoint.x - target.x, 2) + Math.pow(nextPoint.y - target.y, 2));
 				
-				if (game.isValidPosition(nextPoint) && (nextDistance < shortestDistance)) {
+				if (game.isValidPosition(this, nextPoint) && (nextDistance < shortestDistance)) {
 					this.mDirectionNext = direction;
 					shortestDistance = nextDistance; 
 				}
@@ -593,7 +602,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			while (true) {
 				this.mDirectionNext = Entity.Direction.values()[Game.RANDOM.nextInt(Entity.Direction.values().length)];
 				
-				if (game.isValidPosition(Entity.move(this.mPosition, this.mDirectionNext)) && ((this.mDirectionCurrent == null) || (this.mDirectionNext != this.mDirectionCurrent.getOpposite()))) {
+				if (game.isValidPosition(this, Entity.move(this.mPosition, this.mDirectionNext)) && ((this.mDirectionCurrent == null) || (this.mDirectionNext != this.mDirectionCurrent.getOpposite()))) {
 					break;
 				}
 			}

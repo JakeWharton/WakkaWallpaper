@@ -107,6 +107,7 @@ public abstract class Entity {
 	protected float mCellWidthOverTwo;
 	protected float mCellHeightOverTwo;
 	protected int mTickCount;
+	protected boolean mIsWrapping;
 	
 	/**
 	 * Create a new entity.
@@ -266,6 +267,22 @@ public abstract class Entity {
 		}
 		
 		if (moved) {
+			if (this.mIsWrapping) {
+	    		//wrap past bounds positively and negatively
+	    		if (this.mPosition.x < 0) {
+	    			this.mPosition.x = game.getCellsWide() + this.mPosition.x;
+	    		} else {
+	    			this.mPosition.x %= game.getCellsWide();
+	    		}
+	    		if (this.mPosition.y < 0) {
+	    			this.mPosition.y = game.getCellsTall() + this.mPosition.y;
+	    		} else {
+	    			this.mPosition.y %= game.getCellsTall();
+	    		}
+	    		//resets location coordinates
+	    		this.setPosition(this.mPosition);
+			}
+			
 			this.moved(game);
 		}
 		

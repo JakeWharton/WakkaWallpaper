@@ -464,11 +464,17 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		editor.putInt(resources.getString(R.string.settings_game_mode_key), resources.getInteger(R.integer.game_mode_default));
 		//endless dot threshold
 		editor.putInt(resources.getString(R.string.settings_game_endlessdotregen_key), resources.getInteger(R.integer.game_endlessdotregen_default));
-		//endless jugger threshold
+		//endless juggerdot threshold
 		editor.putInt(resources.getString(R.string.settings_game_endlessjuggerdotregen_key), resources.getInteger(R.integer.game_endlessjuggerdotregen_default));
 		//display kill screen
 		editor.putBoolean(resources.getString(R.string.settings_game_killscreen_key), resources.getBoolean(R.bool.game_killscreen_default));
-		//theman mode
+		//wrapping mode
+		editor.putInt(resources.getString(R.string.settings_game_wrappingmode_key), resources.getInteger(R.integer.game_wrappingmode_default));
+		//the man wrapping
+		editor.putBoolean(resources.getString(R.string.settings_game_wrappingtheman_key), resources.getBoolean(R.bool.game_wrappingtheman_default));
+		//ghost wrapping
+		editor.putBoolean(resources.getString(R.string.settings_game_wrappingghosts_key), resources.getBoolean(R.bool.game_wrappingghosts_default));
+		//the man mode
 		editor.putInt(resources.getString(R.string.settings_game_themanmode_key), resources.getInteger(R.integer.game_themanmode_default));
 		//user controllable
 		editor.putBoolean(resources.getString(R.string.settings_game_usercontrol_key), resources.getBoolean(R.bool.game_usercontrol_default));
@@ -659,7 +665,22 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		    	if (game.has(game_killscreen)) {
 		    		editor.putBoolean(game_killscreen, game.getBoolean(game_killscreen));
 		    	}
-	    		//theman mode
+		    	//wrapping mode
+		    	final String game_wrappingmode = resources.getString(R.string.settings_game_wrappingmode_key);
+		    	if (game.has(game_wrappingmode)) {
+		    		editor.putInt(game_wrappingmode, game.getInt(game_wrappingmode));
+		    	}
+		    	//the man wrapping
+		    	final String game_wrappingtheman = resources.getString(R.string.settings_game_wrappingtheman_key);
+		    	if (game.has(game_wrappingtheman)) {
+		    		editor.putBoolean(game_wrappingtheman, game.getBoolean(game_wrappingtheman));
+		    	}
+		    	//ghost wrapping
+		    	final String game_wrappingghosts = resources.getString(R.string.settings_game_wrappingghosts_key);
+		    	if (game.has(game_wrappingghosts)) {
+		    		editor.putBoolean(game_wrappingghosts, game.getBoolean(game_wrappingghosts));
+		    	}
+	    		//the man mode
 	    		final String game_themanmode = resources.getString(R.string.settings_game_themanmode_key);
 	    		if (game.has(game_themanmode)) {
 	    			editor.putInt(game_themanmode, game.getInt(game_themanmode));
@@ -909,6 +930,15 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 			//display kill screen
 	    	final String game_killscreen = resources.getString(R.string.settings_game_killscreen_key);
 	    	game.put(game_killscreen, preferences.getBoolean(game_killscreen, resources.getBoolean(R.bool.game_killscreen_default)));
+	    	//wrapping mode
+	    	final String game_wrappingmode = resources.getString(R.string.settings_game_wrappingmode_key);
+	    	game.put(game_wrappingmode, preferences.getInt(game_wrappingmode, resources.getInteger(R.integer.game_wrappingmode_default)));
+	    	//the man wrapping
+	    	final String game_wrappingtheman = resources.getString(R.string.settings_game_wrappingtheman_key);
+	    	game.put(game_wrappingtheman, preferences.getBoolean(game_wrappingtheman, resources.getBoolean(R.bool.game_wrappingtheman_default)));
+	    	//ghost wrapping
+	    	final String game_wrappingghosts = resources.getString(R.string.settings_game_wrappingghosts_key);
+	    	game.put(game_wrappingghosts, preferences.getBoolean(game_wrappingghosts, resources.getBoolean(R.bool.game_wrappingghosts_default)));
     		//theman mode
     		final String game_themanmode = resources.getString(R.string.settings_game_themanmode_key);
     		game.put(game_themanmode, preferences.getInt(game_themanmode, resources.getInteger(R.integer.game_themanmode_default)));

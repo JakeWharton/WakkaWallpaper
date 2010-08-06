@@ -65,6 +65,30 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			this.length = length;
 		}
 	}
+	enum Wrapping {
+		ALL(0), CENTER_ROW(1);
+		
+		public final int value;
+		
+		private Wrapping(final int value) {
+			this.value = value;
+		}
+		
+		/**
+		 * Convert an integer to its corresponding Game.Wrapping.
+		 * 
+		 * @param wrappingValue Integer
+		 * @return Game.Wrapping
+		 */
+		public static Game.Wrapping parseInt(final int wrappingValue) {
+			for (final Game.Wrapping wrapping : Game.Wrapping.values()) {
+				if (wrapping.value == wrappingValue) {
+					return wrapping;
+				}
+			}
+			throw new IllegalArgumentException("Unknown Game wrapping value: " + wrappingValue);
+		}
+	}
 
 	public static final Random RANDOM = new Random();
 	private static final String TAG = "WakkaWallpaper.Game";
@@ -81,6 +105,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	
 	private Game.State mState;
 	private Game.Mode mMode;
+	private Game.Wrapping mWrapping;
+	private boolean mIsWrappingTheMan;
+	private boolean mIsWrappingGhosts;
 	private long mStateTimestamp;
 	private int mCellsWide;
 	private int mCellsTall;
@@ -211,6 +238,33 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Mode: " + this.mMode);
+			}
+		}
+		
+		final String wrappingMode = resources.getString(R.string.settings_game_wrappingmode_key);
+		if (all || key.equals(wrappingMode)) {
+			this.mWrapping = Game.Wrapping.parseInt(Wallpaper.PREFERENCES.getInt(wrappingMode, resources.getInteger(R.integer.game_wrappingmode_default)));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Wrapping: " + this.mWrapping);
+			}
+		}
+		
+		final String wrappingTheMan = resources.getString(R.string.settings_game_wrappingtheman_key);
+		if (all || key.equals(wrappingTheMan)) {
+			this.mIsWrappingTheMan = Wallpaper.PREFERENCES.getBoolean(wrappingTheMan, resources.getBoolean(R.bool.game_wrappingtheman_default));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Is Wrapping The Man: " + this.mIsWrappingTheMan);
+			}
+		}
+		
+		final String wrappingGhosts = resources.getString(R.string.settings_game_wrappingghosts_key);
+		if (all || key.equals(wrappingGhosts)) {
+			this.mIsWrappingGhosts = Wallpaper.PREFERENCES.getBoolean(wrappingGhosts, resources.getBoolean(R.bool.game_wrappingghosts_default));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Is Wrapping Ghosts: " + this.mIsWrappingGhosts);
 			}
 		}
 		
@@ -710,12 +764,41 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     }
     
     /**
+     * Test if a Point is a valid coordinate on the game board for an entity.
+     * 
+     * @param entity Entity for whom to check.
+     * @param position Point representing coordinate.
+     * @return Boolean indicating whether or not the position is valid.
+     */
+    public boolean isValidPosition(final Entity entity, final Point position) {
+    	if (((entity instanceof TheMan) && this.mIsWrappingTheMan) || ((entity instanceof Ghost) && this.mIsWrappingGhosts)) {
+    		//wrap past bounds positively and negatively
+    		if ((this.mWrapping == Game.Wrapping.ALL) || (position.y == ((this.mIconRows / 2) * (this.mCellRowSpacing + 1)))) {
+	    		if (position.x < 0) {
+	    			position.x = this.mCellsWide + position.x;
+	    		} else {
+	    			position.x %= this.mCellsWide;
+	    		}
+    		}
+    		if (this.mWrapping == Game.Wrapping.ALL) {
+	    		if (position.y < 0) {
+	    			position.y = this.mCellsTall + position.y;
+	    		} else {
+	    			position.y %= this.mCellsTall;
+	    		}
+    		}
+    	}
+    	
+    	return this.isValidBoardPosition(position);
+    }
+    
+    /**
      * Test if a Point is a valid coordinate on the game board.
      * 
      * @param position Point representing coordinate.
      * @return Boolean indicating whether or not the position is valid.
      */
-    public boolean isValidPosition(final Point position) {
+    private boolean isValidBoardPosition(final Point position) {
     	return ((position.x >= 0) && (position.x < this.mCellsWide)
     		    && (position.y >= 0) && (position.y < this.mCellsTall)
     		    && (this.mBoard[position.y][position.x] != Cell.WALL));
@@ -730,7 +813,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     public boolean isIntersection(final Point position) {
     	int directions = 0;
     	for (final Entity.Direction direction : Entity.Direction.values()) {
-    		if (this.isValidPosition(Entity.move(position, direction))) {
+    		if (this.isValidBoardPosition(Entity.move(position, direction))) {
     			directions += 1;
     		}
     	}
@@ -827,7 +910,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private Point getRandomBlankCell() {
     	while (true) {
     		final Point cell = new Point(Game.RANDOM.nextInt(this.mCellsWide), Game.RANDOM.nextInt(this.mCellsTall));
-    		if (this.isValidPosition(cell) && (this.getCell(cell) == Game.Cell.BLANK)) {
+    		if (this.isValidBoardPosition(cell) && (this.getCell(cell) == Game.Cell.BLANK)) {
 				return cell;
 			}
     	}
