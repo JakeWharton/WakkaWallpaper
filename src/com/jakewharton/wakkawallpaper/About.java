@@ -9,22 +9,22 @@ import android.os.Bundle;
 import android.webkit.WebView;
 
 public class About extends Activity {
-	public static final String EXTRA_FILENAME = "filename";
-	public static final String EXTRA_TITLE = "title";
+	/*package*/static final String EXTRA_FILENAME = "filename";
+	/*package*/static final String EXTRA_TITLE = "title";
 	private static final char NEWLINE = '\n';
 	private static final String ERROR = "Failed to load the file from assets.";
 	private static final String MIME_TYPE = "text/html";
 	private static final String ENCODING = "utf8";
 	
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        StringBuffer content = new StringBuffer();
+        final StringBuffer content = new StringBuffer();
         
         try {
         	//Load entire about plain text from asset
-			BufferedReader about = new BufferedReader(new InputStreamReader(this.getAssets().open(this.getIntent().getStringExtra(About.EXTRA_FILENAME))));
+			final BufferedReader about = new BufferedReader(new InputStreamReader(this.getAssets().open(this.getIntent().getStringExtra(About.EXTRA_FILENAME))));
 			String data;
 			while ((data = about.readLine()) != null) {
 				content.append(data);

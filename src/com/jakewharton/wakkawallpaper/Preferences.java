@@ -31,7 +31,7 @@ import android.widget.Toast;
  * @author Jake Wharton
  */
 public class Preferences extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
-	public static final String SHARED_NAME = "WakkaWallpaper";
+	/*package*/static final String SHARED_NAME = "WakkaWallpaper";
 	private static final String FILE_NAME = "settings.wakkawallpaper.json";
 	private static final String MIME_TYPE = "text/plain";
 	private static final int IMPORT_JSON = 1;
@@ -60,7 +60,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 					.setMessage(resources.getString(R.string.reset_display))
 					.setCancelable(false)
 					.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
+						public void onClick(final DialogInterface dialog, final int which) {
 							Preferences.this.loadDisplayDefaults();
 							
 							Toast.makeText(Preferences.this, resources.getString(R.string.reset_display_toast), Toast.LENGTH_LONG).show();
@@ -79,7 +79,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 					.setMessage(resources.getString(R.string.reset_game))
 					.setCancelable(false)
 					.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
+						public void onClick(final DialogInterface dialog, final int which) {
 							Preferences.this.loadGameDefaults();
 							
 							Toast.makeText(Preferences.this, resources.getString(R.string.reset_game_toast), Toast.LENGTH_LONG).show();
@@ -98,7 +98,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 					.setMessage(resources.getString(R.string.reset_color))
 					.setCancelable(false)
 					.setPositiveButton(resources.getString(R.string.yes), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
+						public void onClick(final DialogInterface dialog, final int which) {
 							Preferences.this.loadColorDefaults();
 							
 							Toast.makeText(Preferences.this, resources.getString(R.string.reset_color_toast), Toast.LENGTH_LONG).show();
@@ -136,7 +136,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         
         //instructions
         this.findPreference(resources.getString(R.string.instructions_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				Preferences.this.viewInstructions();
 				return true;
 			}
@@ -144,7 +144,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         
         //change log
         this.findPreference(resources.getString(R.string.changelog_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				Preferences.this.viewChangelog();
 				return true;
 			}
@@ -152,7 +152,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         
         //credits
         this.findPreference(resources.getString(R.string.credits_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				Preferences.this.viewCredits();
 				return true;
 			}
@@ -160,7 +160,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         
         //todo
         this.findPreference(resources.getString(R.string.todo_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				Preferences.this.viewTodo();
 				return true;
 			}
@@ -168,7 +168,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         
         //ai
         this.findPreference(resources.getString(R.string.ai_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				Preferences.this.viewAI();
 				return true;
 			}
@@ -177,7 +177,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         
         //background image
         this.findPreference(resources.getString(R.string.settings_color_game_bgimage_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				Preferences.this.startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI), Preferences.SELECT_BACKGROUND);
 				return true;
 			}
@@ -185,7 +185,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         
         //clear background image
         this.findPreference(resources.getString(R.string.settings_color_game_bgimageclear_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(final Preference preference) {
 				Preferences.this.getPreferenceManager().getSharedPreferences().edit().putString(resources.getString(R.string.settings_color_game_bgimage_key), null).commit();
 				Toast.makeText(Preferences.this, R.string.settings_color_game_bgimageclear_toast, Toast.LENGTH_SHORT).show();
 				return true;
@@ -211,7 +211,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         		.setMessage(resources.getString(R.string.welcome_firstrun))
         		.setCancelable(true)
         		.setPositiveButton(resources.getString(R.string.yes), new OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
+					public void onClick(final DialogInterface dialog, final int which) {
 						Preferences.this.viewInstructions();
 					}
 				})
@@ -228,7 +228,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         		.setMessage(resources.getString(R.string.welcome_upgrade))
         		.setCancelable(true)
         		.setPositiveButton(resources.getString(R.string.yes), new OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
+					public void onClick(final DialogInterface dialog, final int which) {
 						Preferences.this.viewChangelog();
 					}
 				})
@@ -296,7 +296,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		
 		final String mode = resources.getString(R.string.settings_game_mode_key);
 		if (all || key.equals(mode)) {
-			boolean enableEndless = (Game.Mode.parseInt(preferences.getInt(mode, resources.getInteger(R.integer.game_mode_default))) == Game.Mode.ENDLESS);
+			final boolean enableEndless = (Game.Mode.parseInt(preferences.getInt(mode, resources.getInteger(R.integer.game_mode_default))) == Game.Mode.ENDLESS);
 			
 			this.findPreference(resources.getString(R.string.settings_game_endlessdotregen_key)).setEnabled(enableEndless);
 			this.findPreference(resources.getString(R.string.settings_game_endlessjuggerdotregen_key)).setEnabled(enableEndless);
@@ -304,7 +304,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		
 		final String bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
 		if (all || key.equals(bgimage)) {
-			boolean imageEnabled = (preferences.getString(bgimage, null) != null);
+			final boolean imageEnabled = (preferences.getString(bgimage, null) != null);
 			
 			this.findPreference(resources.getString(R.string.settings_color_game_background_key)).setEnabled(!imageEnabled);
 			this.findPreference(resources.getString(R.string.settings_color_game_bgimageclear_key)).setEnabled(imageEnabled);
@@ -560,8 +560,8 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     	
     	try {
     		//Load entire file into JSONOBject
-    		BufferedReader file = new BufferedReader(new InputStreamReader(this.getContentResolver().openInputStream(uri)));
-    		StringBuilder json = new StringBuilder();
+    		final BufferedReader file = new BufferedReader(new InputStreamReader(this.getContentResolver().openInputStream(uri)));
+    		final StringBuilder json = new StringBuilder();
     		String data;
     		while ((data = file.readLine()) != null) {
     			json.append(data);
@@ -939,7 +939,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 	    	//ghost wrapping
 	    	final String game_wrappingghosts = resources.getString(R.string.settings_game_wrappingghosts_key);
 	    	game.put(game_wrappingghosts, preferences.getBoolean(game_wrappingghosts, resources.getBoolean(R.bool.game_wrappingghosts_default)));
-    		//theman mode
+    		//the man mode
     		final String game_themanmode = resources.getString(R.string.settings_game_themanmode_key);
     		game.put(game_themanmode, preferences.getInt(game_themanmode, resources.getInteger(R.integer.game_themanmode_default)));
 	    	//user controllable
@@ -1052,7 +1052,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 	    	settings.put(resources.getString(R.string.settings_color_key), color);
 	    	
 	    	//write to disk
-	    	PrintWriter file = new PrintWriter(new FileOutputStream(new File(Environment.getExternalStorageDirectory(), Preferences.FILE_NAME)));
+	    	final PrintWriter file = new PrintWriter(new FileOutputStream(new File(Environment.getExternalStorageDirectory(), Preferences.FILE_NAME)));
 	    	file.write(settings.toString());
 	    	file.close();
 	    	

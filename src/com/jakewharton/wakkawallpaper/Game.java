@@ -90,7 +90,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		}
 	}
 
-	public static final Random RANDOM = new Random();
+	/*package*/static final Random RANDOM = new Random();
 	private static final String TAG = "WakkaWallpaper.Game";
 	private static final NumberFormat SCORE_FORMAT = new DecimalFormat("000000");
 	private static final int SCORE_FLIPPING = 1000000;

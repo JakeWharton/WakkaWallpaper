@@ -16,11 +16,11 @@ import android.view.SurfaceHolder;
  * @author Jake Wharton
  */
 public class Wallpaper extends WallpaperService {
-    public static SharedPreferences PREFERENCES;
-    public static Context CONTEXT;
+	/*package*/static SharedPreferences PREFERENCES;
+	/*package*/static Context CONTEXT;
     
-    public static final boolean LOG_DEBUG = false;
-    public static final boolean LOG_VERBOSE = false;
+	/*package*/static final boolean LOG_DEBUG = false;
+	/*package*/static final boolean LOG_VERBOSE = false;
     private static final boolean AUTO_TICK = true;
     
     private final Handler mHandler = new Handler();
