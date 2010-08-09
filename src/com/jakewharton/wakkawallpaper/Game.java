@@ -185,6 +185,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private final RectF mCellSize;
     private boolean mIsTrophyAndyEnabled;
     private Bitmap mAndy;
+    private Bitmap mKillScreen;
     
     /**
      * Create a new game adhering to the specified parameters.
@@ -426,7 +427,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			this.mIsTrophyAndyEnabled = preferences.getBoolean(trophyAndy, resources.getBoolean(R.bool.trophy_andy_default));
 			
 			if (this.mIsTrophyAndyEnabled) {
-				//Load the Andy sprites
+				//Load the Andy sprite
 				final BitmapFactory.Options options = new BitmapFactory.Options();
 				options.inScaled = false;
 				this.mAndy = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.andy, options);
@@ -1172,12 +1173,25 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	this.setState(Game.State.READY);
     	
     	//Kill screen on level 256
-    	if (this.mLevel == Game.KILL_SCREEN_LEVEL) {
+    	if (this.mIsKillScreenEnabled && (this.mLevel == Game.KILL_SCREEN_LEVEL)) {
     		this.mIsOnKillScreen = true;
+    		
+			//Load the kill screen sprite
+			final BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inScaled = false;
+			this.mKillScreen = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.killscreen, options);
     		
     		if (Wallpaper.LOG_DEBUG) {
     			Log.d(Game.TAG, "Kill screen enabled for this level");
     		}
+    	} else {
+    		if (this.mIsKillScreenEnabled && (this.mLevel > Game.KILL_SCREEN_LEVEL)) {
+    			//Loop levels
+    			this.mLevel = 1;
+    		}
+    		
+    		this.mIsOnKillScreen = false;
+    		this.mKillScreen = null;
     	}
     	
     	//Check trophy CEOs earned
@@ -1466,7 +1480,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         }
         
         if (this.mIsOnKillScreen) {
-        	this.drawKillScreen(c);
+        	final RectF screenSize = new RectF(0, 0, this.mCellsWide * this.mCellWidth, this.mCellsTall * this.mCellHeight);
+        	c.drawBitmap(this.mKillScreen, null, screenSize, null);
         }
         
         //Set filter in case of Bitmaps
@@ -1522,7 +1537,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		        for (int i = 0; i < this.mLives; i++) {
 		        	final RectF dest = new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top);
 		        	if (this.mIsTrophyAndyEnabled) {
-		        		c.drawBitmap(this.mAndy, Entity.SPRITE_SIZE, dest, Entity.SPRITE_PAINT);
+		        		c.drawBitmap(this.mAndy, null, dest, Entity.SPRITE_PAINT);
 		        	} else {
 		        		c.drawArc(dest, Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
 		        	}
@@ -1538,18 +1553,5 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	        final float landscapeOffset = this.mIsLandscape ? this.mDotGridPaddingTop : 0;
 	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - Game.HUD_PADDING - landscapeOffset, top, this.mHudForeground);
     	}
-    }
-    
-    /**
-     * Render the kill screen garbage over the board.
-     * 
-     * @param c Canvas to draw on.
-     */
-    private void drawKillScreen(final Canvas c) {
-    	c.save();
-    	
-    	//TODO: draw garbled text on right half of screen using dot, entity, and HUD colors
-    	
-    	c.restore();
     }
 }

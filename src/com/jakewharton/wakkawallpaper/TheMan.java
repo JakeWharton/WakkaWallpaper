@@ -500,7 +500,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
      * @param isLandscape Whether or not the display is in landscape mode.
      */
     private void drawSprite(final Game game, final Canvas c) {
-    	c.drawBitmap(this.mSprite, Entity.SPRITE_SIZE, game.getCellSize(), Entity.SPRITE_PAINT);
+    	c.drawBitmap(this.mSprite, null, game.getCellSize(), Entity.SPRITE_PAINT);
     }
     
 	@Override

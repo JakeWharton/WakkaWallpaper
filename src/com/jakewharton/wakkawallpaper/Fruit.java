@@ -228,7 +228,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 					break;
 					
 				case GOOGOL:
-					c.drawBitmap(this.mFruits, Entity.SPRITE_SIZE, game.getCellSize(), Entity.SPRITE_PAINT);
+					c.drawBitmap(this.mFruits, null, game.getCellSize(), Entity.SPRITE_PAINT);
 					break;
 			}
 			
