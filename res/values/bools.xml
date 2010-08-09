@@ -11,4 +11,9 @@
 	<bool name="game_usercontrol_default">true</bool>
 	<bool name="game_wrappingtheman_default">false</bool>
 	<bool name="game_wrappingghosts_default">false</bool>
+	
+	<bool name="trophy_andy_default">false</bool>
+	<bool name="trophy_logos_default">false</bool>
+	<bool name="trophy_ceos_default">false</bool>
+	<bool name="trophy_googol_default">false</bool>
 </resources>

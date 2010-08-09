@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import org.json.JSONObject;
+import com.jakewharton.utilities.IconCheckBoxPreference;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -19,6 +20,8 @@ import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.provider.MediaStore;
 import android.view.Menu;
@@ -32,6 +35,7 @@ import android.widget.Toast;
  */
 public class Preferences extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	/*package*/static final String SHARED_NAME = "WakkaWallpaper";
+	/*package*/static final String EXTRA_TROPHY = "Trophy";
 	private static final String FILE_NAME = "settings.wakkawallpaper.json";
 	private static final String MIME_TYPE = "text/plain";
 	private static final int IMPORT_JSON = 1;
@@ -206,6 +210,76 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 				return true;
 			}
 		});
+        
+        //trophies
+        final IconCheckBoxPreference trophyAndy = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_andy_key));
+        final IconCheckBoxPreference trophyLogos = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_logos_key));
+        final IconCheckBoxPreference trophyCeos = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_ceos_key));
+        final IconCheckBoxPreference trophyGoogol = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_googol_key));
+        final boolean earnedTrophyAndy = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_andy_persist), false);
+        final boolean earnedTrophyLogos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_logos_persist), false);
+        final boolean earnedTrophyCeos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_ceos_persist), false);
+        final boolean earnedTrophyGoogol = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_googol_persist), false);
+        
+        trophyAndy.setEnabled(earnedTrophyAndy);
+        trophyAndy.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				if ((Boolean)newValue) {
+					trophyGoogol.setChecked(false);
+				}
+				return true;
+			}
+		});
+        if (!earnedTrophyAndy) {
+        	trophyAndy.setIcon(resources.getDrawable(R.drawable.trophy));
+        	trophyAndy.setSummary(R.string.trophy_andy_hint);
+        }
+        
+        trophyLogos.setEnabled(earnedTrophyLogos);
+        trophyLogos.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				if ((Boolean)newValue) {
+					trophyCeos.setChecked(false);
+					trophyGoogol.setChecked(false);
+				}
+				return true;
+			}
+		});
+        if (!earnedTrophyLogos) {
+        	trophyLogos.setIcon(resources.getDrawable(R.drawable.trophy));
+        	trophyLogos.setSummary(R.string.trophy_logos_hint);
+        }
+
+        trophyCeos.setEnabled(earnedTrophyCeos);
+        trophyCeos.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				if ((Boolean)newValue) {
+					trophyLogos.setChecked(false);
+					trophyGoogol.setChecked(false);
+				}
+				return true;
+			}
+		});
+        if (!earnedTrophyCeos) {
+        	trophyCeos.setIcon(resources.getDrawable(R.drawable.trophy));
+        	trophyCeos.setSummary(R.string.trophy_ceos_hint);
+        }
+
+        trophyGoogol.setEnabled(earnedTrophyGoogol);
+        trophyGoogol.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				if ((Boolean)newValue) {
+					trophyAndy.setChecked(false);
+					trophyLogos.setChecked(false);
+					trophyCeos.setChecked(false);
+				}
+				return true;
+			}
+		});
+        if (!earnedTrophyGoogol) {
+        	trophyGoogol.setIcon(resources.getDrawable(R.drawable.trophy));
+        	trophyGoogol.setSummary(R.string.trophy_googol_hint);
+        }
 
         //Register as a preference change listener
         Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
@@ -249,6 +323,11 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 				})
 				.setNegativeButton(resources.getString(R.string.no), null)
 				.show();
+        }
+        
+        final Intent intent = this.getIntent();
+        if (intent.getBooleanExtra(Preferences.EXTRA_TROPHY, false)) {
+        	this.setPreferenceScreen((PreferenceScreen)this.findPreference(resources.getString(R.string.trophies_key)));
         }
     }
     
@@ -329,6 +408,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		final boolean all = (key == null);
 		final Resources resources = this.getResources();
 		
+		//Only enable endless controls when endless game mode is set
 		final String mode = resources.getString(R.string.settings_game_mode_key);
 		if (all || key.equals(mode)) {
 			final boolean enableEndless = (Game.Mode.parseInt(preferences.getInt(mode, resources.getInteger(R.integer.game_mode_default))) == Game.Mode.ENDLESS);
@@ -337,6 +417,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 			this.findPreference(resources.getString(R.string.settings_game_endlessjuggerdotregen_key)).setEnabled(enableEndless);
 		}
 		
+		//Only enable clear bg image when a bg image is set
 		final String bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
 		if (all || key.equals(bgimage)) {
 			this.findPreference(resources.getString(R.string.settings_color_game_bgimageclear_key)).setEnabled(preferences.getString(bgimage, null) != null);

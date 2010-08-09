@@ -21,10 +21,10 @@ public class NumberPreference extends DialogPreference implements SeekBar.OnSeek
 		super(context, attrs);
 		this.setPersistent(true);
 
-		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.EditNumberPreference, 0, 0);
-		this.mSuffix = a.getString(R.styleable.EditNumberPreference_suffix);
-		this.mMin = a.getInt(R.styleable.EditNumberPreference_min, 0);
-		this.mMax = a.getInt(R.styleable.EditNumberPreference_max, 100);
+		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.NumberPreference, 0, 0);
+		this.mSuffix = a.getString(R.styleable.NumberPreference_suffix);
+		this.mMin = a.getInt(R.styleable.NumberPreference_min, 0);
+		this.mMax = a.getInt(R.styleable.NumberPreference_max, 100);
 
 		this.setDialogLayoutResource(R.layout.number_preference);
 	}

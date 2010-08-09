@@ -431,6 +431,35 @@
 					android:summary="@string/settings_color_reset_summary"/>
 			</PreferenceCategory>
 		</PreferenceScreen>
+		<PreferenceScreen
+			android:key="@string/trophies_key"
+			android:title="@string/trophies"
+			android:summary="@string/trophies_summary">
+			<com.jakewharton.utilities.IconCheckBoxPreference
+				android:key="@string/trophy_andy_key"
+				android:title="@string/trophy_andy"
+				android:summary="@string/trophy_andy_summary"
+				android:defaultValue="@bool/trophy_andy_default"
+				app:icon="@drawable/andy_icon"/>
+			<com.jakewharton.utilities.IconCheckBoxPreference
+				android:key="@string/trophy_logos_key"
+				android:title="@string/trophy_logos"
+				android:summary="@string/trophy_logos_summary"
+				android:defaultValue="@bool/trophy_logos_default"
+				app:icon="@drawable/logos_icon"/>
+			<com.jakewharton.utilities.IconCheckBoxPreference
+				android:key="@string/trophy_ceos_key"
+				android:title="@string/trophy_ceos"
+				android:summary="@string/trophy_ceos_summary"
+				android:defaultValue="@bool/trophy_ceos_default"
+				app:icon="@drawable/ceos_icon"/>
+			<com.jakewharton.utilities.IconCheckBoxPreference
+				android:key="@string/trophy_googol_key"
+				android:title="@string/trophy_googol"
+				android:summary="@string/trophy_googol_summary"
+				android:defaultValue="@bool/trophy_googol_default"
+				app:icon="@drawable/googol_icon"/>
+		</PreferenceScreen>
 	</PreferenceCategory>
 	
 	<PreferenceCategory

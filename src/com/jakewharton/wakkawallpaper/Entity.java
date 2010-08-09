@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.util.Log;
 
 /**
@@ -95,6 +96,10 @@ public abstract class Entity {
 	}
 	
 	private static final String TAG = "WakkaWallpaper.Entity";
+	/*package*/static final Paint SPRITE_PAINT = new Paint(Paint.ANTI_ALIAS_FLAG);
+	/*package*/static final int SPRITE_WIDTH = 100;
+	/*package*/static final int SPRITE_HEIGHT = 100;
+	/*package*/static final Rect SPRITE_SIZE = new Rect(0, 0, Entity.SPRITE_WIDTH, Entity.SPRITE_HEIGHT);
 	
 	protected final Point mPosition;
 	protected final PointF mLocation;
@@ -296,7 +301,7 @@ public abstract class Entity {
      * 
      * @param c Canvas on which to draw.
      */
-	public abstract void draw(final Canvas c, final boolean isLandscape);
+	public abstract void draw(final Game game, final Canvas c);
 	
 	/**
 	 * Triggered when we have moved into a new cell.

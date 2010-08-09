@@ -2,10 +2,13 @@ package com.jakewharton.wakkawallpaper;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
 
@@ -17,6 +20,7 @@ import android.util.Log;
 public abstract class Ghost extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum State { HUNTING, FRIGHTENED, EATEN }
 	enum Strategy { CHASE, SCATTER, RANDOM }
+	enum Character { GHOST, LOGOS, CEOS, GOOGOL }
 	enum Mode {
 		CHASE_AND_SCATTER(0), CHASE_ONLY(1), SCATTER_ONLY(2), RANDOM_TURNS(3);
 		
@@ -38,6 +42,10 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 
 	private static final String TAG = "WakkaWallpaper.Ghost";
 	private static final int FRIGHTENED_LENGTH_BLINK = 1000;
+	private static final int SPRITE_OFFSET_HUNTING = 0;
+	private static final int SPRITE_OFFSET_FRIGHTENED = 1;
+	private static final int SPRITE_OFFSET_FRIGHTENED_BLINK = 2;
+	private static final int SPRITE_OFFSET_EATEN = 3;
 	private static final int[] FRIGHTENED_LENGTH = new int[] {
 		/* Level 1   */ 6000,
 		/* Level 2   */ 5000,
@@ -71,6 +79,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	protected Ghost.Strategy mStrategyCurrent;
 	protected Ghost.Strategy mStrategyLast;
 	protected Ghost.Mode mMode;
+	private Ghost.Character mCharacter;
 	protected final Paint mBodyBackground;
 	private final Paint mEyeBackground;
 	private final Paint mEyeForeground;
@@ -91,14 +100,21 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	private int mModePointer;
 	private int mModeTimer;
 	private long mModeLastTime;
+	private boolean mIsTrophyLogosEnabled;
+	private boolean mIsTrophyCeosEnabled;
+	private boolean mIsTrophyGoogolEnabled;
+	private Bitmap mSprites;
+	private final int mSpriteIndex;
 	
     /**
      * Create a new ghost.
      * 
      * @param backgroundColor Primary color of the ghost.
      */
-	protected Ghost() {
+	protected Ghost(final int spriteIndex) {
 		super();
+		
+		this.mSpriteIndex = spriteIndex;
 		
 		this.mBodyBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.mEyeBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -136,7 +152,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		final String eyeBg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_eyebg_key);
 		if (all || key.equals(eyeBg)) {
-			this.mEyeBackground.setColor(Wallpaper.PREFERENCES.getInt(eyeBg, resources.getInteger(R.integer.color_ghost_eyebg_default)));
+			this.mEyeBackground.setColor(preferences.getInt(eyeBg, resources.getInteger(R.integer.color_ghost_eyebg_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Ghost.TAG, "Eye Background: #" + Integer.toHexString(this.mEyeBackground.getColor()));
@@ -145,7 +161,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		final String eyeFg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_eyefg_key);
 		if (all || key.equals(eyeFg)) {
-			this.mEyeForeground.setColor(Wallpaper.PREFERENCES.getInt(eyeFg, resources.getInteger(R.integer.color_ghost_eyefg_default)));
+			this.mEyeForeground.setColor(preferences.getInt(eyeFg, resources.getInteger(R.integer.color_ghost_eyefg_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Ghost.TAG, "Eye Foreground: #" + Integer.toHexString(this.mEyeForeground.getColor()));
@@ -154,7 +170,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		final String scaredBg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredbg_key);
 		if (all || key.equals(scaredBg)) {
-			this.mScaredBackground.setColor(Wallpaper.PREFERENCES.getInt(scaredBg, resources.getInteger(R.integer.color_ghost_scaredbg_default)));
+			this.mScaredBackground.setColor(preferences.getInt(scaredBg, resources.getInteger(R.integer.color_ghost_scaredbg_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Ghost.TAG, "Scared Background: #" + Integer.toHexString(this.mScaredBackground.getColor()));
@@ -163,7 +179,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		final String scaredFg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredfg_key);
 		if (all || key.equals(scaredFg)) {
-			final int color = Wallpaper.PREFERENCES.getInt(scaredFg, resources.getInteger(R.integer.color_ghost_scaredfg_default));
+			final int color = preferences.getInt(scaredFg, resources.getInteger(R.integer.color_ghost_scaredfg_default));
 			this.mScaredMouthForeground.setColor(color);
 			this.mScaredEyeForeground.setColor(color);
 			
@@ -174,7 +190,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		final String scaredBlinkBg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredblinkbg_key);
 		if (all || key.equals(scaredBlinkBg)) {
-			this.mScaredBlinkBackground.setColor(Wallpaper.PREFERENCES.getInt(scaredBlinkBg, resources.getInteger(R.integer.color_ghost_scaredblinkbg_default)));
+			this.mScaredBlinkBackground.setColor(preferences.getInt(scaredBlinkBg, resources.getInteger(R.integer.color_ghost_scaredblinkbg_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Ghost.TAG, "Scared Blink Background: #" + Integer.toHexString(this.mScaredBlinkBackground.getColor()));
@@ -183,7 +199,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		final String scaredBlinkFg = Wallpaper.CONTEXT.getString(R.string.settings_color_ghost_scaredblinkfg_key);
 		if (all || key.equals(scaredBlinkFg)) {
-			final int color = Wallpaper.PREFERENCES.getInt(scaredBlinkFg, resources.getInteger(R.integer.color_ghost_scaredblinkfg_default));
+			final int color = preferences.getInt(scaredBlinkFg, resources.getInteger(R.integer.color_ghost_scaredblinkfg_default));
 			this.mScaredBlinkMouthForeground.setColor(color);
 			this.mScaredBlinkEyeForeground.setColor(color);
 			
@@ -194,7 +210,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		final String ghostMode = Wallpaper.CONTEXT.getString(R.string.settings_game_ghostmode_key);
 		if (all || key.equals(ghostMode)) {
-			this.mMode = Ghost.Mode.parseInt(Wallpaper.PREFERENCES.getInt(ghostMode, resources.getInteger(R.integer.game_ghostmode_default)));
+			this.mMode = Ghost.Mode.parseInt(preferences.getInt(ghostMode, resources.getInteger(R.integer.game_ghostmode_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Ghost.TAG, "Mode: " + this.mMode);
@@ -203,7 +219,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		final String color_style = Wallpaper.CONTEXT.getString(R.string.settings_color_entitystyle_key);
 		if (all || key.equals(color_style)) {
-			final Entity.Style style = Entity.Style.parseInt(Wallpaper.PREFERENCES.getInt(color_style, resources.getInteger(R.integer.color_entitystyle_default)));
+			final Entity.Style style = Entity.Style.parseInt(preferences.getInt(color_style, resources.getInteger(R.integer.color_entitystyle_default)));
 			//The eyes and mouth are always fill_and_stroke and stroke, respectively. We only change the body background rendering.
 			this.mBodyBackground.setStyle(style.style);
 			this.mScaredBackground.setStyle(style.style);
@@ -216,10 +232,73 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		
 		final String wrapping = resources.getString(R.string.settings_game_wrappingghosts_key);
 		if (all || key.equals(wrapping)) {
-			this.mIsWrapping= Wallpaper.PREFERENCES.getBoolean(wrapping, resources.getBoolean(R.bool.game_wrappingghosts_default));
+			this.mIsWrapping = preferences.getBoolean(wrapping, resources.getBoolean(R.bool.game_wrappingghosts_default));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Ghost.TAG, "Is Wrapping: " + this.mIsWrapping);
+			}
+		}
+		
+		final String trophyLogos = resources.getString(R.string.trophy_logos_key);
+		if (all || key.equals(trophyLogos)) {
+			this.mIsTrophyLogosEnabled = preferences.getBoolean(trophyLogos, resources.getBoolean(R.bool.trophy_logos_default));
+			
+			if (this.mIsTrophyLogosEnabled) {
+				this.mCharacter = Ghost.Character.LOGOS;
+
+				//Load the Logos sprites
+				final BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inScaled = false;
+				this.mSprites = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.logos, options);
+			} else if (!this.mIsTrophyCeosEnabled && !this.mIsTrophyGoogolEnabled) {
+				this.mCharacter = Ghost.Character.GHOST;
+				this.mSprites = null;
+			}
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Is Trophy Logos Enabled: " + this.mIsTrophyLogosEnabled);
+			}
+		}
+		
+		final String trophyCeos = resources.getString(R.string.trophy_ceos_key);
+		if (all || key.equals(trophyCeos)) {
+			this.mIsTrophyCeosEnabled = preferences.getBoolean(trophyCeos, resources.getBoolean(R.bool.trophy_ceos_default));
+			
+			if (this.mIsTrophyCeosEnabled) {
+				this.mCharacter = Ghost.Character.CEOS;
+
+				//Load the Logos sprites
+				final BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inScaled = false;
+				this.mSprites = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.ceos, options);
+			} else if (!this.mIsTrophyLogosEnabled && !this.mIsTrophyGoogolEnabled) {
+				this.mCharacter = Ghost.Character.GHOST;
+				this.mSprites = null;
+			}
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Is Trophy CEOs Enabled: " + this.mIsTrophyCeosEnabled);
+			}
+		}
+		
+		final String trophyGoogol = resources.getString(R.string.trophy_googol_key);
+		if (all || key.equals(trophyGoogol)) {
+			this.mIsTrophyGoogolEnabled = preferences.getBoolean(trophyGoogol, resources.getBoolean(R.bool.trophy_googol_default));
+			
+			if (this.mIsTrophyGoogolEnabled) {
+				this.mCharacter = Ghost.Character.GOOGOL;
+
+				//Load the Logos sprites
+				final BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inScaled = false;
+				this.mSprites = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.googol, options);
+			} else if (!this.mIsTrophyLogosEnabled && !this.mIsTrophyCeosEnabled) {
+				this.mCharacter = Ghost.Character.GHOST;
+				this.mSprites = null;
+			}
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Ghost.TAG, "Is Trophy Googol Enabled: " + this.mIsTrophyGoogolEnabled);
 			}
 		}
 		
@@ -337,14 +416,36 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
      * @param c Canvas to draw on.
      */
 	@Override
-	public void draw(final Canvas c, final boolean isLandscape) {
+	public void draw(final Game game, final Canvas c) {
 		c.save();
 		c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
 		
-		if (isLandscape) {
+		if (game.getIsLandscape()) {
 			c.rotate(90, this.mCellWidthOverTwo, this.mCellHeightOverTwo);
 		}
 		
+		switch (this.mCharacter) {
+			case GHOST:
+				this.drawGhost(game, c);
+				break;
+				
+			case LOGOS:
+			case CEOS:
+			case GOOGOL:
+				this.drawSprites(game, c);
+				break;
+		}
+		
+		c.restore();
+	}
+	
+	/**
+	 * Draw a normal ghost rendering.
+	 * 
+	 * @param game Game instance.
+	 * @param c Canvas to draw on.
+	 */
+	private void drawGhost(final Game game, final Canvas c) {
 		switch (this.mState) {
 			case HUNTING:
 				c.drawPath(this.mBody[this.mTickCount % this.mBody.length], this.mBodyBackground);
@@ -375,8 +476,39 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				}
 				break;
 		}
+	}
+	
+	/**
+	 * Draw the ghosts as competitor logos.
+	 * 
+	 * @param game Game instance.
+	 * @param c Canvas to draw on.
+	 */
+	private void drawSprites(final Game game, final Canvas c) {
+		final Rect src = new Rect(this.mSpriteIndex * Entity.SPRITE_WIDTH, 0, (this.mSpriteIndex + 1) * Entity.SPRITE_WIDTH, 0);
 		
-		c.restore();
+		switch (this.mState) {
+			case HUNTING:
+				src.top = Ghost.SPRITE_OFFSET_HUNTING * Entity.SPRITE_HEIGHT;
+				break;
+				
+			case EATEN:
+				src.top = Ghost.SPRITE_OFFSET_EATEN * Entity.SPRITE_HEIGHT;
+				break;
+				
+			case FRIGHTENED:
+				if ((this.mStateTimer > Ghost.FRIGHTENED_LENGTH_BLINK) || (this.mTickCount % 2 == 0)) {
+					//draw normal scared
+					src.top = Ghost.SPRITE_OFFSET_FRIGHTENED * Entity.SPRITE_HEIGHT;
+				} else {
+					//draw scared blink
+					src.top = Ghost.SPRITE_OFFSET_FRIGHTENED_BLINK * Entity.SPRITE_HEIGHT;
+				}
+				break;
+		}
+		
+		src.bottom = src.top + Entity.SPRITE_HEIGHT;
+		c.drawBitmap(this.mSprites, src, game.getCellSize(), Entity.SPRITE_PAINT);
 	}
 
 	/**
@@ -645,6 +777,11 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 */
 	public static class Blinky extends Ghost implements SharedPreferences.OnSharedPreferenceChangeListener {
 		private static final String TAG = Ghost.TAG + ".Blinky";
+		private static final int INDEX = 0;
+		
+		public Blinky() {
+			super(Blinky.INDEX);
+		}
 		
 	    /**
 	     * Handle the changing of a preference.
@@ -691,7 +828,12 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 */
 	public static class Pinky extends Ghost implements SharedPreferences.OnSharedPreferenceChangeListener {
 		private static final String TAG = Ghost.TAG + ".Pinky";
+		private static final int INDEX = 1;
 		private static final int LEADING_FACTOR = 4;
+		
+		public Pinky() {
+			super(Pinky.INDEX);
+		}
 
 	    /**
 	     * Handle the changing of a preference.
@@ -742,8 +884,13 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 */
 	public static class Inky extends Ghost implements SharedPreferences.OnSharedPreferenceChangeListener {
 		private static final String TAG = Ghost.TAG + ".Inky";
+		private static final int INDEX = 2;
 		private static final int LEADING_FACTOR = 2;
 		private static final int BLINKY_INDEX = 0; //always the first ghost initialized
+		
+		public Inky() {
+			super(Inky.INDEX);
+		}
 
 	    /**
 	     * Handle the changing of a preference.
@@ -797,7 +944,12 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 */
 	public static class Clyde extends Ghost implements SharedPreferences.OnSharedPreferenceChangeListener {
 		private static final String TAG = Ghost.TAG + ".Clyde";
+		private static final int INDEX = 3;
 		private static final int PROXIMITY_THRESHOLD = 8;
+		
+		public Clyde() {
+			super(Clyde.INDEX);
+		}
 
 	    /**
 	     * Handle the changing of a preference.

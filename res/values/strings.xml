@@ -249,6 +249,32 @@
     <string name="settings_color_reset_key">color_reset</string>
     <string name="settings_color_reset_summary">All color settings back to default</string>
     
+    <string name="trophies">Trophies</string>
+    <string name="trophies_key">trophies</string>
+    <string name="trophies_summary">Complete tasks to unlock special features</string>
+    <string name="trophy_andy">The Andy Man Can</string>
+    <string name="trophy_andy_key">trophy_andy</string>
+    <string name="trophy_andy_hint">Eat four ghosts in one powerup without losing a life</string>
+    <string name="trophy_andy_summary">\'Cause he mixes it with love and makes the Froyo taste good</string>
+    <string name="trophy_andy_persist">trophy_andy_unlocked</string>
+    <string name="trophy_logos">Brand Identity</string>
+    <string name="trophy_logos_key">trophy_logos</string>
+    <string name="trophy_logos_hint">Eat 12 ghosts in one level without losing a life</string>
+    <string name="trophy_logos_summary">Eat up the competition, literally</string>
+    <string name="trophy_logos_persist">trophy_logos_unlocked</string>
+    <string name="trophy_ceos">Head Honcho Hunt</string>
+    <string name="trophy_ceos_key">trophy_ceos</string>
+    <string name="trophy_ceos_hint">Reach level 256</string>
+    <string name="trophy_ceos_summary">Eat up the competition, literally</string>
+    <string name="trophy_ceos_persist">trophy_ceos_unlocked</string>
+    <string name="trophy_googol">1.0 x 10^100</string>
+    <string name="trophy_googol_key">trophy_googol</string>
+    <string name="trophy_googol_hint">Score at least one Googol points (kind of)</string>
+    <string name="trophy_googol_summary">Pay homage to the company that makes this all possible</string>
+    <string name="trophy_googol_persist">trophy_googol_unlocked</string>
+    <string name="trophy_notification_text">Click here to activate or read more.</string>
+    <string name="trophy_notification_title">New Trophy</string>
+    
     <string name="about">About</string>
     <string name="about_key">about</string>
     <string name="about_summary">Instructions, change log, credits...</string>

@@ -1,46 +1,30 @@
-/*
- * Copyright (C) 2009 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.jakewharton.utilities;
 
-import com.jakewharton.wakkawallpaper.R;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.preference.Preference;
+import android.preference.CheckBoxPreference;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import com.jakewharton.wakkawallpaper.R;
 
-public class IconPreference extends Preference {
-    private Drawable mIcon;
-
-    public IconPreference(final Context context, final AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public IconPreference(final Context context, final AttributeSet attrs, final int defStyle) {
+public class IconCheckBoxPreference extends CheckBoxPreference {
+	private Drawable mIcon;
+    
+    public IconCheckBoxPreference(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         
-        this.setLayoutResource(R.layout.icon_preference);
+        this.setLayoutResource(R.layout.icon_checkbox_preference);
         
         this.mIcon = context.obtainStyledAttributes(attrs, R.styleable.IconPreference, defStyle, 0).getDrawable(R.styleable.IconPreference_icon);
     }
 
+    public IconCheckBoxPreference(final Context context, final AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
     @Override
-    public void onBindView(final View view) {
+    protected void onBindView(final View view) {
         super.onBindView(view);
         
         final ImageView imageView = (ImageView)view.findViewById(R.id.icon);
@@ -49,7 +33,7 @@ public class IconPreference extends Preference {
         }
     }
 
-    /**
+	/**
      * Sets the icon for this Preference with a Drawable.
      *
      * @param icon The icon for this Preference

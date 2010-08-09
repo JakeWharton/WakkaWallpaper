@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -18,6 +20,7 @@ import android.util.Log;
  */
 public class TheMan extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum State { ALIVE, DEAD }
+	enum Character { THEMAN, /*MRS_THEMAN,*/ ANDY, GOOGOL }
 	enum Mode {
 		/*AI(0),*/ NEAREST_DOT(1), RANDOM(2);
 		
@@ -45,10 +48,14 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	
 	private TheMan.State mState;
 	private TheMan.Mode mMode;
+	private TheMan.Character mCharacter;
 	private int mStateTicker;
     private final Paint mForeground;
 	private Entity.Direction mWantsToGo;
 	private long mWantsToGoTimer;
+	private boolean mIsTrophyAndyEnabled;
+	private boolean mIsTrophyGoogolEnabled;
+	private Bitmap mSprite;
     
 	/**
 	 * Create instance of "The Man"
@@ -78,7 +85,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		
 		final String foregroundColor = Wallpaper.CONTEXT.getString(R.string.settings_color_theman_key);
 		if (all || key.equals(foregroundColor)) {
-			this.mForeground.setColor(Wallpaper.PREFERENCES.getInt(foregroundColor, resources.getInteger(R.integer.color_theman_default)));
+			this.mForeground.setColor(preferences.getInt(foregroundColor, resources.getInteger(R.integer.color_theman_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(TheMan.TAG, "Foreground Color: #" + Integer.toHexString(this.mForeground.getColor()));
@@ -87,7 +94,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		
 		final String mode = Wallpaper.CONTEXT.getString(R.string.settings_game_themanmode_key);
 		if (all || key.equals(mode)) {
-			this.mMode = TheMan.Mode.parseInt(Wallpaper.PREFERENCES.getInt(mode, resources.getInteger(R.integer.game_themanmode_default)));
+			this.mMode = TheMan.Mode.parseInt(preferences.getInt(mode, resources.getInteger(R.integer.game_themanmode_default)));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(TheMan.TAG, "Mode: " + this.mMode);
@@ -96,7 +103,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		
 		final String color_style = Wallpaper.CONTEXT.getString(R.string.settings_color_entitystyle_key);
 		if (all || key.equals(color_style)) {
-			final Entity.Style style = Entity.Style.parseInt(Wallpaper.PREFERENCES.getInt(color_style, resources.getInteger(R.integer.color_entitystyle_default)));
+			final Entity.Style style = Entity.Style.parseInt(preferences.getInt(color_style, resources.getInteger(R.integer.color_entitystyle_default)));
 			this.mForeground.setStyle(style.style);
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -106,10 +113,56 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		
 		final String wrapping = resources.getString(R.string.settings_game_wrappingtheman_key);
 		if (all || key.equals(wrapping)) {
-			this.mIsWrapping= Wallpaper.PREFERENCES.getBoolean(wrapping, resources.getBoolean(R.bool.game_wrappingtheman_default));
+			this.mIsWrapping = preferences.getBoolean(wrapping, resources.getBoolean(R.bool.game_wrappingtheman_default));
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(TheMan.TAG, "Is Wrapping: " + this.mIsWrapping);
+			}
+		}
+		
+		final String trophyAndy = resources.getString(R.string.trophy_andy_key);
+		if (all || key.equals(trophyAndy)) {
+			this.mIsTrophyAndyEnabled = preferences.getBoolean(trophyAndy, resources.getBoolean(R.bool.trophy_andy_default));
+			
+			if (this.mIsTrophyAndyEnabled) {
+				this.mCharacter = TheMan.Character.ANDY;
+
+				//Load the Andy sprites
+				final BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inScaled = false;
+				this.mSprite = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.andy, options);
+			} else if (!this.mIsTrophyGoogolEnabled) {
+				//TODO: parseValue of character when the Mrs. is implemented
+				this.mCharacter = TheMan.Character.THEMAN;
+				
+				this.mSprite = null;
+			}
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(TheMan.TAG, "Is Trophy Andy Enabled: " + this.mIsTrophyAndyEnabled);
+			}
+		}
+		
+		final String trophyGoogol = resources.getString(R.string.trophy_googol_key);
+		if (all || key.equals(trophyGoogol)) {
+			this.mIsTrophyGoogolEnabled = preferences.getBoolean(trophyGoogol, resources.getBoolean(R.bool.trophy_googol_default));
+			
+			if (this.mIsTrophyGoogolEnabled) {
+				this.mCharacter = TheMan.Character.GOOGOL;
+
+				//Load the Andy sprites
+				final BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inScaled = false;
+				this.mSprite = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.googol_theman, options);
+			} else if (!this.mIsTrophyAndyEnabled) {
+				//TODO: parseValue of character when the Mrs. is implemented
+				this.mCharacter = TheMan.Character.THEMAN;
+				
+				this.mSprite = null;
+			}
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(TheMan.TAG, "Is Trophy Andy Enabled: " + this.mIsTrophyAndyEnabled);
 			}
 		}
 
@@ -385,10 +438,35 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	}*/
 	
     @Override
-	public void draw(final Canvas c, final boolean isLandscape) {
+	public void draw(final Game game, final Canvas c) {
 		c.save();
 		c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
 		
+		switch (this.mCharacter) {
+			case THEMAN:
+				this.drawTheMan(game, c);
+				break;
+				
+			/*case MRS_THEMAN:
+				this.drawMrsTheMan(c, isLandscape);
+				break;*/
+				
+			case ANDY:
+			case GOOGOL:
+				this.drawSprite(game, c);
+				break;
+		}
+		
+		c.restore();
+	}
+    
+    /**
+     * Draw The Man.
+     * 
+     * @param c Canvas to draw on.
+     * @param isLandscape Whether or not the display is in landscape mode.
+     */
+    private void drawTheMan(final Game game, final Canvas c) {
 		float startingAngle = 270;
 		int degrees = 360;
 		if (this.mState == TheMan.State.ALIVE) {
@@ -398,7 +476,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 				degrees -= angle;
 			}
 		} else {
-			if (isLandscape) {
+			if (game.getIsLandscape()) {
 				c.rotate(90, this.mCellWidthOverTwo, this.mCellHeightOverTwo);
 			}
 			final int delta = this.mStateTicker * TheMan.DEATH_ANGLE_GROWTH;
@@ -409,10 +487,22 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		if (degrees > 0) {
 			c.drawArc(new RectF(0, 0, this.mCellWidth, this.mCellHeight), startingAngle, degrees, true, this.mForeground);
 		}
-		
-		c.restore();
-	}
+    }
 
+    /*private void drawMrsTheMan(final Canvas c, final boolean isLandscape) {
+    	//TODO: draw Mrs. The Man
+    }*/
+    
+    /**
+     * Draw sprite.
+     * 
+     * @param c Canvas to draw on.
+     * @param isLandscape Whether or not the display is in landscape mode.
+     */
+    private void drawSprite(final Game game, final Canvas c) {
+    	c.drawBitmap(this.mSprite, Entity.SPRITE_SIZE, game.getCellSize(), Entity.SPRITE_PAINT);
+    }
+    
 	@Override
 	protected void newLevel(final Game game) {
 		this.newLife(game);

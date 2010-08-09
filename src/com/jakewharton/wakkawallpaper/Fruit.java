@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.util.Log;
 
 /**
@@ -16,6 +15,7 @@ import android.util.Log;
  * @author Jake Wharton
  */
 public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
+	enum Character { FRUIT, GOOGOL }
 	enum Type {
 		CHERRY(100, new Rect(0, 0, 12, 14)),
 		STRAWBERRY(300, new Rect(1, 20, 12, 34)),
@@ -38,6 +38,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	private static final String TAG = "WakkaWallpaper.Fruit";
 	
 	private Fruit.Type mType;
+	private Fruit.Character mCharacter;
 	private long mCreated;
 	private boolean mIsVisible;
 	private int mVisibleLength;
@@ -46,8 +47,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	private int mThresholdFirst;
 	private int mThresholdSecond;
 	private int mNumberDisplayed;
-	private final Bitmap mFruits;
-	private final RectF mCellSize;
+	private Bitmap mFruits;
 	private Point[] mPositions;
 	
 	/**
@@ -56,15 +56,8 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	public Fruit() {
 		super();
 		
-		this.mCellSize = new RectF(0, 0, 0, 0);
-		
 		//We are fruit. We can't wrap.
 		this.mIsWrapping = false;
-		
-		//Load the fruit sprites
-		final BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inScaled = false;
-		this.mFruits = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.fruits, options);
 
         //Load all preferences or their defaults
         Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
@@ -86,7 +79,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		
 		final String thresholdFirst = Wallpaper.CONTEXT.getString(R.string.settings_game_fruitonethreshold_key);
 		if (all || key.equals(thresholdFirst)) {
-			this.mThresholdFirst = Wallpaper.PREFERENCES.getInt(key, resources.getInteger(R.integer.game_fruitonethreshold_default));
+			this.mThresholdFirst = preferences.getInt(key, resources.getInteger(R.integer.game_fruitonethreshold_default));
 			changed = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -96,7 +89,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 
 		final String thresholdSecond = Wallpaper.CONTEXT.getString(R.string.settings_game_fruittwothreshold_key);
 		if (all || key.equals(thresholdSecond)) {
-			this.mThresholdSecond = Wallpaper.PREFERENCES.getInt(key, resources.getInteger(R.integer.game_fruittwothreshold_default));
+			this.mThresholdSecond = preferences.getInt(key, resources.getInteger(R.integer.game_fruittwothreshold_default));
 			changed = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -106,7 +99,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		
 		final String visibleLower = Wallpaper.CONTEXT.getString(R.string.settings_game_fruitvisiblelower_key);
 		if (all || key.equals(visibleLower)) {
-			this.mVisibleLower = Wallpaper.PREFERENCES.getInt(key, resources.getInteger(R.integer.game_fruitvisiblelower_default));
+			this.mVisibleLower = preferences.getInt(key, resources.getInteger(R.integer.game_fruitvisiblelower_default));
 			changed = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
@@ -116,11 +109,32 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		
 		final String visibleUpper = Wallpaper.CONTEXT.getString(R.string.settings_game_fruitvisibleupper_key);
 		if (all || key.equals(visibleUpper)) {
-			this.mVisibleUpper = Wallpaper.PREFERENCES.getInt(key, resources.getInteger(R.integer.game_fruitvisibleupper_default));
+			this.mVisibleUpper = preferences.getInt(key, resources.getInteger(R.integer.game_fruitvisibleupper_default));
 			changed = true;
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Fruit.TAG, "Visible Upper: " + this.mVisibleUpper);
+			}
+		}
+		
+		final String trophyGoogol = Wallpaper.CONTEXT.getString(R.string.trophy_googol_key);
+		if (all || key.equals(trophyGoogol)) {
+			final boolean enabled = preferences.getBoolean(trophyGoogol, resources.getBoolean(R.bool.trophy_googol_default));
+			
+			if (enabled) {
+				this.mCharacter = Fruit.Character.GOOGOL;
+
+				//Load the fruit sprites
+				final BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inScaled = false;
+				this.mFruits = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.googol_fruit, options);
+			} else {
+				this.mCharacter = Fruit.Character.FRUIT;
+				
+				//Load the fruit sprites
+				final BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inScaled = false;
+				this.mFruits = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.fruits, options);
 			}
 		}
 		
@@ -177,10 +191,6 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
     			this.mPositions[(i * dotRows) + j] = new Point(i * dotsCol, j * dotsRow);
     		}
     	}
-    	
-    	//Create cell size rectangle for drawing
-    	this.mCellSize.right = game.getCellWidth();
-    	this.mCellSize.bottom = game.getCellHeight();
     }
 	
 	@Override
@@ -202,17 +212,25 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	}
 
 	@Override
-	public void draw(final Canvas c, final boolean isLandscape) {
+	public void draw(final Game game, final Canvas c) {
 		if (this.mIsVisible) {
 			c.save();
 			c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
 
-			if (isLandscape) {
+			if (game.getIsLandscape()) {
 				c.rotate(90, this.mCellWidthOverTwo, this.mCellHeightOverTwo);
 			}
 			
-			//two to four daily servings...
-			c.drawBitmap(this.mFruits, this.mType.sprite, this.mCellSize, null);
+			switch (this.mCharacter) {
+				case FRUIT:
+					//two to four daily servings...
+					c.drawBitmap(this.mFruits, this.mType.sprite, game.getCellSize(), null);
+					break;
+					
+				case GOOGOL:
+					c.drawBitmap(this.mFruits, Entity.SPRITE_SIZE, game.getCellSize(), Entity.SPRITE_PAINT);
+					break;
+			}
 			
 			c.restore();
 		}
