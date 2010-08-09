@@ -554,7 +554,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			this.mDirectionNext = this.mDirectionCurrent.getOpposite();
 			
 			int levelPointer = game.getLevel() - 1;
-			if (levelPointer > Ghost.FRIGHTENED_LENGTH.length) {
+			if (levelPointer >= Ghost.FRIGHTENED_LENGTH.length) {
 				levelPointer = Ghost.FRIGHTENED_LENGTH.length - 1;
 			}
 			this.mStateTimer = Ghost.FRIGHTENED_LENGTH[levelPointer];
