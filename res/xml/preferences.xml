@@ -436,11 +436,23 @@
 			android:title="@string/trophies"
 			android:summary="@string/trophies_summary">
 			<com.jakewharton.utilities.IconCheckBoxPreference
+				android:key="@string/trophy_ego_key"
+				android:title="@string/trophy_ego"
+				android:summary="@string/trophy_ego_summary"
+				android:defaultValue="@bool/trophy_ego_default"
+				app:icon="@drawable/ego_icon"/>
+			<com.jakewharton.utilities.IconCheckBoxPreference
 				android:key="@string/trophy_andy_key"
 				android:title="@string/trophy_andy"
 				android:summary="@string/trophy_andy_summary"
 				android:defaultValue="@bool/trophy_andy_default"
 				app:icon="@drawable/andy_icon"/>
+			<com.jakewharton.utilities.IconCheckBoxPreference
+				android:key="@string/trophy_themandroid_key"
+				android:title="@string/trophy_themandroid"
+				android:summary="@string/trophy_themandroid_summary"
+				android:defaultValue="@bool/trophy_themandroid_default"
+				app:icon="@drawable/themandroid_icon"/>
 			<com.jakewharton.utilities.IconCheckBoxPreference
 				android:key="@string/trophy_logos_key"
 				android:title="@string/trophy_logos"
@@ -454,11 +466,35 @@
 				android:defaultValue="@bool/trophy_ceos_default"
 				app:icon="@drawable/ceos_icon"/>
 			<com.jakewharton.utilities.IconCheckBoxPreference
+				android:key="@string/trophy_desserts_key"
+				android:title="@string/trophy_desserts"
+				android:summary="@string/trophy_desserts_summary"
+				android:defaultValue="@bool/trophy_desserts_default"
+				app:icon="@drawable/dessert_icon"/>
+			<com.jakewharton.utilities.IconCheckBoxPreference
+				android:key="@string/trophy_appledots_key"
+				android:title="@string/trophy_appledots"
+				android:summary="@string/trophy_appledots_summary"
+				android:defaultValue="@bool/trophy_appledots_default"
+				app:icon="@drawable/apple_icon"/>
+			<com.jakewharton.utilities.IconCheckBoxPreference
+				android:key="@string/trophy_eden_key"
+				android:title="@string/trophy_eden"
+				android:summary="@string/trophy_eden_summary"
+				android:defaultValue="@bool/trophy_eden_default"
+				app:icon="@drawable/eden_icon"/>
+			<com.jakewharton.utilities.IconCheckBoxPreference
 				android:key="@string/trophy_googol_key"
 				android:title="@string/trophy_googol"
 				android:summary="@string/trophy_googol_summary"
 				android:defaultValue="@bool/trophy_googol_default"
 				app:icon="@drawable/googol_icon"/>
+			<com.jakewharton.utilities.IconCheckBoxPreference
+				android:key="@string/trophy_legend_key"
+				android:title="@string/trophy_legend"
+				android:summary="@string/trophy_legend_summary"
+				android:defaultValue="@bool/trophy_legend_default"
+				app:icon="@drawable/legend_icon"/>
 		</PreferenceScreen>
 	</PreferenceCategory>
 	

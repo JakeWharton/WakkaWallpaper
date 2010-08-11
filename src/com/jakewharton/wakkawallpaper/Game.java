@@ -3,8 +3,8 @@ package com.jakewharton.wakkawallpaper;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.HashSet;
 import java.util.Random;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -95,8 +95,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			throw new IllegalArgumentException("Unknown Game wrapping value: " + wrappingValue);
 		}
 	}
-
+	enum Dots { CIRCLES, APPLES }
+	
 	/*package*/static final Random RANDOM = new Random();
+	/*package*/static final PaintFlagsDrawFilter FILTER_SET = new PaintFlagsDrawFilter(0, Paint.FILTER_BITMAP_FLAG);
+	/*package*/static final PaintFlagsDrawFilter FILTER_REMOVE = new PaintFlagsDrawFilter(Paint.FILTER_BITMAP_FLAG, 0);
 	private static final String TAG = "WakkaWallpaper.Game";
 	private static final NumberFormat SCORE_FORMAT = new DecimalFormat("000000");
 	private static final int SCORE_FLIPPING = 1000000;
@@ -110,14 +113,15 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	private static final int KILL_SCREEN_LEVEL = 256;
 	private static final int INITIAL_LIVES = 3;
 	private static final int TROPHY_GOOGOL_THRESHOLD = 1010100;
+	private static final int TROPHY_LEGEND_THRESHOLD = 3333360;
 	private static final int TROPHY_LOGOS_THRESHOLD = 12;
 	private static final int TROPHY_CEOS_THRESHOLD = 256;
-	private static final PaintFlagsDrawFilter FITLER_SET = new PaintFlagsDrawFilter(0, Paint.FILTER_BITMAP_FLAG);
-	private static final PaintFlagsDrawFilter FILTER_REMOVE = new PaintFlagsDrawFilter(Paint.FILTER_BITMAP_FLAG, 0);
+	private static final int KILL_SCREEN_TROPHY_PROBABILITY = 10;
 	
 	private Game.State mState;
 	private Game.Mode mMode;
 	private Game.Wrapping mWrapping;
+	private Game.Dots mDots;
 	private boolean mIsWrappingTheMan;
 	private boolean mIsWrappingGhosts;
 	private long mStateTimestamp;
@@ -178,34 +182,23 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private int mEndlessJuggerdotThreshold;
     private String mBackgroundPath;
     private Bitmap mBackground;
-    private boolean mHasEarnedTrophyAndy;
-    private boolean mHasEarnedTrophyLogos;
-    private boolean mHasEarnedTrophyCeos;
-    private boolean mHasEarnedTrophyGoogol;
     private final RectF mCellSize;
-    private boolean mIsTrophyAndyEnabled;
     private Bitmap mAndy;
     private Bitmap mKillScreen;
+    private final HashSet<Fruit.Type> mFruitsEaten;
+    private Bitmap mDotSprite;
+    private boolean mIsTrophyLegendEnabled;
+    private boolean mIsTrophyDessertsEnabled;
     
     /**
-     * Create a new game adhering to the specified parameters.
-     * 
-     * @param iconRows Number of rows of icons on the launcher.
-     * @param iconCols Number of columns of icons on the launcher.
-     * @param screenWidth Width in pixels of the screen.
-     * @param screenHeight Height in pixels of the screen.
+     * Create a new game.
      */
     public Game() {
     	if (Wallpaper.LOG_VERBOSE) {
     		Log.v(Game.TAG, "> Game()");
     	}
     	
-    	//Load trophies earned
     	final Resources resources = Wallpaper.CONTEXT.getResources();
-    	this.mHasEarnedTrophyAndy = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_andy_persist), false);
-    	this.mHasEarnedTrophyLogos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_logos_persist), false);
-    	this.mHasEarnedTrophyCeos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_ceos_persist), false);
-    	this.mHasEarnedTrophyGoogol = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_googol_persist), false);
     	
         //Create Paints
     	this.mWallsForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -226,6 +219,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         this.mTextLocation = new PointF();
         
         this.mCellSize = new RectF(0, 0, 0, 0);
+        
+        this.mFruitsEaten = new HashSet<Fruit.Type>();
         
         //Create "The Man" and fruit
     	this.mTheMan = new TheMan();
@@ -422,24 +417,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			}
 		}
 		
-		final String trophyAndy = resources.getString(R.string.trophy_andy_key);
-		if (all || key.equals(trophyAndy)) {
-			this.mIsTrophyAndyEnabled = preferences.getBoolean(trophyAndy, resources.getBoolean(R.bool.trophy_andy_default));
-			
-			if (this.mIsTrophyAndyEnabled) {
-				//Load the Andy sprite
-				final BitmapFactory.Options options = new BitmapFactory.Options();
-				options.inScaled = false;
-				this.mAndy = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.andy, options);
-			} else {
-				this.mAndy = null;
-			}
-			
-			if (Wallpaper.LOG_DEBUG) {
-				Log.d(Game.TAG, "Is Trophy Andy Enabled: " + this.mIsTrophyAndyEnabled);
-			}
-		}
-		
 		
 		// COLORS //
         
@@ -564,6 +541,59 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "TheMan HUD Style: " + style);
 			}
+		}
+		
+		
+		// TROPHY //
+		
+		final String trophyAppleDots = resources.getString(R.string.trophy_appledots_key);
+		if (all || key.equals(trophyAppleDots)) {
+			if (preferences.getBoolean(trophyAppleDots, resources.getBoolean(R.bool.trophy_appledots_default))) {
+				this.mDots = Game.Dots.APPLES;
+				
+				//Load the apple sprite
+				final BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inScaled = false;
+				this.mDotSprite = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.apple, options);
+			} else {
+				this.mDots = Game.Dots.CIRCLES;
+				this.mDotSprite = null;
+			}
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Dot Drawing Mode: " + this.mDots);
+			}
+		}
+		
+		final String trophyAndy = resources.getString(R.string.trophy_andy_key);
+		if (all || key.equals(trophyAndy)) {
+			if (preferences.getBoolean(trophyAndy, resources.getBoolean(R.bool.trophy_andy_default))) {
+				//Load the Andy sprite
+				final BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inScaled = false;
+				this.mAndy = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.andy, options);
+			} else {
+				this.mAndy = null;
+			}
+		}
+		
+		final String trophyTheMandroid = resources.getString(R.string.trophy_themandroid_key);
+		if (all || key.equals(trophyTheMandroid)) {
+			if (preferences.getBoolean(trophyTheMandroid, resources.getBoolean(R.bool.trophy_themandroid_default))) {
+				this.mTheManForeground.setColor(TheMan.THE_MANDROID_FOREGROUND);
+			} else {
+				this.mTheManForeground.setColor(preferences.getInt(resources.getString(R.string.settings_color_theman_key), resources.getInteger(R.integer.color_theman_default)));
+			}
+		}
+		
+		final String trophyLegend = resources.getString(R.string.trophy_legend_key);
+		if (all || key.equals(trophyLegend)) {
+			this.mIsTrophyLegendEnabled = preferences.getBoolean(trophyLegend, resources.getBoolean(R.bool.trophy_legend_default));
+		}
+		
+		final String trophyDesserts = resources.getString(R.string.trophy_desserts_key);
+		if (all || key.equals(trophyDesserts)) {
+			this.mIsTrophyDessertsEnabled = preferences.getBoolean(trophyDesserts, resources.getBoolean(R.bool.trophy_desserts_default));
 		}
     	
         
@@ -900,6 +930,12 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	return null;
     }
     
+    /**
+     * Return a fruit at the specified position or null.
+     * 
+     * @param position Position to check.
+     * @return The fruit or null.
+     */
     public Fruit getFruitAtPosition(final Point position) {
     	if ((this.mFruit.getPosition().x == position.x) && (this.mFruit.getPosition().y == position.y) && this.mFruit.isVisible()) {
     		return this.mFruit;
@@ -932,8 +968,13 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     	
     	//Check for Googol trophy
-    	if (!this.mHasEarnedTrophyGoogol && (this.mScore >= Game.TROPHY_GOOGOL_THRESHOLD) && !this.mIsBonusLifeGiven && (this.mLives == Game.INITIAL_LIVES)) {
+    	if (this.mScore >= Game.TROPHY_GOOGOL_THRESHOLD) {
     		this.earnTrophyGoogol();
+    	}
+    	
+    	//Check for Legend trophy
+    	if (this.mScore >= Game.TROPHY_LEGEND_THRESHOLD) {
+    		this.earnTrophyLegend();
     	}
     }
     
@@ -960,47 +1001,108 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     }
     
     /**
+     * Check if a trophy has been earned
+     * 
+     * @param persistString Resource for the preference key that persists the boolean of whether or not the trophy has been earned
+     * @param defaultBool Resource for the default boolean for the trophy
+     * @param titleString Resource for the title of the trophy
+     */
+    private void earnTrophy(final int persistString, final int defaultBool, final int titleString) {
+    	final Resources resources = Wallpaper.CONTEXT.getResources();
+    	final String key = resources.getString(persistString);
+    	
+    	if (!Wallpaper.PREFERENCES.getBoolean(key, resources.getBoolean(defaultBool))) {
+    		//If we haven't earned this yet, store it
+    		Wallpaper.PREFERENCES.edit().putBoolean(key, true).commit();
+    		this.showNotification(resources.getString(titleString));
+    		
+    		//Check if all trophies have been earned
+    		final boolean trophyAndy = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_andy_persist), resources.getBoolean(R.bool.trophy_andy_default));
+    		final boolean trophyTheMandroid = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_themandroid_persist), resources.getBoolean(R.bool.trophy_themandroid_default));
+    		final boolean trophyLogos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_logos_persist), resources.getBoolean(R.bool.trophy_logos_default));
+    		final boolean trophyCeos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_ceos_persist), resources.getBoolean(R.bool.trophy_ceos_default));
+    		final boolean trophyDesserts = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_desserts_persist), resources.getBoolean(R.bool.trophy_desserts_default));
+    		final boolean trophyAppleDots = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_appledots_persist), resources.getBoolean(R.bool.trophy_appledots_default));
+    		final boolean trophyEden = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_eden_persist), resources.getBoolean(R.bool.trophy_eden_default));
+    		final boolean trophyGoogol = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_googol_persist), resources.getBoolean(R.bool.trophy_googol_default));
+    		final boolean trophyLegend = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_legend_persist), resources.getBoolean(R.bool.trophy_legend_default));
+    		if (trophyAndy && trophyTheMandroid && trophyLogos && trophyCeos && trophyDesserts && trophyAppleDots && trophyEden && trophyGoogol && trophyLegend) {
+    			Wallpaper.PREFERENCES.edit().putBoolean(resources.getString(R.string.trophy_ego_persist), true).commit();
+    			this.showNotification(resources.getString(R.string.trophy_ego));
+    		}
+    	}
+    }
+    
+    /**
      * Mark the Andy trophy as earned
      */
     private void earnTrophyAndy() {
-    	final Resources resources = Wallpaper.CONTEXT.getResources();
-    	
-    	this.mHasEarnedTrophyAndy = true;
-    	Wallpaper.PREFERENCES.edit().putBoolean(resources.getString(R.string.trophy_andy_persist), true).commit();
-    	this.showNotification(resources.getString(R.string.trophy_andy));
+    	this.earnTrophy(R.string.trophy_andy_persist, R.bool.trophy_andy_default, R.string.trophy_andy);
+    }
+    
+    /**
+     * Mark the The Mandroid trophy as earned
+     */
+    private void earnTrophyTheMandroid() {
+    	this.earnTrophy(R.string.trophy_themandroid_persist, R.bool.trophy_themandroid_default, R.string.trophy_themandroid);
     }
     
     /**
      * Mark the Logos trophy as earned
      */
     private void earnTrophyLogos() {
-    	final Resources resources = Wallpaper.CONTEXT.getResources();
-    	
-    	this.mHasEarnedTrophyLogos = true;
-    	Wallpaper.PREFERENCES.edit().putBoolean(resources.getString(R.string.trophy_logos_persist), true).commit();
-    	this.showNotification(resources.getString(R.string.trophy_logos));
+    	this.earnTrophy(R.string.trophy_logos_persist, R.bool.trophy_logos_default, R.string.trophy_logos);
     }
     
     /**
      * Mark the CEOs trophy as earned
      */
     private void earnTrophyCeos() {
-    	final Resources resources = Wallpaper.CONTEXT.getResources();
-    	
-    	this.mHasEarnedTrophyCeos = true;
-    	Wallpaper.PREFERENCES.edit().putBoolean(resources.getString(R.string.trophy_ceos_persist), true).commit();
-    	this.showNotification(resources.getString(R.string.trophy_ceos));
+    	this.earnTrophy(R.string.trophy_ceos_persist, R.bool.trophy_ceos_default, R.string.trophy_ceos);
+    }
+    
+    /**
+     * Mark the Desserts trophy as earned
+     */
+    private void earnTrophyDesserts() {
+    	this.earnTrophy(R.string.trophy_desserts_persist, R.bool.trophy_desserts_default, R.string.trophy_desserts);
+    }
+    
+    /**
+     * Mark the Apple Dots trophy as earned
+     */
+    private void earnTrophyAppleDots() {
+    	this.earnTrophy(R.string.trophy_appledots_persist, R.bool.trophy_appledots_default, R.string.trophy_appledots);
+    }
+    
+    /**
+     * Mark the Eden trophy as earned
+     */
+    private void earnTrophyEden() {
+    	this.earnTrophy(R.string.trophy_eden_persist, R.bool.trophy_eden_default, R.string.trophy_eden);
     }
     
     /**
      * Mark the Googol trophy as earned
      */
     private void earnTrophyGoogol() {
-    	final Resources resources = Wallpaper.CONTEXT.getResources();
-    	
-    	this.mHasEarnedTrophyGoogol = true;
-    	Wallpaper.PREFERENCES.edit().putBoolean(resources.getString(R.string.trophy_googol_persist), true).commit();
-    	this.showNotification(resources.getString(R.string.trophy_googol));
+    	this.earnTrophy(R.string.trophy_googol_persist, R.bool.trophy_googol_default, R.string.trophy_googol);
+    }
+    
+    /**
+     * Mark the Legend trophy as earned
+     */
+    private void earnTrophyLegend() {
+    	this.earnTrophy(R.string.trophy_legend_persist, R.bool.trophy_legend_default, R.string.trophy_legend);
+    }
+    
+    /**
+     * See if the player has lost a life.
+     * 
+     * @return Boolean.
+     */
+    private boolean hasNotLostLife() {
+    	return (!this.mIsBonusLifeGiven && (this.mLives == Game.INITIAL_LIVES)) || (this.mIsBonusLifeGiven && (this.mLives == (Game.INITIAL_LIVES + 1)));
     }
     
     /**
@@ -1055,6 +1157,28 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      */
     public void checkFruit() {
     	if (this.mTheMan.isCollidingWith(this.mFruit) && this.mFruit.isVisible()) {
+    		//Check for Apple Dots trophy
+    		if (this.mFruit.getType() == Fruit.Type.APPLE) {
+    			this.earnTrophyAppleDots();
+    		}
+    		
+    		//Check for Eden trophy
+    		if (this.mFruitsEaten.add(this.mFruit.getType()) && (this.mFruitsEaten.size() == Fruit.Type.values().length)) {
+    			this.earnTrophyEden();
+    		}
+    		
+    		//Check for Desserts trophy
+    		if (this.mFleeingGhostsEaten > 0) {
+    			//we've eaten at least one ghost on the last juggerdot
+    			for (final Ghost ghost : this.mGhosts) {
+    				if (ghost.getState() == Ghost.State.FRIGHTENED) {
+    					//there is still at least one frightened ghost
+        				this.earnTrophyDesserts();
+        				break;
+    				}
+    			}
+    		}
+    		
     		//eat the fruit
     		this.addToScore(this.mFruit.eat());
     	}
@@ -1078,9 +1202,12 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	
 					case FRIGHTENED:
 						//Eat ghost
-						this.addToScore(Game.POINTS_FLEEING_GHOSTS[this.mFleeingGhostsEaten]);
-						this.mFleeingGhostsEaten += 1;
-						this.mGhostEatenThisLevel += 1;
+						if (!this.mIsTrophyDessertsEnabled) {
+							this.addToScore(Game.POINTS_FLEEING_GHOSTS[this.mFleeingGhostsEaten]);
+							this.mFleeingGhostsEaten += 1;
+							this.mGhostEatenThisLevel += 1;
+						}
+						
 						ghost.setState(this, Ghost.State.EATEN);
 						
 						//See if we have eaten all the ghosts for this juggerdot
@@ -1088,7 +1215,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 							this.mAllFleeingGhostsEaten += 1;
 							
 							//Check for Andy trophy
-							if (!this.mHasEarnedTrophyAndy && !this.mIsBonusLifeGiven && (this.mLives == Game.INITIAL_LIVES)) {
+							if (this.hasNotLostLife()) {
 								this.earnTrophyAndy();
 							}
 							
@@ -1099,7 +1226,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 						}
 						
 						//Check for Logos trophy
-						if (!this.mHasEarnedTrophyLogos && (this.mGhostEatenThisLevel >= Game.TROPHY_LOGOS_THRESHOLD) && !this.mIsBonusLifeGiven && (this.mLives == Game.INITIAL_LIVES)) {
+						if ((this.mGhostEatenThisLevel >= Game.TROPHY_LOGOS_THRESHOLD) && this.hasNotLostLife()) {
 							this.earnTrophyLogos();
 						}
 						
@@ -1152,6 +1279,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		this.mIsBonusLifeGiven = false;
         this.mIsOnKillScreen = false;
         this.mTickCount = 0;
+        this.mFruitsEaten.clear();
     	
     	//Reset board
     	this.newLevel();
@@ -1173,7 +1301,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	this.setState(Game.State.READY);
     	
     	//Kill screen on level 256
-    	if (this.mIsKillScreenEnabled && (this.mLevel == Game.KILL_SCREEN_LEVEL)) {
+    	if ((this.mIsKillScreenEnabled && (this.mLevel == Game.KILL_SCREEN_LEVEL)) || (this.mIsTrophyLegendEnabled && (Game.RANDOM.nextInt(Game.KILL_SCREEN_TROPHY_PROBABILITY) == 0))) {
     		this.mIsOnKillScreen = true;
     		
 			//Load the kill screen sprite
@@ -1195,7 +1323,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     	
     	//Check trophy CEOs earned
-    	if (!this.mHasEarnedTrophyCeos && (this.mLevel == Game.TROPHY_CEOS_THRESHOLD)) {
+    	if (this.mLevel == Game.TROPHY_CEOS_THRESHOLD) {
     		this.earnTrophyCeos();
     	}
     	
@@ -1254,6 +1382,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
     	//Check for level complete
     	if ((this.mDotsRemaining <= 0) && (this.mState != Game.State.LEVEL_COMPLETE)) {
+    		//Check for The Mandroid trophy
+    		if (this.hasNotLostLife() && (this.mGhostEatenThisLevel == 0) && (this.mJuggerdotsRemaining == 0)) {
+    			this.earnTrophyTheMandroid();
+    		}
+    		
         	this.setState(Game.State.LEVEL_COMPLETE);
     	}
     	
@@ -1431,27 +1564,103 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         	c.translate(this.mDotGridPaddingLeft, this.mDotGridPaddingTop);
         }
         
+        //Draw dots and walls
+        this.drawGameBoard(c);
+        
+        if (this.mIsOnKillScreen) {
+        	final RectF screenSize = new RectF(0, 0, this.mCellsWide * this.mCellWidth, this.mCellsTall * this.mCellHeight);
+        	c.drawBitmap(this.mKillScreen, null, screenSize, null);
+        }
+        
+        //Draw the fruit only if it is enabled and the game isn't over or level completed
+    	if (this.mIsFruitEnabled && (this.mState != Game.State.GAME_OVER) && (this.mState != Game.State.LEVEL_COMPLETE)) {
+        	this.mFruit.draw(this, c);
+    	}
+    	
+    	//Draw "The Man"
+    	this.mTheMan.draw(this, c);
+    	
+    	//Draw the ghosts if we are ready or playing
+    	if ((this.mState == Game.State.READY) || (this.mState == Game.State.PLAYING)) {
+	    	for (final Ghost ghost : this.mGhosts) {
+	    		ghost.draw(this, c);
+	    	}
+    	}
+
+        if (this.mIsLandscape) {
+        	//Perform clockwise rotation back to normal
+        	c.rotate(90, this.mScreenWidth / 2.0f, this.mScreenWidth / 2.0f);
+        }
+        
+    	switch (this.mState) {
+    		case READY:
+    			c.drawText(this.mTextReady, this.mTextLocation.x - (this.mReadyForeground.measureText(this.mTextReady) / 2.0f), this.mTextLocation.y, this.mReadyForeground);
+    			break;
+    		case GAME_OVER:
+    			c.drawText(this.mTextGameOver, this.mTextLocation.x - (this.mGameOverForeground.measureText(this.mTextGameOver) / 2.0f), this.mTextLocation.y, this.mGameOverForeground);
+    			break;
+    	}
+        
+        c.restore();
+    }
+
+    /**
+     * Render the dots and walls.
+     * 
+     * @param c Canvas to draw on.
+     */
+    private void drawGameBoard(final Canvas c) {
+    	if (this.mDots != Game.Dots.CIRCLES) {
+    		//Set filter in case of Bitmaps
+    		c.setDrawFilter(Game.FILTER_SET);
+    	}
+        
+    	//draw dots
         for (int y = 0; y < this.mCellsTall; y++) {
         	for (int x = 0; x < this.mCellsWide; x++) {
         		final Game.Cell cell = this.mBoard[y][x];
         		if (cell == Cell.DOT) {
-            		final float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.75f) / 2);
-            		final float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.75f) / 2);
-            		final float right = left + (this.mCellWidth * 0.25f);
-            		final float bottom = top + (this.mCellHeight * 0.25f);
+            		if (this.mDots == Game.Dots.CIRCLES) {
+            			final float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.75f) / 2);
+            			final float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.75f) / 2);
+            			final float right = left + (this.mCellWidth * 0.25f);
+            			final float bottom = top + (this.mCellHeight * 0.25f);
             		
-            		c.drawOval(new RectF(left, top, right, bottom), this.mDotForeground);
+            			c.drawOval(new RectF(left, top, right, bottom), this.mDotForeground);
+            		} else {
+            			final float left = (x * this.mCellWidth) + (this.mCellWidth / 4.0f);
+            			final float top = (y * this.mCellHeight) + (this.mCellHeight / 4.0f);
+            			final float right = left + (this.mCellWidth / 2.0f);
+            			final float bottom = top + (this.mCellHeight / 2.0f);
+            			
+            			c.drawBitmap(this.mDotSprite, null, new RectF(left, top, right, bottom), Entity.SPRITE_PAINT);
+            		}
         		} else if ((cell == Cell.JUGGERDOT) && (this.mTickCount % this.mJuggerdotBlinkLength < this.mJuggerdotBlinkInterval)) {
-            		final float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.25f) / 2);
-            		final float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.25f) / 2);
-            		final float right = left + (this.mCellWidth * 0.75f);
-            		final float bottom = top + (this.mCellHeight * 0.75f);
+            		if (this.mDots == Game.Dots.CIRCLES) {
+            			final float left = (x * this.mCellWidth) + ((this.mCellWidth * 0.25f) / 2);
+            			final float top = (y * this.mCellHeight) + ((this.mCellHeight * 0.25f) / 2);
+            			final float right = left + (this.mCellWidth * 0.75f);
+            			final float bottom = top + (this.mCellHeight * 0.75f);
 
-            		c.drawOval(new RectF(left, top, right, bottom), this.mJuggerdotForeground);
+            			c.drawOval(new RectF(left, top, right, bottom), this.mJuggerdotForeground);
+            		} else {
+            			final float left = x * this.mCellWidth;
+            			final float top = y * this.mCellHeight;
+            			final float right = left + this.mCellWidth;
+            			final float bottom = top + this.mCellHeight;
+            			
+            			c.drawBitmap(this.mDotSprite, null, new RectF(left, top, right, bottom), Entity.SPRITE_PAINT);
+            		}
         		}
         	}
         }
         
+        if (this.mDots != Game.Dots.CIRCLES) {
+        	//Remove filter
+        	c.setDrawFilter(Game.FILTER_REMOVE);
+        }
+        
+        //draw walls if enabled
         if (this.mIsDisplayingWalls) {
 			final float mCellWidthOverEight = this.mCellWidth / 8.0f;
 			final float mCellHeightOverEight = this.mCellHeight / 8.0f;
@@ -1478,48 +1687,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         		}
         	}
         }
-        
-        if (this.mIsOnKillScreen) {
-        	final RectF screenSize = new RectF(0, 0, this.mCellsWide * this.mCellWidth, this.mCellsTall * this.mCellHeight);
-        	c.drawBitmap(this.mKillScreen, null, screenSize, null);
-        }
-        
-        //Set filter in case of Bitmaps
-        c.setDrawFilter(Game.FITLER_SET);
-        
-        //Draw the fruit only if it is enabled and the game isn't over or level completed
-    	if (this.mIsFruitEnabled && (this.mState != Game.State.GAME_OVER) && (this.mState != Game.State.LEVEL_COMPLETE)) {
-        	this.mFruit.draw(this, c);
-    	}
-    	
-    	//Draw "The Man"
-    	this.mTheMan.draw(this, c);
-    	
-    	//Draw the ghosts if we are ready or playing
-    	if ((this.mState == Game.State.READY) || (this.mState == Game.State.PLAYING)) {
-	    	for (final Ghost ghost : this.mGhosts) {
-	    		ghost.draw(this, c);
-	    	}
-    	}
-    	
-    	//Remove filter
-    	c.setDrawFilter(Game.FILTER_REMOVE);
-
-        if (this.mIsLandscape) {
-        	//Perform clockwise rotation back to normal
-        	c.rotate(90, this.mScreenWidth / 2.0f, this.mScreenWidth / 2.0f);
-        }
-        
-    	switch (this.mState) {
-    		case READY:
-    			c.drawText(this.mTextReady, this.mTextLocation.x - (this.mReadyForeground.measureText(this.mTextReady) / 2.0f), this.mTextLocation.y, this.mReadyForeground);
-    			break;
-    		case GAME_OVER:
-    			c.drawText(this.mTextGameOver, this.mTextLocation.x - (this.mGameOverForeground.measureText(this.mTextGameOver) / 2.0f), this.mTextLocation.y, this.mGameOverForeground);
-    			break;
-    	}
-        
-        c.restore();
     }
     
     /**
@@ -1536,10 +1703,16 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	        if (this.mMode != Game.Mode.ENDLESS) {
 		        for (int i = 0; i < this.mLives; i++) {
 		        	final RectF dest = new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top);
-		        	if (this.mIsTrophyAndyEnabled) {
-		        		c.drawBitmap(this.mAndy, null, dest, Entity.SPRITE_PAINT);
-		        	} else {
-		        		c.drawArc(dest, Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
+		        	switch (this.mTheMan.getCharacter()) {
+		        		case THEMAN:
+		        		case GOOGOL:
+		        		case THEMANDROID:
+			        		c.drawArc(dest, Game.HUD_THEMAN_ANGLE, Game.HUD_THEMAN_ARC, true, this.mTheManForeground);
+		        			break;
+		        			
+		        		case ANDY:
+		        			c.drawBitmap(this.mAndy, null, dest, Entity.SPRITE_PAINT);
+		        			break;
 		        	}
 		        }
 		        

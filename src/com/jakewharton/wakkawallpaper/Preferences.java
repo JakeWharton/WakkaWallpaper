@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -212,27 +213,62 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		});
         
         //trophies
+        final Drawable trophy = resources.getDrawable(R.drawable.trophy);
+        final IconCheckBoxPreference trophyEgo = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_ego_key));
         final IconCheckBoxPreference trophyAndy = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_andy_key));
+        final IconCheckBoxPreference trophyTheMandroid = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_themandroid_key));
         final IconCheckBoxPreference trophyLogos = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_logos_key));
         final IconCheckBoxPreference trophyCeos = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_ceos_key));
+        final IconCheckBoxPreference trophyDesserts = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_desserts_key));
+        final IconCheckBoxPreference trophyAppleDots = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_appledots_key));
+        final IconCheckBoxPreference trophyEden = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_eden_key));
         final IconCheckBoxPreference trophyGoogol = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_googol_key));
-        final boolean earnedTrophyAndy = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_andy_persist), false);
-        final boolean earnedTrophyLogos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_logos_persist), false);
-        final boolean earnedTrophyCeos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_ceos_persist), false);
-        final boolean earnedTrophyGoogol = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_googol_persist), false);
+        final IconCheckBoxPreference trophyLegend = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_legend_key));
+        final boolean earnedTrophyEgo = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_ego_persist), resources.getBoolean(R.bool.trophy_ego_default));
+        final boolean earnedTrophyAndy = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_andy_persist), resources.getBoolean(R.bool.trophy_andy_default));
+        final boolean earnedTrophyTheMandroid = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_themandroid_persist), resources.getBoolean(R.bool.trophy_themandroid_default));
+        final boolean earnedTrophyLogos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_logos_persist), resources.getBoolean(R.bool.trophy_logos_default));
+        final boolean earnedTrophyCeos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_ceos_persist), resources.getBoolean(R.bool.trophy_ceos_default));
+        final boolean earnedTrophyDesserts = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_desserts_persist), resources.getBoolean(R.bool.trophy_desserts_default));
+        final boolean earnedTrophyAppleDots = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_appledots_persist), resources.getBoolean(R.bool.trophy_appledots_default));
+        final boolean earnedTrophyEden = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_eden_persist), resources.getBoolean(R.bool.trophy_eden_default));
+        final boolean earnedTrophyGoogol = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_googol_persist), resources.getBoolean(R.bool.trophy_googol_default));
+        final boolean earnedTrophyLegend= Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_legend_persist), resources.getBoolean(R.bool.trophy_legend_default));
+        
+        trophyEgo.setEnabled(earnedTrophyEgo);
+        if (!earnedTrophyEgo) {
+        	trophyEgo.setIcon(trophy);
+        	trophyEgo.setSummary(R.string.trophy_ego_hint);
+        }
         
         trophyAndy.setEnabled(earnedTrophyAndy);
         trophyAndy.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				if ((Boolean)newValue) {
 					trophyGoogol.setChecked(false);
+					trophyTheMandroid.setChecked(false);
 				}
 				return true;
 			}
 		});
         if (!earnedTrophyAndy) {
-        	trophyAndy.setIcon(resources.getDrawable(R.drawable.trophy));
+        	trophyAndy.setIcon(trophy);
         	trophyAndy.setSummary(R.string.trophy_andy_hint);
+        }
+        
+        trophyTheMandroid.setEnabled(earnedTrophyTheMandroid);
+        trophyTheMandroid.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				if ((Boolean)newValue) {
+					trophyAndy.setChecked(false);
+					trophyGoogol.setChecked(false);
+				}
+				return true;
+			}
+		});
+        if (!earnedTrophyTheMandroid) {
+        	trophyTheMandroid.setIcon(trophy);
+        	trophyTheMandroid.setSummary(R.string.trophy_themandroid_hint);
         }
         
         trophyLogos.setEnabled(earnedTrophyLogos);
@@ -241,12 +277,13 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 				if ((Boolean)newValue) {
 					trophyCeos.setChecked(false);
 					trophyGoogol.setChecked(false);
+					trophyDesserts.setChecked(false);
 				}
 				return true;
 			}
 		});
         if (!earnedTrophyLogos) {
-        	trophyLogos.setIcon(resources.getDrawable(R.drawable.trophy));
+        	trophyLogos.setIcon(trophy);
         	trophyLogos.setSummary(R.string.trophy_logos_hint);
         }
 
@@ -256,13 +293,40 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 				if ((Boolean)newValue) {
 					trophyLogos.setChecked(false);
 					trophyGoogol.setChecked(false);
+					trophyDesserts.setChecked(false);
 				}
 				return true;
 			}
 		});
         if (!earnedTrophyCeos) {
-        	trophyCeos.setIcon(resources.getDrawable(R.drawable.trophy));
+        	trophyCeos.setIcon(trophy);
         	trophyCeos.setSummary(R.string.trophy_ceos_hint);
+        }
+        
+        trophyDesserts.setEnabled(earnedTrophyDesserts);
+        trophyDesserts.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				trophyLogos.setChecked(false);
+				trophyCeos.setChecked(false);
+				trophyGoogol.setChecked(false);
+				return true;
+			}
+		});
+        if (!earnedTrophyDesserts) {
+        	trophyDesserts.setIcon(trophy);
+        	trophyDesserts.setSummary(R.string.trophy_desserts_hint);
+        }
+        
+        trophyAppleDots.setEnabled(earnedTrophyAppleDots);
+        if (!earnedTrophyAppleDots) {
+        	trophyAppleDots.setIcon(trophy);
+        	trophyAppleDots.setSummary(R.string.trophy_appledots_hint);
+        }
+        
+        trophyEden.setEnabled(earnedTrophyEden);
+        if (!earnedTrophyEden) {
+        	trophyEden.setIcon(trophy);
+        	trophyEden.setSummary(R.string.trophy_eden_hint);
         }
 
         trophyGoogol.setEnabled(earnedTrophyGoogol);
@@ -270,15 +334,23 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				if ((Boolean)newValue) {
 					trophyAndy.setChecked(false);
+					trophyTheMandroid.setChecked(false);
 					trophyLogos.setChecked(false);
 					trophyCeos.setChecked(false);
+					trophyDesserts.setChecked(false);
 				}
 				return true;
 			}
 		});
         if (!earnedTrophyGoogol) {
-        	trophyGoogol.setIcon(resources.getDrawable(R.drawable.trophy));
+        	trophyGoogol.setIcon(trophy);
         	trophyGoogol.setSummary(R.string.trophy_googol_hint);
+        }
+        
+        trophyLegend.setEnabled(earnedTrophyLegend);
+        if (!earnedTrophyLegend) {
+        	trophyLegend.setIcon(trophy);
+        	trophyLegend.setSummary(R.string.trophy_legend_hint);
         }
 
         //Register as a preference change listener
@@ -325,8 +397,8 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 				.show();
         }
         
-        final Intent intent = this.getIntent();
-        if (intent.getBooleanExtra(Preferences.EXTRA_TROPHY, false)) {
+        //Check for trophy intent which opens the trophy screen only
+        if (this.getIntent().getBooleanExtra(Preferences.EXTRA_TROPHY, false)) {
         	this.setPreferenceScreen((PreferenceScreen)this.findPreference(resources.getString(R.string.trophies_key)));
         }
     }

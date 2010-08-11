@@ -20,7 +20,7 @@ import android.util.Log;
  */
 public class TheMan extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum State { ALIVE, DEAD }
-	enum Character { THEMAN, /*MRS_THEMAN,*/ ANDY, GOOGOL }
+	enum Character { THEMAN, /*MRS_THEMAN,*/ ANDY, GOOGOL, THEMANDROID }
 	enum Mode {
 		/*AI(0),*/ NEAREST_DOT(1), RANDOM(2);
 		
@@ -45,6 +45,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	private static final int DEATH_ANGLE_GROWTH = 30;
 	private static final int[] CHOMP_ANGLES = new int[] { 90, 45, 0, 45 };
 	private static final int WANTS_TO_GO_MAX_LENGTH = 5000;
+	/*package*/static final int THE_MANDROID_FOREGROUND = 0xffa4c639;
 	
 	private TheMan.State mState;
 	private TheMan.Mode mMode;
@@ -55,6 +56,8 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	private long mWantsToGoTimer;
 	private boolean mIsTrophyAndyEnabled;
 	private boolean mIsTrophyGoogolEnabled;
+	private boolean mIsTrophyTheMandroidEnabled;
+    private boolean mIsTrophyEgoEnabled;
 	private Bitmap mSprite;
     
 	/**
@@ -131,9 +134,10 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 				final BitmapFactory.Options options = new BitmapFactory.Options();
 				options.inScaled = false;
 				this.mSprite = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.andy, options);
-			} else if (!this.mIsTrophyGoogolEnabled) {
+			} else if (!this.mIsTrophyGoogolEnabled && !this.mIsTrophyTheMandroidEnabled) {
 				//TODO: parseValue of character when the Mrs. is implemented
 				this.mCharacter = TheMan.Character.THEMAN;
+				this.mForeground.setColor(preferences.getInt(resources.getString(R.string.settings_color_theman_key), resources.getInteger(R.integer.color_theman_default)));
 				
 				this.mSprite = null;
 			}
@@ -154,9 +158,10 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 				final BitmapFactory.Options options = new BitmapFactory.Options();
 				options.inScaled = false;
 				this.mSprite = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.googol_theman, options);
-			} else if (!this.mIsTrophyAndyEnabled) {
+			} else if (!this.mIsTrophyAndyEnabled && !this.mIsTrophyTheMandroidEnabled) {
 				//TODO: parseValue of character when the Mrs. is implemented
 				this.mCharacter = TheMan.Character.THEMAN;
+				this.mForeground.setColor(preferences.getInt(resources.getString(R.string.settings_color_theman_key), resources.getInteger(R.integer.color_theman_default)));
 				
 				this.mSprite = null;
 			}
@@ -164,6 +169,31 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(TheMan.TAG, "Is Trophy Andy Enabled: " + this.mIsTrophyAndyEnabled);
 			}
+		}
+		
+		final String trophyTheMandroid = resources.getString(R.string.trophy_themandroid_key);
+		if (all || key.equals(trophyTheMandroid)) {
+			this.mIsTrophyTheMandroidEnabled = preferences.getBoolean(trophyTheMandroid, resources.getBoolean(R.bool.trophy_themandroid_default));
+			
+			if (this.mIsTrophyTheMandroidEnabled) {
+				this.mCharacter = TheMan.Character.THEMANDROID;
+				this.mForeground.setColor(TheMan.THE_MANDROID_FOREGROUND);
+			} else if (!this.mIsTrophyAndyEnabled && !this.mIsTrophyGoogolEnabled) {
+				//TODO: parseValue of character when the Mrs. is implemented
+				this.mCharacter = TheMan.Character.THEMAN;
+				this.mForeground.setColor(preferences.getInt(resources.getString(R.string.settings_color_theman_key), resources.getInteger(R.integer.color_theman_default)));
+				
+				this.mSprite = null;
+			}
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(TheMan.TAG, "Is Trophy The Mandroid Enabled: " + this.mIsTrophyTheMandroidEnabled);
+			}
+		}
+		
+		final String trophyEgo = resources.getString(R.string.trophy_ego_key);
+		if (all || key.equals(trophyEgo)) {
+			this.mIsTrophyEgoEnabled = preferences.getBoolean(trophyEgo, resources.getBoolean(R.bool.trophy_ego_default));
 		}
 
 		if (Wallpaper.LOG_VERBOSE) {
@@ -221,6 +251,15 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	 */
 	public TheMan.State getState() {
 		return this.mState;
+	}
+	
+	/**
+	 * Get the current character of The Man.
+	 * 
+	 * @return TheMan.Character
+	 */
+	public TheMan.Character getCharacter() {
+		return this.mCharacter;
 	}
 	
 	/**
@@ -440,10 +479,17 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
     @Override
 	public void draw(final Game game, final Canvas c) {
 		c.save();
-		c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
+		
+		if (this.mIsTrophyEgoEnabled) {
+			c.translate(this.mLocation.x - this.mCellWidth, this.mLocation.y - this.mCellHeight);
+			c.scale(2, 2);
+		} else {
+			c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
+		}
 		
 		switch (this.mCharacter) {
 			case THEMAN:
+			case THEMANDROID:
 				this.drawTheMan(game, c);
 				break;
 				
@@ -453,7 +499,9 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 				
 			case ANDY:
 			case GOOGOL:
+		        c.setDrawFilter(Game.FILTER_SET);
 				this.drawSprite(game, c);
+		    	c.setDrawFilter(Game.FILTER_REMOVE);
 				break;
 		}
 		
@@ -486,6 +534,11 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		
 		if (degrees > 0) {
 			c.drawArc(new RectF(0, 0, this.mCellWidth, this.mCellHeight), startingAngle, degrees, true, this.mForeground);
+		}
+		
+		if ((this.mState == TheMan.State.ALIVE) && (this.mCharacter == TheMan.Character.THEMANDROID)) {
+			//TODO: draw eye
+			//TODO: draw antenna
 		}
     }
 

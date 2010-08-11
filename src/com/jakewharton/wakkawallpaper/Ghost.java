@@ -20,7 +20,7 @@ import android.util.Log;
 public abstract class Ghost extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	enum State { HUNTING, FRIGHTENED, EATEN }
 	enum Strategy { CHASE, SCATTER, RANDOM }
-	enum Character { GHOST, LOGOS, CEOS, GOOGOL }
+	enum Character { GHOST, SPRITES }
 	enum Mode {
 		CHASE_AND_SCATTER(0), CHASE_ONLY(1), SCATTER_ONLY(2), RANDOM_TURNS(3);
 		
@@ -103,6 +103,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	private boolean mIsTrophyLogosEnabled;
 	private boolean mIsTrophyCeosEnabled;
 	private boolean mIsTrophyGoogolEnabled;
+	private boolean mIsTrophyDessertsEnabled;
 	private Bitmap mSprites;
 	private final int mSpriteIndex;
 	
@@ -244,13 +245,13 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			this.mIsTrophyLogosEnabled = preferences.getBoolean(trophyLogos, resources.getBoolean(R.bool.trophy_logos_default));
 			
 			if (this.mIsTrophyLogosEnabled) {
-				this.mCharacter = Ghost.Character.LOGOS;
+				this.mCharacter = Ghost.Character.SPRITES;
 
 				//Load the Logos sprites
 				final BitmapFactory.Options options = new BitmapFactory.Options();
 				options.inScaled = false;
 				this.mSprites = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.logos, options);
-			} else if (!this.mIsTrophyCeosEnabled && !this.mIsTrophyGoogolEnabled) {
+			} else if (!this.mIsTrophyCeosEnabled && !this.mIsTrophyGoogolEnabled && !this.mIsTrophyDessertsEnabled) {
 				this.mCharacter = Ghost.Character.GHOST;
 				this.mSprites = null;
 			}
@@ -265,13 +266,13 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			this.mIsTrophyCeosEnabled = preferences.getBoolean(trophyCeos, resources.getBoolean(R.bool.trophy_ceos_default));
 			
 			if (this.mIsTrophyCeosEnabled) {
-				this.mCharacter = Ghost.Character.CEOS;
+				this.mCharacter = Ghost.Character.SPRITES;
 
 				//Load the Logos sprites
 				final BitmapFactory.Options options = new BitmapFactory.Options();
 				options.inScaled = false;
 				this.mSprites = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.ceos, options);
-			} else if (!this.mIsTrophyLogosEnabled && !this.mIsTrophyGoogolEnabled) {
+			} else if (!this.mIsTrophyLogosEnabled && !this.mIsTrophyGoogolEnabled && !this.mIsTrophyDessertsEnabled) {
 				this.mCharacter = Ghost.Character.GHOST;
 				this.mSprites = null;
 			}
@@ -286,19 +287,36 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 			this.mIsTrophyGoogolEnabled = preferences.getBoolean(trophyGoogol, resources.getBoolean(R.bool.trophy_googol_default));
 			
 			if (this.mIsTrophyGoogolEnabled) {
-				this.mCharacter = Ghost.Character.GOOGOL;
+				this.mCharacter = Ghost.Character.SPRITES;
 
 				//Load the Logos sprites
 				final BitmapFactory.Options options = new BitmapFactory.Options();
 				options.inScaled = false;
 				this.mSprites = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.googol, options);
-			} else if (!this.mIsTrophyLogosEnabled && !this.mIsTrophyCeosEnabled) {
+			} else if (!this.mIsTrophyLogosEnabled && !this.mIsTrophyCeosEnabled && !this.mIsTrophyDessertsEnabled) {
 				this.mCharacter = Ghost.Character.GHOST;
 				this.mSprites = null;
 			}
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Ghost.TAG, "Is Trophy Googol Enabled: " + this.mIsTrophyGoogolEnabled);
+			}
+		}
+		
+		final String trophyDesserts = resources.getString(R.string.trophy_desserts_key);
+		if (all || key.equals(trophyDesserts)) {
+			this.mIsTrophyDessertsEnabled = preferences.getBoolean(trophyDesserts, resources.getBoolean(R.bool.trophy_desserts_default));
+			
+			if (this.mIsTrophyDessertsEnabled) {
+				this.mCharacter = Ghost.Character.SPRITES;
+
+				//Load the Dessers sprites
+				final BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inScaled = false;
+				this.mSprites = BitmapFactory.decodeResource(Wallpaper.CONTEXT.getResources(), R.drawable.desserts, options);
+			} else if (!this.mIsTrophyCeosEnabled && !this.mIsTrophyGoogolEnabled && !this.mIsTrophyLogosEnabled) {
+				this.mCharacter = Ghost.Character.GHOST;
+				this.mSprites = null;
 			}
 		}
 		
@@ -429,10 +447,10 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 				this.drawGhost(game, c);
 				break;
 				
-			case LOGOS:
-			case CEOS:
-			case GOOGOL:
+			case SPRITES:
+		        c.setDrawFilter(Game.FILTER_SET);
 				this.drawSprites(game, c);
+		    	c.setDrawFilter(Game.FILTER_REMOVE);
 				break;
 		}
 		
@@ -517,7 +535,12 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * @return State
 	 */
 	public State getState() {
-		return this.mState;
+		if (this.mIsTrophyDessertsEnabled && (this.mState == Ghost.State.HUNTING)) {
+			//Always edible when this trophy is enabled
+			return Ghost.State.FRIGHTENED;
+		} else {
+			return this.mState;
+		}
 	}
 	
 	/**

@@ -16,4 +16,10 @@
 	<bool name="trophy_logos_default">false</bool>
 	<bool name="trophy_ceos_default">false</bool>
 	<bool name="trophy_googol_default">false</bool>
+	<bool name="trophy_themandroid_default">false</bool>
+	<bool name="trophy_eden_default">false</bool>
+	<bool name="trophy_appledots_default">false</bool>
+	<bool name="trophy_desserts_default">false</bool>
+	<bool name="trophy_ego_default">false</bool>
+	<bool name="trophy_legend_default">false</bool>
 </resources>

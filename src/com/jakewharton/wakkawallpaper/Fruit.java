@@ -49,6 +49,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	private int mNumberDisplayed;
 	private Bitmap mFruits;
 	private Point[] mPositions;
+    private boolean mIsTrophyEdenEnabled;
 	
 	/**
 	 * Initialize a new fruit adhering to the parameters.
@@ -138,6 +139,11 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 			}
 		}
 		
+		final String trophyEden = resources.getString(R.string.trophy_eden_key);
+		if (all || key.equals(trophyEden)) {
+			this.mIsTrophyEdenEnabled = preferences.getBoolean(trophyEden, resources.getBoolean(R.bool.trophy_eden_default));
+		}
+		
 		
 		if (changed) {
 			this.hide();
@@ -159,11 +165,30 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	}
 	
 	/**
+	 * Get the current Fruit's type.
+	 * 
+	 * @return Fruit.Type
+	 */
+	public Fruit.Type getType() {
+		return this.mType;
+	}
+	
+	/**
 	 * Move off screen and make invisible.
 	 */
 	private void hide() {
-		this.mIsVisible = false;
-		this.mPosition.set(-1, -1);
+		if (this.mIsTrophyEdenEnabled) {
+			//Randomize next fruit
+			this.mType = Fruit.Type.values()[Game.RANDOM.nextInt(Fruit.Type.values().length)];
+			
+			if (this.mPositions != null) {
+				//Show it!
+				this.show();
+			}
+		} else {
+			this.mIsVisible = false;
+			this.mPosition.set(-1, -1);
+		}
 	}
 	
 	/**
@@ -191,6 +216,10 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
     			this.mPositions[(i * dotRows) + j] = new Point(i * dotsCol, j * dotsRow);
     		}
     	}
+    	
+    	if (this.mIsTrophyEdenEnabled) {
+    		this.show();
+    	}
     }
 	
 	@Override
@@ -202,14 +231,21 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		} else {
 			final int dotsEaten = game.getDotsEaten();
 			if (((dotsEaten > this.mThresholdFirst) && (this.mNumberDisplayed == 0)) || ((dotsEaten > this.mThresholdSecond) && (this.mNumberDisplayed == 1))) {
-				this.mIsVisible = true;
-				this.mNumberDisplayed += 1;
-				this.mVisibleLength = Game.RANDOM.nextInt(this.mVisibleUpper - this.mVisibleLower + 1) + this.mVisibleLower;
-				this.setPosition(this.mPositions[Game.RANDOM.nextInt(this.mPositions.length)]);
-				this.mCreated = System.currentTimeMillis();
+				this.show();
 			}
 		}
 	}
+
+	/**
+	 * Show fruit at random position
+	 */
+	private void show() {
+	    this.mIsVisible = true;
+	    this.mNumberDisplayed += 1;
+	    this.mVisibleLength = Game.RANDOM.nextInt(this.mVisibleUpper - this.mVisibleLower + 1) + this.mVisibleLower;
+	    this.setPosition(this.mPositions[Game.RANDOM.nextInt(this.mPositions.length)]);
+	    this.mCreated = System.currentTimeMillis();
+    }
 
 	@Override
 	public void draw(final Game game, final Canvas c) {
@@ -228,7 +264,9 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 					break;
 					
 				case GOOGOL:
+			    	c.setDrawFilter(Game.FILTER_SET);
 					c.drawBitmap(this.mFruits, null, game.getCellSize(), Entity.SPRITE_PAINT);
+			    	c.setDrawFilter(Game.FILTER_REMOVE);
 					break;
 			}
 			
