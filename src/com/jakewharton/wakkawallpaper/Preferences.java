@@ -646,6 +646,8 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		editor.putInt(resources.getString(R.string.settings_display_rowspacing_key), resources.getInteger(R.integer.display_rowspacing_default));
 		//icon col spacing
 		editor.putInt(resources.getString(R.string.settings_display_colspacing_key), resources.getInteger(R.integer.display_colspacing_default));
+		//widget locations
+		editor.putString(resources.getString(R.string.settings_display_widgetlocations_key), resources.getString(R.string.display_widgetlocations_default));
 		//padding top
 		editor.putInt(resources.getString(R.string.settings_display_padding_top_key), resources.getInteger(R.integer.display_padding_top_default));
 		//padding bottom
