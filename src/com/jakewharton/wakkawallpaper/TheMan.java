@@ -500,7 +500,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 			case ANDY:
 			case GOOGOL:
 		        c.setDrawFilter(Game.FILTER_SET);
-				this.drawSprite(game, c);
+				this.drawStaticSprite(game, c);
 		    	c.setDrawFilter(Game.FILTER_REMOVE);
 				break;
 		}
@@ -552,7 +552,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
      * @param c Canvas to draw on.
      * @param isLandscape Whether or not the display is in landscape mode.
      */
-    private void drawSprite(final Game game, final Canvas c) {
+    private void drawStaticSprite(final Game game, final Canvas c) {
     	c.drawBitmap(this.mSprite, null, game.getCellSize(), Entity.SPRITE_PAINT);
     }
     
