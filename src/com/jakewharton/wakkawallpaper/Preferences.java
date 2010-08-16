@@ -493,7 +493,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		//Only enable clear bg image when a bg image is set
 		final String bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
 		if (all || key.equals(bgimage)) {
-			this.findPreference(resources.getString(R.string.settings_color_game_bgimageclear_key)).setEnabled(preferences.getString(bgimage, null) != null);
+			final boolean enabled = preferences.getString(bgimage, null) != null;
+			this.findPreference(resources.getString(R.string.settings_color_game_bgimageclear_key)).setEnabled(enabled);
+			this.findPreference(resources.getString(R.string.settings_color_game_bgopacity_key)).setEnabled(enabled);
 		}
 		
 		final String iconRows = resources.getString(R.string.settings_display_iconrows_key);
@@ -712,6 +714,8 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		editor.putInt(resources.getString(R.string.settings_color_game_walls_key), resources.getInteger(R.integer.color_game_walls_default));
 		//background image
 		editor.putString(resources.getString(R.string.settings_color_game_bgimage_key), null);
+		//background opacity
+		editor.putInt(resources.getString(R.string.settings_color_game_bgopacity_key), resources.getInteger(R.integer.color_game_bgopacity_default));
 		//dots
 		editor.putInt(resources.getString(R.string.settings_color_game_dot_key), resources.getInteger(R.integer.color_game_dot_default));
 		//juggerdots
@@ -961,6 +965,11 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 	    		if (color.has(color_game_bgimage)) {
 	    			editor.putString(color_game_bgimage, color.getString(color_game_bgimage));
 	    		}
+	    		//background opacity
+	    		final String color_game_bgopacity = resources.getString(R.string.settings_color_game_bgopacity_key);
+	    		if (color.has(color_game_bgopacity)) {
+	    			editor.putInt(color_game_bgopacity, color.getInt(color_game_bgopacity));
+	    		}
 	    		//dots
 		    	final String color_game_dot = resources.getString(R.string.settings_color_game_dot_key);
 		    	if (color.has(color_game_dot)) {
@@ -1187,6 +1196,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     		//background image
     		final String color_game_bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
     		color.put(color_game_bgimage, preferences.getString(color_game_bgimage, null));
+    		//background opacity
+    		final String color_game_bgopacity = resources.getString(R.string.settings_color_game_bgopacity_key);
+    		color.put(color_game_bgopacity, preferences.getInt(color_game_bgopacity, resources.getInteger(R.integer.color_game_bgopacity_default)));
 			//dots
 	    	final String color_game_dot = resources.getString(R.string.settings_color_game_dot_key);
 	    	color.put(color_game_dot, preferences.getInt(color_game_dot, resources.getInteger(R.integer.color_game_dot_default)));

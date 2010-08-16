@@ -177,6 +177,9 @@
     <string name="settings_color_game_bgimage_key">color_game_bgimage</string>
     <string name="settings_color_game_bgimage_toast">Background image successfully set.</string>
     <string name="settings_color_game_bgimage_summary">Image to display as opposed to a solid color</string>
+    <string name="settings_color_game_bgopacity">Background Opacity</string>
+    <string name="settings_color_game_bgopacity_key">color_game_bgopacity</string>
+    <string name="settings_color_game_bgopacity_summary">The level of opacity of the background image</string>
     <string name="settings_color_game_bgimageclear">Clear Background Image</string>
     <string name="settings_color_game_bgimageclear_key">color_game_bgimage_clear</string>
     <string name="settings_color_game_bgimageclear_toast">Background image cleared.</string>

@@ -194,6 +194,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private boolean mIsTrophyLegendEnabled;
     private boolean mIsTrophyDessertsEnabled;
     private List<Rect> mWidgetLocations;
+    private final Paint mBackgroundPaint;
     
     /**
      * Create a new game.
@@ -218,6 +219,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         this.mReadyForeground.setTextSize(Game.HUD_SIZE);
         this.mGameOverForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mGameOverForeground.setTextSize(Game.HUD_SIZE);
+        this.mBackgroundPaint = new Paint();
         
         this.mTextReady = resources.getString(R.string.ready);
         this.mTextGameOver = resources.getString(R.string.gameover);
@@ -471,6 +473,15 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 				hasGraphicsChanged = true;
 			} else {
 				this.mBackground = null;
+			}
+		}
+		
+		final String backgroundOpacity = resources.getString(R.string.settings_color_game_bgopacity_key);
+		if (all || key.equals(backgroundOpacity)) {
+			this.mBackgroundPaint.setAlpha(preferences.getInt(backgroundOpacity, resources.getInteger(R.integer.color_game_bgopacity_default)));
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Background Image Opacity: " + this.mBackgroundPaint.getAlpha());
 			}
 		}
         
@@ -1587,7 +1598,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 		c.drawColor(this.mGameBackground);
     	if (this.mBackground != null) {
     		//Bitmap should already be sized to the screen so draw it at the origin
-    		c.drawBitmap(this.mBackground, 0, 0, null);
+    		c.drawBitmap(this.mBackground, 0, 0, this.mBackgroundPaint);
     	}
         
         if (this.mIsLandscape) {

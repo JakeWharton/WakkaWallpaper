@@ -302,6 +302,13 @@
 						android:key="@string/settings_color_game_bgimage_key"
 						android:title="@string/settings_color_game_bgimage"
 						android:summary="@string/settings_color_game_bgimage_summary"/>
+					<com.jakewharton.utilities.NumberPreference
+						android:key="@string/settings_color_game_bgopacity_key"
+						android:title="@string/settings_color_game_bgopacity"
+						android:summary="@string/settings_color_game_bgopacity_summary"
+						android:defaultValue="@integer/color_game_bgopacity_default"
+						app:min="@integer/color_game_bgopacity_min"
+						app:max="@integer/color_game_bgopacity_max"/>
 					<Preference
 						android:key="@string/settings_color_game_bgimageclear_key"
 						android:title="@string/settings_color_game_bgimageclear"
