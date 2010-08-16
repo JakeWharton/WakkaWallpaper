@@ -19,9 +19,11 @@ public class Wallpaper extends WallpaperService {
 	/*package*/static SharedPreferences PREFERENCES;
 	/*package*/static Context CONTEXT;
     
-	/*package*/static final boolean LOG_DEBUG = true;
+	/*package*/static final boolean LOG_DEBUG = false;
 	/*package*/static final boolean LOG_VERBOSE = false;
     private static final boolean AUTO_TICK = true;
+    private static final int STATUS_BAR_HEIGHT = 24;
+    private static final int APP_DRAWER_HEIGHT = 50;
     
     private final Handler mHandler = new Handler();
 
@@ -29,7 +31,31 @@ public class Wallpaper extends WallpaperService {
     public Engine onCreateEngine() {
     	Wallpaper.PREFERENCES = this.getSharedPreferences(Preferences.SHARED_NAME, Context.MODE_PRIVATE);
     	Wallpaper.CONTEXT = this;
+    	
+    	this.performFirstRunCheckAndSetup();
+    	
         return new WakkaEngine();
+    }
+    
+    /**
+     * Sets up some preferences based on screen size on the first run only.
+     */
+    private void performFirstRunCheckAndSetup() {
+    	final Resources resources = this.getResources();
+        final int defaultVersion = resources.getInteger(R.integer.version_code_default);
+        final int previousVersion = Wallpaper.PREFERENCES.getInt(resources.getString(R.string.version_code_key), defaultVersion);
+        if (previousVersion == defaultVersion) {
+        	//First install
+        	
+        	//Base top and bottom padding off of known metrics
+        	final float density = this.getResources().getDisplayMetrics().density;
+        	final int topHeight = (int)(density * Wallpaper.STATUS_BAR_HEIGHT);
+        	final int bottomHeight = (int)(density * Wallpaper.APP_DRAWER_HEIGHT);
+        	final SharedPreferences.Editor editor = Wallpaper.PREFERENCES.edit();
+        	editor.putInt(resources.getString(R.string.settings_display_padding_top_key), topHeight);
+        	editor.putInt(resources.getString(R.string.settings_display_padding_bottom_key), bottomHeight);
+        	editor.commit();
+        }
     }
 
     /**
