@@ -48,6 +48,10 @@
 	<integer name="display_hudoffset_min">0</integer>
 	<integer name="display_hudoffset_max">50</integer>
 	
+	<integer name="display_hudsize_default">20</integer>
+	<integer name="display_hudsize_min">8</integer>
+	<integer name="display_hudsize_max">30</integer>
+	
 	<integer name="game_mode_default">0</integer>
 	
 	<integer name="game_endlessdotregen_default">50</integer>

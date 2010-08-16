@@ -109,7 +109,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	private static final int SCORE_FLIPPING = 1000000;
 	private static final int[] POINTS_FLEEING_GHOSTS = new int[] { 200, 400, 800, 1600 };
 	private static final int POINTS_ALL_FLEEING_GHOSTS = 12000;
-	private static final float HUD_SIZE = 20;
 	private static final float HUD_PADDING = 3;
 	private static final float HUD_THEMAN_ANGLE = 202.5f;
 	private static final float HUD_THEMAN_ARC = 315;
@@ -195,6 +194,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private boolean mIsTrophyDessertsEnabled;
     private List<Rect> mWidgetLocations;
     private final Paint mBackgroundPaint;
+    private int mHudSize;
     
     /**
      * Create a new game.
@@ -213,12 +213,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         this.mDotForeground = new Paint(Paint.ANTI_ALIAS_FLAG); 
         this.mJuggerdotForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mHudForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
-        this.mHudForeground.setTextSize(Game.HUD_SIZE);
         this.mTheManForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mReadyForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
-        this.mReadyForeground.setTextSize(Game.HUD_SIZE);
         this.mGameOverForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
-        this.mGameOverForeground.setTextSize(Game.HUD_SIZE);
         this.mBackgroundPaint = new Paint();
         
         this.mTextReady = resources.getString(R.string.ready);
@@ -413,6 +410,18 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "Is Displaying HUD: " + this.mIsDisplayingHud);
+			}
+		}
+		
+		final String hudSize = resources.getString(R.string.settings_display_hudsize_key);
+		if (all || key.equals(hudSize)) {
+			this.mHudSize = preferences.getInt(hudSize, resources.getInteger(R.integer.display_hudsize_default));
+			this.mHudForeground.setTextSize(this.mHudSize);
+			this.mReadyForeground.setTextSize(this.mHudSize);
+			this.mGameOverForeground.setTextSize(this.mHudSize);
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "HUD Size: " + this.mHudSize);
 			}
 		}
 		
@@ -1753,7 +1762,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 
 	        if (this.mMode != Game.Mode.ENDLESS) {
 		        for (int i = 0; i < this.mLives; i++) {
-		        	final RectF dest = new RectF((i * (Game.HUD_SIZE + Game.HUD_PADDING)) + Game.HUD_PADDING, top - Game.HUD_SIZE, ((i + 1) * (Game.HUD_SIZE + Game.HUD_PADDING)), top);
+		        	final RectF dest = new RectF((i * (this.mHudSize + Game.HUD_PADDING)) + Game.HUD_PADDING, top - this.mHudSize, ((i + 1) * (this.mHudSize + Game.HUD_PADDING)), top);
 		        	switch (this.mTheMan.getCharacter()) {
 		        		case THEMAN:
 		        		case GOOGOL:

@@ -32,6 +32,14 @@
 				android:summary="@string/settings_display_showhud_summary"
 				android:defaultValue="@bool/display_showhud_default"/>
 			<com.jakewharton.utilities.NumberPreference
+				android:key="@string/settings_display_hudsize_key"
+				android:title="@string/settings_display_hudsize"
+				android:summary="@string/settings_display_hudsize_summary"
+				android:defaultValue="@integer/display_hudsize_default"
+				android:dependency="@string/settings_display_showhud_key"
+				app:min="@integer/display_hudsize_min"
+				app:max="@integer/display_hudsize_max"/>
+			<com.jakewharton.utilities.NumberPreference
 				android:key="@string/settings_display_hudoffset_key"
 				android:title="@string/settings_display_hudoffset"
 				android:summary="@string/settings_display_hudoffset_summary"

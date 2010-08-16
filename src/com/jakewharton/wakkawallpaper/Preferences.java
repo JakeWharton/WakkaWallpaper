@@ -634,6 +634,8 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		editor.putInt(resources.getString(R.string.settings_display_juggerdotblink_key), resources.getInteger(R.integer.display_juggerdotblink_default));
 		//show hud
 		editor.putBoolean(resources.getString(R.string.settings_display_showhud_key), resources.getBoolean(R.bool.display_showhud_default));
+		//hud size
+		editor.putInt(resources.getString(R.string.settings_display_hudsize_key), resources.getInteger(R.integer.display_hudsize_default));
 		//hud offset
 		editor.putInt(resources.getString(R.string.settings_display_hudoffset_key), resources.getInteger(R.integer.display_hudoffset_default));
 		//show walls
@@ -793,6 +795,11 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 				final String display_showhud = resources.getString(R.string.settings_display_showhud_key);
 				if (display.has(display_showhud)) {
 					editor.putBoolean(display_showhud, display.getBoolean(display_showhud));
+				}
+				//hud size
+				final String display_hudsize = resources.getString(R.string.settings_display_hudsize_key);
+				if (display.has(display_hudsize)) {
+					editor.putInt(display_hudsize, display.getInt(display_hudsize));
 				}
 	    		//hud offset
 	    		final String display_hudoffset = resources.getString(R.string.settings_display_hudoffset_key);
@@ -1096,6 +1103,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 			//show hud
 			final String display_showhud = resources.getString(R.string.settings_display_showhud_key);
 	        display.put(display_showhud, preferences.getBoolean(display_showhud, resources.getBoolean(R.bool.display_showhud_default)));
+	        //hud size
+	        final String display_hudsize = resources.getString(R.string.settings_display_hudsize_key);
+	        display.put(display_hudsize, preferences.getInt(display_hudsize, resources.getInteger(R.integer.display_hudsize_default)));
     		//hud offset
     		final String display_hudoffset = resources.getString(R.string.settings_display_hudoffset_key);
     		display.put(display_hudoffset, preferences.getInt(display_hudoffset, resources.getInteger(R.integer.display_hudoffset_default)));

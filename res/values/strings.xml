@@ -51,6 +51,9 @@
     <string name="settings_display_showhud">Show HUD</string>
     <string name="settings_display_showhud_key">display_showhud</string>
     <string name="settings_display_showhud_summary">Toggle the heads-up display for lives and score</string>
+    <string name="settings_display_hudsize">HUD Size</string>
+    <string name="settings_display_hudsize_key">display_hudsize</string>
+    <string name="settings_display_hudsize_summary">Size of the lives and score</string>
     <string name="settings_display_hudoffset">HUD Offset</string>
     <string name="settings_display_hudoffset_key">display_hudoffset</string>
     <string name="settings_display_hudoffset_summary">Offset from bottom of screen</string>

@@ -24,6 +24,7 @@ public class Wallpaper extends WallpaperService {
     private static final boolean AUTO_TICK = true;
     private static final int STATUS_BAR_HEIGHT = 24;
     private static final int APP_DRAWER_HEIGHT = 50;
+    private static final int HUD_SIZE_HEIGHT = 13;
     
     private final Handler mHandler = new Handler();
 
@@ -46,14 +47,19 @@ public class Wallpaper extends WallpaperService {
         final int previousVersion = Wallpaper.PREFERENCES.getInt(resources.getString(R.string.version_code_key), defaultVersion);
         if (previousVersion == defaultVersion) {
         	//First install
+        	final float density = this.getResources().getDisplayMetrics().density;
+        	final SharedPreferences.Editor editor = Wallpaper.PREFERENCES.edit();
         	
         	//Base top and bottom padding off of known metrics
-        	final float density = this.getResources().getDisplayMetrics().density;
         	final int topHeight = (int)(density * Wallpaper.STATUS_BAR_HEIGHT);
         	final int bottomHeight = (int)(density * Wallpaper.APP_DRAWER_HEIGHT);
-        	final SharedPreferences.Editor editor = Wallpaper.PREFERENCES.edit();
         	editor.putInt(resources.getString(R.string.settings_display_padding_top_key), topHeight);
         	editor.putInt(resources.getString(R.string.settings_display_padding_bottom_key), bottomHeight);
+        	
+        	//Base HUD size off of known metrics
+        	final int hudSize = (int)(density * Wallpaper.HUD_SIZE_HEIGHT);
+        	editor.putInt(resources.getString(R.string.settings_display_hudsize_key), hudSize);
+        	
         	editor.commit();
         }
     }
