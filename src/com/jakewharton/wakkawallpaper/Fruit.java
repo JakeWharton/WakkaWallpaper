@@ -1,5 +1,7 @@
 package com.jakewharton.wakkawallpaper;
 
+import java.util.LinkedList;
+import java.util.List;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -48,7 +50,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	private int mThresholdSecond;
 	private int mNumberDisplayed;
 	private Bitmap mFruits;
-	private Point[] mPositions;
+	private List<Point> mPositions;
     private boolean mIsTrophyEdenEnabled;
 	
 	/**
@@ -59,6 +61,8 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		
 		//We are fruit. We can't wrap.
 		this.mIsWrapping = false;
+		
+		this.mPositions = new LinkedList<Point>();
 
         //Load all preferences or their defaults
         Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
@@ -210,10 +214,12 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
     	final int dotsRow = game.getCellRowSpacing() + 1;
     	
     	//Get all possible fruit positions
-    	this.mPositions = new Point[dotCols * dotRows];
+    	this.mPositions.clear();
     	for (int i = 0; i < dotCols; i++) {
     		for (int j = 0; j < dotRows; j++) {
-    			this.mPositions[(i * dotRows) + j] = new Point(i * dotsCol, j * dotsRow);
+    			if (game.isValidBoardPosition(new Point(i, j))) {
+    				this.mPositions.add(new Point(i * dotsCol, j * dotsRow));
+    			}
     		}
     	}
     	
@@ -243,7 +249,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	    this.mIsVisible = true;
 	    this.mNumberDisplayed += 1;
 	    this.mVisibleLength = Game.RANDOM.nextInt(this.mVisibleUpper - this.mVisibleLower + 1) + this.mVisibleLower;
-	    this.setPosition(this.mPositions[Game.RANDOM.nextInt(this.mPositions.length)]);
+	    this.setPosition(this.mPositions.get(Game.RANDOM.nextInt(this.mPositions.size())));
 	    this.mCreated = System.currentTimeMillis();
     }
 

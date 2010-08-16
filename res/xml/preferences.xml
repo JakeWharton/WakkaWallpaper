@@ -74,6 +74,11 @@
 					android:defaultValue="@integer/display_colspacing_default"
 					app:min="@integer/display_colspacing_min"
 					app:max="@integer/display_colspacing_max"/>
+				<com.jakewharton.utilities.WidgetLocationsPreference
+					android:key="@string/settings_display_widgetlocations_key"
+					android:title="@string/settings_display_widgetlocations"
+					android:summary="@string/settings_display_widgetlocations_summary"
+					android:defaultValue="@string/display_widgetlocations_default"/>
 				<PreferenceScreen
 					android:key="@string/settings_display_padding_key"
 					android:title="@string/settings_display_padding"

@@ -4,7 +4,10 @@ import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
+import com.jakewharton.utilities.WidgetLocationsPreference;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -19,6 +22,7 @@ import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.util.Log;
@@ -189,6 +193,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private Bitmap mDotSprite;
     private boolean mIsTrophyLegendEnabled;
     private boolean mIsTrophyDessertsEnabled;
+    private List<Rect> mWidgetLocations;
     
     /**
      * Create a new game.
@@ -221,6 +226,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         this.mCellSize = new RectF(0, 0, 0, 0);
         
         this.mFruitsEaten = new HashSet<Fruit.Type>();
+        this.mWidgetLocations = new LinkedList<Rect>();
         
         //Create "The Man" and fruit
     	this.mTheMan = new TheMan();
@@ -414,6 +420,16 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			
 			if (Wallpaper.LOG_DEBUG) {
 				Log.d(Game.TAG, "HUD Offset: " + this.mHudOffset);
+			}
+		}
+		
+		final String widgetLocations = resources.getString(R.string.settings_display_widgetlocations_key);
+		if (all || key.equals(widgetLocations)) {
+			this.mWidgetLocations = WidgetLocationsPreference.convertStringToWidgetList(preferences.getString(widgetLocations, resources.getString(R.string.display_widgetlocations_default)));
+			hasLayoutChanged = true;
+			
+			if (Wallpaper.LOG_DEBUG) {
+				Log.d(Game.TAG, "Widget Locations: " + (this.mWidgetLocations.size() / 4));
 			}
 		}
 		
@@ -891,7 +907,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
      * @param position Point representing coordinate.
      * @return Boolean indicating whether or not the position is valid.
      */
-    private boolean isValidBoardPosition(final Point position) {
+    public boolean isValidBoardPosition(final Point position) {
     	return ((position.x >= 0) && (position.x < this.mCellsWide)
     		    && (position.y >= 0) && (position.y < this.mCellsTall)
     		    && (this.mBoard[position.y][position.x] != Cell.WALL));
@@ -1327,30 +1343,54 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		this.earnTrophyCeos();
     	}
     	
-    	//Initialize dots
-    	this.mDotsTotal = 0;
+    	//Initialize dot grid
+    	final int cellWidth = this.mCellColumnSpacing + 1;
+    	final int cellHeight = this.mCellRowSpacing + 1;
     	for (int y = 0; y < this.mCellsTall; y++) {
     		for (int x = 0; x < this.mCellsWide; x++) {
-    			if ((x % (this.mCellColumnSpacing + 1) == 0) || (y % (this.mCellRowSpacing + 1) == 0)) {
-    				this.mBoard[y][x] = Cell.DOT;
-    				this.mDotsTotal += 1;
+    			
+    			if ((x % cellWidth == 0) || (y % cellHeight == 0)) {
+    				this.mBoard[y][x] = Game.Cell.DOT;
     			} else {
-    				this.mBoard[y][x] = Cell.WALL;
+    				this.mBoard[y][x] = Game.Cell.WALL;
     			}
     		}
     	}
-    	this.mDotsRemaining = this.mDotsTotal;
     	
-    	this.mAllFleeingGhostsEaten = 0;
-    	this.mGhostEatenThisLevel = 0;
+    	//Remove dots under widgets
+    	for (final Rect widget : this.mWidgetLocations) {
+    		Log.d(Game.TAG, "L: " + widget.left + ", T: " + widget.top + ", R: " + widget.right + ", B: " + widget.bottom);
+    		final int left = (widget.left * cellWidth) + 1;
+    		final int top = (widget.top * cellHeight) + 1;
+    		final int bottom = (widget.bottom * cellHeight) + this.mCellRowSpacing;
+    		final int right = (widget.right * cellWidth) + this.mCellColumnSpacing;
+    		for (int y = top; y <= bottom; y++) {
+    			for (int x = left; x <= right; x++) {
+    				this.mBoard[y][x] = Game.Cell.WALL;
+    			}
+    		}
+    	}
     	
     	//Initialize juggerdots
     	this.mBoard[this.mCellRowSpacing + 1][0] = Cell.JUGGERDOT;
     	this.mBoard[0][this.mCellsWide - this.mCellColumnSpacing - 2] = Cell.JUGGERDOT;
     	this.mBoard[this.mCellsTall - this.mCellRowSpacing - 2][this.mCellsWide - 1] = Cell.JUGGERDOT;
     	this.mBoard[this.mCellsTall - 1][this.mCellColumnSpacing + 1] = Cell.JUGGERDOT;
-    	this.mDotsRemaining -= Game.NUMBER_OF_JUGGERDOTS;
     	this.mJuggerdotsRemaining = Game.NUMBER_OF_JUGGERDOTS;
+    	
+    	//Count dots
+    	this.mDotsRemaining = 0;
+    	for (int y = 0; y < this.mCellsTall; y++) {
+    		for (int x = 0; x < this.mCellsWide; x++) {
+    			if (this.mBoard[y][x] == Cell.DOT) {
+    				this.mDotsRemaining += 1;
+				}
+    		}
+    	}
+    	this.mDotsTotal = this.mDotsRemaining + this.mJuggerdotsRemaining;
+    	
+    	this.mAllFleeingGhostsEaten = 0;
+    	this.mGhostEatenThisLevel = 0;
     	
     	//Initialize entities
     	this.mTheMan.newLevel(this);

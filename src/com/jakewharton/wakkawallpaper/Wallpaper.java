@@ -19,7 +19,7 @@ public class Wallpaper extends WallpaperService {
 	/*package*/static SharedPreferences PREFERENCES;
 	/*package*/static Context CONTEXT;
     
-	/*package*/static final boolean LOG_DEBUG = false;
+	/*package*/static final boolean LOG_DEBUG = true;
 	/*package*/static final boolean LOG_VERBOSE = false;
     private static final boolean AUTO_TICK = true;
     

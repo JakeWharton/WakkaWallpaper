@@ -92,7 +92,7 @@ public class ColorPreference extends DialogPreference {
 		if (positiveResult) {
 			this.mTempColor = this.mColor;
 			if (this.callChangeListener(this.mTempColor)) {
-				this.setValue(this.mTempColor);
+				this.saveValue(this.mTempColor);
 			}
 		}
 	}
@@ -100,6 +100,10 @@ public class ColorPreference extends DialogPreference {
 	public void setValue(final int color) {
 		this.mColor = color;
 		this.mPreview.setBackgroundColor(color);
+	}
+	
+	public void saveValue(final int color) {
+		this.setValue(color);
 		this.persistInt(color);
 	}
 }

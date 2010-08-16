@@ -63,7 +63,7 @@ public class NumberPreference extends DialogPreference implements SeekBar.OnSeek
 		if (positiveResult) {
 			final int value = this.mSeekBar.getProgress() + this.mMin;
 			if (this.callChangeListener(value)) {
-				this.setValue(value);
+				this.saveValue(value);
 			}
 		}
 	}
@@ -75,6 +75,10 @@ public class NumberPreference extends DialogPreference implements SeekBar.OnSeek
 			value = this.mMin;
 		}
 		this.mValue = value;
+	}
+	
+	private void saveValue(final int value) {
+		this.setValue(value);
 		this.persistInt(value);
 	}
 
@@ -97,6 +101,5 @@ public class NumberPreference extends DialogPreference implements SeekBar.OnSeek
 	}
 
 	public void onStartTrackingTouch(final SeekBar seek) {}
-
 	public void onStopTrackingTouch(final SeekBar seek) {}
 }

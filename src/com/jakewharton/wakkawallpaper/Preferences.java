@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import org.json.JSONObject;
 import com.jakewharton.utilities.IconCheckBoxPreference;
+import com.jakewharton.utilities.WidgetLocationsPreference;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -493,6 +494,20 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		final String bgimage = resources.getString(R.string.settings_color_game_bgimage_key);
 		if (all || key.equals(bgimage)) {
 			this.findPreference(resources.getString(R.string.settings_color_game_bgimageclear_key)).setEnabled(preferences.getString(bgimage, null) != null);
+		}
+		
+		final String iconRows = resources.getString(R.string.settings_display_iconrows_key);
+		final String iconCols = resources.getString(R.string.settings_display_iconcols_key);
+		if (all || key.equals(iconRows) || key.equals(iconCols)) {
+			final int rows = preferences.getInt(iconRows, resources.getInteger(R.integer.display_iconrows_default));
+			final int cols = preferences.getInt(iconCols, resources.getInteger(R.integer.display_iconcols_default));
+			final String widgetLocations = resources.getString(R.string.settings_display_widgetlocations_key);
+			
+			//Clear any layouts
+			preferences.edit().putString(widgetLocations, resources.getString(R.string.display_widgetlocations_default)).commit();
+			
+			//Update with counts
+			((WidgetLocationsPreference)this.findPreference(widgetLocations)).setIconCounts(rows, cols);
 		}
 	}
 
