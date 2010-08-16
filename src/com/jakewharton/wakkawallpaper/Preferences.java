@@ -498,6 +498,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 			this.findPreference(resources.getString(R.string.settings_color_game_bgopacity_key)).setEnabled(enabled);
 		}
 		
+		//If the icon rows or cols are explicitly changed then clear the widget locations
 		final String iconRows = resources.getString(R.string.settings_display_iconrows_key);
 		final String iconCols = resources.getString(R.string.settings_display_iconcols_key);
 		if (all || key.equals(iconRows) || key.equals(iconCols)) {
@@ -505,8 +506,10 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 			final int cols = preferences.getInt(iconCols, resources.getInteger(R.integer.display_iconcols_default));
 			final String widgetLocations = resources.getString(R.string.settings_display_widgetlocations_key);
 			
-			//Clear any layouts
-			preferences.edit().putString(widgetLocations, resources.getString(R.string.display_widgetlocations_default)).commit();
+			if (!all) {
+				//Clear any layouts
+				preferences.edit().putString(widgetLocations, resources.getString(R.string.display_widgetlocations_default)).commit();
+			}
 			
 			//Update with counts
 			((WidgetLocationsPreference)this.findPreference(widgetLocations)).setIconCounts(rows, cols);
