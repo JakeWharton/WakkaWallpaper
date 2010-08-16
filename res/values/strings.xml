@@ -18,6 +18,7 @@
     <string name="gameover">GAME OVER</string>
     
     <string name="display_widgetlocations_default"/>
+    <string name="widgetlocations_howto">Draw rectangles to indicate widget positions. Long press to delete.</string>
     
     <string name="reset_game">Are you sure you want to reset all game-related settings?</string>
     <string name="reset_game_toast">All game-related settings reset.</string>

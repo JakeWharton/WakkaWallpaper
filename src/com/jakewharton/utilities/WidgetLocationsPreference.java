@@ -2,6 +2,7 @@ package com.jakewharton.utilities;
 
 import java.util.LinkedList;
 import java.util.List;
+import com.jakewharton.wakkawallpaper.R;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -11,6 +12,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +21,10 @@ import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 public class WidgetLocationsPreference extends DialogPreference {
+	private static final String LOG = "WidgetLocationsPreference";
+	private static final int RECTANGLE_LENGTH = 4;
+	private static final int PADDING = 10;
+	
 	private WidgetLocatorView mView;
 	private String mValue;
 	private String mTempValue;
@@ -36,10 +42,10 @@ public class WidgetLocationsPreference extends DialogPreference {
 		final Context context = this.getContext();
 		final LinearLayout layout = new LinearLayout(context);
 		layout.setOrientation(LinearLayout.VERTICAL);
-		layout.setPadding(10, 10, 10, 10);
+		layout.setPadding(WidgetLocationsPreference.PADDING, WidgetLocationsPreference.PADDING, WidgetLocationsPreference.PADDING, WidgetLocationsPreference.PADDING);
 		
 		final TextView text = new TextView(context);
-		text.setText("Draw rectangles to indicate widget positions. Long press to delete.");
+		text.setText(R.string.widgetlocations_howto);
 		layout.addView(text, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		
 		this.mView = new WidgetLocatorView(context, this.mIconRows, this.mIconCols, this.mValue);
@@ -87,7 +93,7 @@ public class WidgetLocationsPreference extends DialogPreference {
 	public static List<Rect> convertStringToWidgetList(final String string) {
 		final List<Rect> list = new LinkedList<Rect>();
 		
-		if (string.length() % 4 != 0) {
+		if ((string.length() % WidgetLocationsPreference.RECTANGLE_LENGTH) != 0) {
 			throw new IllegalArgumentException("String length must be a multiple of four.");
 		}
 		
@@ -95,13 +101,15 @@ public class WidgetLocationsPreference extends DialogPreference {
 		while (i < string.length()) {
 			try {
 				final Rect r = new Rect();
-				r.left = Integer.parseInt(String.valueOf(string.charAt(i++)));
-				r.top = Integer.parseInt(String.valueOf(string.charAt(i++)));
-				r.right = Integer.parseInt(String.valueOf(string.charAt(i++)));
-				r.bottom = Integer.parseInt(String.valueOf(string.charAt(i++)));
+				r.left = Integer.parseInt(String.valueOf(string.charAt(i)));
+				r.top = Integer.parseInt(String.valueOf(string.charAt(i+1)));
+				r.right = Integer.parseInt(String.valueOf(string.charAt(i+2)));
+				r.bottom = Integer.parseInt(String.valueOf(string.charAt(i+3)));
 				list.add(r);
 			} catch (NumberFormatException e) {
-				//TODO: warn
+				Log.w(WidgetLocationsPreference.LOG, "Invalid rectangle: " + string.substring(i, WidgetLocationsPreference.RECTANGLE_LENGTH));
+			} finally {
+				i += WidgetLocationsPreference.RECTANGLE_LENGTH;
 			}
 		}
 		
@@ -250,7 +258,7 @@ public class WidgetLocationsPreference extends DialogPreference {
 			final Rect newWidget = this.toRectangle();
 			final Rect insetWidget = new Rect(newWidget);
 			
-			//This is so that intersect returns true if they actually adjacent
+			//This is so that intersect returns true if they are actually adjacent
 			insetWidget.inset(-1, -1);
 			
 			for (final Rect widget : this.mWidgets) {
