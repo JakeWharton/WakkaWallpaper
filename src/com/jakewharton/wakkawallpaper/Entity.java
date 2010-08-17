@@ -297,6 +297,7 @@ public abstract class Entity {
     /**
      * Render the entity on the Canvas.
      * 
+     * @param game Game instance
      * @param c Canvas on which to draw.
      */
 	public abstract void draw(final Game game, final Canvas c);
