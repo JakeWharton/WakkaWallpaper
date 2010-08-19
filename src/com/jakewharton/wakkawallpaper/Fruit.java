@@ -95,7 +95,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	private boolean mIsVisible;
 	
 	/**
-	 * The lengthof time this fruit will be visible on screen.
+	 * The length of time this fruit will be visible on screen.
 	 */
 	private int mVisibleLength;
 	
