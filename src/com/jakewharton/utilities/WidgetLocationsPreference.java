@@ -20,23 +20,70 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
+/**
+ * Dialog preference which allows for the selection of the locations of launcher widgets.
+ * 
+ * @author Jake Wharton
+ */
 public class WidgetLocationsPreference extends DialogPreference {
+	/**
+	 * Tag used for logging.
+	 */
 	private static final String LOG = "WidgetLocationsPreference";
+	
+	/**
+	 * Number of numbers stored in a rectangle (L, R, T, B).
+	 */
 	private static final int RECTANGLE_LENGTH = 4;
+	
+	/**
+	 * Offset from the sides of the dialog.
+	 */
 	private static final int PADDING = 10;
 	
+	
+	
+	/**
+	 * Widget location view. 
+	 */
 	private WidgetLocatorView mView;
+	
+	/**
+	 * The string representation of the locations.
+	 */
 	private String mValue;
+	
+	/**
+	 * The string representation of the locations used for the save callback.
+	 */
 	private String mTempValue;
+	
+	/**
+	 * Number of icon rows on the launcher.
+	 */
 	private int mIconRows;
+	
+	/**
+	 * Number of icon columns on the launcher.
+	 */
 	private int mIconCols;
 
+	
+	
+	/**
+	 * Create a new instance of the WidgetLocationsPreference.
+	 * 
+	 * @param context Context.
+	 * @param attrs Attributes.
+	 */
 	public WidgetLocationsPreference(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 
 		this.setPersistent(true);
 	}
 
+	
+	
 	@Override
 	protected View onCreateDialogView() {
 		final Context context = this.getContext();
@@ -54,6 +101,12 @@ public class WidgetLocationsPreference extends DialogPreference {
 		return layout;
 	}
 	
+	/**
+	 * Update the number of icon rows and columns on the launcher.
+	 * 
+	 * @param iconRows Number of rows.
+	 * @param iconCols Number of columns.
+	 */
 	public void setIconCounts(final int iconRows, final int iconCols) {
 		this.mIconRows = iconRows;
 		this.mIconCols = iconCols;
@@ -81,15 +134,31 @@ public class WidgetLocationsPreference extends DialogPreference {
 		}
 	}
 
+	/**
+	 * Set and persist the string representation of the widget locations.
+	 * @param value
+	 */
 	private void saveValue(final String value) {
 		this.setValue(value);
 		this.persistString(value);
 	}
 	
+	/**
+	 * Set the string representation of the widget locations.
+	 * @param value
+	 */
 	private void setValue(final String value) {
 		this.mValue = value;
 	}
 	
+	
+	
+	/**
+	 * Convert a persisted string value to the actual widget locations.
+	 * 
+	 * @param string Persisted string.
+	 * @return List of Rects where the widgets are located.
+	 */
 	public static List<Rect> convertStringToWidgetList(final String string) {
 		final List<Rect> list = new LinkedList<Rect>();
 		
@@ -116,22 +185,84 @@ public class WidgetLocationsPreference extends DialogPreference {
 		return list;
 	}
 	
+	
+	
+	/**
+	 * View which allows for the selecting of widget locations
+	 * 
+	 * @author Jake Wharton
+	 */
 	private class WidgetLocatorView extends View {
+		/**
+		 * Offset from the sides of the view.
+		 */
 		private static final float OFFSET = 5;
 		
+		
+		
+		/**
+		 * Location at which the current widget location begins.
+		 */
 		private Point mTouchStart;
+		
+		/**
+		 * Location at which the current widget location ends.
+		 */
 		private Point mTouchEnd;
+		
+		/**
+		 * Number of icon rows to display.
+		 */
 		private final int mRows;
+		
+		/**
+		 * Number of icon columns to display.
+		 */
 		private final int mCols;
+		
+		/**
+		 * The width of a single icon.
+		 */
 		private float mIconWidth;
+		
+		/**
+		 * The height of a single icon.
+		 */
 		private float mIconHeight;
+		
+		/**
+		 * The width of the virtual screen on the view.
+		 */
 		private float mWidth;
+		
+		/**
+		 * The width of the virtual screen on the view.
+		 */
 		private float mHeight;
+		
+		/**
+		 * Paint used to draw the icon divider lines.
+		 */
 		private final Paint mLine;
+		
+		/**
+		 * Paint used to draw the current widget.
+		 */
 		private final Paint mDrawing;
+		
+		/**
+		 * Paint used to draw the existing widgets.
+		 */
 		private final Paint mWidget;
+		
+		/**
+		 * List of current existing widget locations.
+		 */
 		private final List<Rect> mWidgets;
 		
+		/**
+		 * Detect long-presses on the view.
+		 */
 		private final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.OnGestureListener() {
 			public boolean onSingleTapUp(MotionEvent e) { return false; }
 			public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) { return false; }
@@ -143,6 +274,16 @@ public class WidgetLocationsPreference extends DialogPreference {
 			}
 		});
 		
+		
+		
+		/**
+		 * Create a new instance of the WidgetLocatorView.
+		 * 
+		 * @param context Context.
+		 * @param rows Number of icon rows.
+		 * @param cols Number of icon columns.
+		 * @param value Persisted value of widget location representation.
+		 */
 		public WidgetLocatorView(final Context context, final int rows, final int cols, final String value) {
 			super(context);
 			
@@ -164,6 +305,8 @@ public class WidgetLocationsPreference extends DialogPreference {
 			this.mWidgets = WidgetLocationsPreference.convertStringToWidgetList(value);
 		}
 
+		
+		
 		@Override
 		protected void onDraw(final Canvas c) {
 			c.save();
@@ -254,6 +397,9 @@ public class WidgetLocationsPreference extends DialogPreference {
 			}
 		}
 		
+		/**
+		 * Add a new widget using the two touch point locations as corners.
+		 */
 		private void add() {
 			final Rect newWidget = this.toRectangle();
 			final Rect insetWidget = new Rect(newWidget);
@@ -275,6 +421,9 @@ public class WidgetLocationsPreference extends DialogPreference {
 			this.save();
 		}
 		
+		/**
+		 * Delete a widget at the long-pressed poisiton (if it exists).
+		 */
 		private void delete() {
 			for (final Rect widget : this.mWidgets) {
 				if ((this.mTouchEnd.x >= widget.left) && (this.mTouchEnd.x <= widget.right) && (this.mTouchEnd.y >= widget.top) && (this.mTouchEnd.y <= widget.bottom)) {
@@ -286,6 +435,9 @@ public class WidgetLocationsPreference extends DialogPreference {
 			this.invalidate();
 		}
 		
+		/**
+		 * Save the value to the parent instance.
+		 */
 		private void save() {
 			final StringBuilder builder = new StringBuilder();
 			for (final Rect widget : this.mWidgets) {
@@ -297,6 +449,13 @@ public class WidgetLocationsPreference extends DialogPreference {
 			WidgetLocationsPreference.this.setValue(builder.toString());
 		}
 		
+		/**
+		 * Get the icon location Point from the current pixel coordinates.
+		 * 
+		 * @param x X coordinate.
+		 * @param y Y coordinate.
+		 * @return Icon location Point.
+		 */
 		private Point getPoint(float x, float y) {
 			x -= WidgetLocatorView.OFFSET;
 			y -= WidgetLocatorView.OFFSET;
@@ -317,6 +476,11 @@ public class WidgetLocationsPreference extends DialogPreference {
 			return new Point(newX, newY);
 		}
 		
+		/**
+		 * Convert the two touch Points to a Rect.
+		 * 
+		 * @return Rect with corners at the two touch points.
+		 */
 		private Rect toRectangle() {
 			final boolean isStartXSmaller = (this.mTouchStart.x < this.mTouchEnd.x);
 			final boolean isStartYSmaller = (this.mTouchStart.y < this.mTouchEnd.y);

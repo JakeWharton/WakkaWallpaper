@@ -8,9 +8,26 @@ import android.view.View;
 import android.widget.ImageView;
 import com.jakewharton.wakkawallpaper.R;
 
+/**
+ * A simple CheckBoxPreference which also allows for the display of an icon.
+ * 
+ * @author Jake Wharton
+ */
 public class IconCheckBoxPreference extends CheckBoxPreference {
+	/**
+	 * The icon.
+	 */
 	private Drawable mIcon;
     
+	
+	
+	/**
+	 * Create a new instance of the IconCheckBoxPreference.
+	 * 
+	 * @param context Context.
+	 * @param attrs Attributes.
+	 * @param defStyle Style.
+	 */
     public IconCheckBoxPreference(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         
@@ -19,10 +36,18 @@ public class IconCheckBoxPreference extends CheckBoxPreference {
         this.mIcon = context.obtainStyledAttributes(attrs, R.styleable.IconPreference, defStyle, 0).getDrawable(R.styleable.IconPreference_icon);
     }
 
+    /**
+     * Create a new instance of the IconCheckBoxPreference.
+     * 
+     * @param context Context.
+     * @param attrs Attributes.
+     */
     public IconCheckBoxPreference(final Context context, final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
+    
+    
     @Override
     protected void onBindView(final View view) {
         super.onBindView(view);

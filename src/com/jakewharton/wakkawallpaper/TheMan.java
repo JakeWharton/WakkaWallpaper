@@ -19,17 +19,47 @@ import android.util.Log;
  * @author Jake Wharton
  */
 public class TheMan extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
+	/**
+	 * Living state of The Man.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum State { ALIVE, DEAD }
+	
+	/**
+	 * Current character representing The Man.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum Character { THEMAN, /*MRS_THEMAN,*/ ANDY, GOOGOL, THEMANDROID }
+	
+	/**
+	 * Current AI mode.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum Mode {
 		/*AI(0),*/ NEAREST_DOT(1), RANDOM(2);
 		
+		/**
+		 * Persisted unique value.
+		 */
 		public final int value;
+		
+		
 		
 		private Mode(final int value) {
 			this.value = value;
 		}
 		
+		
+		
+		/**
+		 * Parse an integer that corresponds to a mode.
+		 * 
+		 * @param modeValue Value to parse.
+		 * @return Mode.
+		 */
 		public static TheMan.Mode parseInt(final int modeValue) {
 			for (TheMan.Mode mode : TheMan.Mode.values()) {
 				if (mode.value == modeValue) {
@@ -40,26 +70,97 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		}
 	}
 	
+	
+	
+	/**
+	 * Tag used for logging purposes.
+	 */
 	private static final String TAG = "WakkaWallpaper.TheMan";
-	private static final int CHOMP_ANGLE_COUNT = 4;
-	private static final int DEATH_ANGLE_GROWTH = 30;
+	
+	/**
+	 * Angles iterated over when moving to create the chomping action.
+	 */
 	private static final int[] CHOMP_ANGLES = new int[] { 90, 45, 0, 45 };
+	
+	/**
+	 * Angle by which the death animation grows per frame.
+	 */
+	private static final int DEATH_ANGLE_GROWTH = 30;
+	
+	/**
+	 * The maximum timespan to follow a user's directional guidance.
+	 */
 	private static final int WANTS_TO_GO_MAX_LENGTH = 5000;
+	
+	/**
+	 * The foreground color used when we are "The Mandroid" character.
+	 */
 	/*package*/static final int THE_MANDROID_FOREGROUND = 0xffa4c639;
 	
+	
+	
+	/**
+	 * Current living state.
+	 */
 	private TheMan.State mState;
+	
+	/**
+	 * Current AI mode.
+	 */
 	private TheMan.Mode mMode;
+	
+	/**
+	 * Current playing character.
+	 */
 	private TheMan.Character mCharacter;
+	
+	/**
+	 * Timer used for holding states in animation.
+	 */
 	private int mStateTicker;
+	
+	/**
+	 * The foreground color used to paint.
+	 */
     private final Paint mForeground;
+    
+    /**
+     * The next direction the user wants us to take. 
+     */
 	private Entity.Direction mWantsToGo;
+	
+	/**
+	 * Timer for the wants to go value to timeout.
+	 */
 	private long mWantsToGoTimer;
+	
+	/**
+	 * Whether or not the Andy trophy is enabled.
+	 */
 	private boolean mIsTrophyAndyEnabled;
+	
+	/**
+	 * Whether or not the Googol trophy is enabled.
+	 */
 	private boolean mIsTrophyGoogolEnabled;
+	
+	/**
+	 * Whether or not The Mandroid trophy is enabled.
+	 */
 	private boolean mIsTrophyTheMandroidEnabled;
+	
+	/**
+	 * Whether or not the Ego trophy is enabled.
+	 */
     private boolean mIsTrophyEgoEnabled;
+    
+    /**
+     * The image of sprites for the current character (if any).1
+     */
 	private Bitmap mSprite;
     
+	
+	
 	/**
 	 * Create instance of "The Man"
 	 */
@@ -75,6 +176,8 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
     	this.mWantsToGo = null;
 	}
 
+	
+	
     /**
      * Handle the changing of a preference.
      */

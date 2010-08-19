@@ -17,7 +17,18 @@ import android.util.Log;
  * @author Jake Wharton
  */
 public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
+	/**
+	 * The character that represents the fruit.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum Character { FRUIT, GOOGOL }
+	
+	/**
+	 * The type of fruit.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum Type {
 		CHERRY(100, new Rect(0, 0, 12, 14)),
 		STRAWBERRY(300, new Rect(1, 20, 12, 34)),
@@ -28,30 +39,107 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		BELL(3000, new Rect(40, 40, 52, 54)),
 		KEY(5000, new Rect(40, 60, 52, 74));
 		
+		
+		
+		/**
+		 * Point value of this type of fruit.
+		 */
 		public final int points;
+		
+		/**
+		 * The location of the sprite for this fruit.
+		 */
 		public final Rect sprite;
 		
+		
+		
+		/**
+		 * Create a fruit type.
+		 * 
+		 * @param points Value of fruit in points.
+		 * @param sprite Location of fruit's sprite.
+		 */
 		private Type(final int points, final Rect sprite) {
 			this.points = points;
 			this.sprite = sprite;
 		}
 	}
 	
+	
+	
+	/**
+	 * Tag used for logging.
+	 */
 	private static final String TAG = "WakkaWallpaper.Fruit";
 	
+	
+	
+	/**
+	 * The type of fruit.
+	 */
 	private Fruit.Type mType;
+	
+	/**
+	 * The character representing this fruit.
+	 */
 	private Fruit.Character mCharacter;
+	
+	/**
+	 * The time at which the fruit was created on screen.
+	 */
 	private long mCreated;
+	
+	/**
+	 * Whether or not the fruit is currently visible on screen.
+	 */
 	private boolean mIsVisible;
+	
+	/**
+	 * The lengthof time this fruit will be visible on screen.
+	 */
 	private int mVisibleLength;
+	
+	/**
+	 * The lowest amount of time possible a fruit can appear on the screen.
+	 */
 	private int mVisibleLower;
+	
+	/**
+	 * The highest amount of time possible a fruit can appear on the screen.
+	 */
 	private int mVisibleUpper;
+	
+	/**
+	 * The dot threshold at which the first fruit is displayed.
+	 */
 	private int mThresholdFirst;
+	
+	/**
+	 * The dot threshold at which the second fruit is displayed.
+	 */
 	private int mThresholdSecond;
+	
+	/**
+	 * The number of fruits that have been displayed so far this level.
+	 */
 	private int mNumberDisplayed;
+	
+	/**
+	 * Bitmap holding the fruit sprites.
+	 */
 	private Bitmap mFruits;
+	
+	/**
+	 * List of possible board positions a fruit could appear in.
+	 */
 	private List<Point> mPositions;
+	
+	/**
+	 * Whether or not the Eden trophy is enabled.
+	 */
     private boolean mIsTrophyEdenEnabled;
+    
+    
 	
 	/**
 	 * Initialize a new fruit adhering to the parameters.
@@ -69,6 +157,8 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
         this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
 	}
 
+	
+	
     /**
      * Handle the changing of a preference.
      */
@@ -296,6 +386,7 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 	public void newLife(final Game game) {
 		//We do not move
 	}
+	
 	
 
 	/**

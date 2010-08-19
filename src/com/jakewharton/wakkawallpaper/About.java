@@ -8,13 +8,43 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.WebView;
 
+/**
+ * Activity which displays a web view with the contents loaded from an asset.
+ * 
+ * @author Jake Wharton
+ */
 public class About extends Activity {
+	/**
+	 * Filename of the asset to load.
+	 */
 	/*package*/static final String EXTRA_FILENAME = "filename";
+	
+	/**
+	 * Title of the activity.
+	 */
 	/*package*/static final String EXTRA_TITLE = "title";
+	
+	/**
+	 * Newline character to use between asset lines.
+	 */
 	private static final char NEWLINE = '\n';
+	
+	/**
+	 * Error message displayed when the asset fails to load.
+	 */
 	private static final String ERROR = "Failed to load the file from assets.";
+	
+	/**
+	 * Encoding of the assets.
+	 */
 	private static final String MIME_TYPE = "text/html";
+	
+	/**
+	 * Character set of the assets.
+	 */
 	private static final String ENCODING = "utf8";
+	
+	
 	
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

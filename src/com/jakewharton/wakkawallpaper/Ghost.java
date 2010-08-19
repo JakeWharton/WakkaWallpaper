@@ -18,18 +18,61 @@ import android.util.Log;
  * @author Jake Wharton
  */
 public abstract class Ghost extends Entity implements SharedPreferences.OnSharedPreferenceChangeListener {
+	/**
+	 * Ghost movement state.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum State { HUNTING, FRIGHTENED, EATEN }
+	
+	/**
+	 * Ghost movement strategy.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum Strategy { CHASE, SCATTER, RANDOM }
+	
+	/**
+	 * Character representing a ghost.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum Character { GHOST, SPRITES }
+	
+	/**
+	 * Movement mode with which the next direction is determined.
+	 * 
+	 * @author Jake Wharton.
+	 */
 	enum Mode {
 		CHASE_AND_SCATTER(0), CHASE_ONLY(1), SCATTER_ONLY(2), RANDOM_TURNS(3);
 		
+		
+		
+		/**
+		 * Persisted value.
+		 */
 		public final int value;
 		
+		
+		
+		/**
+		 * Create a mode.
+		 * 
+		 * @param value Persisted value.
+		 */
 		private Mode(final int value) {
 			this.value = value;
 		}
 		
+		
+		
+		/**
+		 * Convert a persisted value back to a Mode.
+		 * 
+		 * @param modeValue Mode value.
+		 * @return Mode.
+		 */
 		public static Ghost.Mode parseInt(final int modeValue) {
 			for (final Ghost.Mode mode : Ghost.Mode.values()) {
 				if (mode.value == modeValue) {
@@ -40,12 +83,41 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		}
 	}
 
+	
+	
+	/**
+	 * Tag used for logging.
+	 */
 	private static final String TAG = "WakkaWallpaper.Ghost";
+	
+	/**
+	 * Length (in milliseconds) at which the ghosts blink when about to exit the frightened state.
+	 */
 	private static final int FRIGHTENED_LENGTH_BLINK = 1000;
+	
+	/**
+	 * Sprite offset on the bitmap when in hunting state.
+	 */
 	private static final int SPRITE_OFFSET_HUNTING = 0;
+	
+	/**
+	 * Sprite offset on the bitmap when in frightened state.
+	 */
 	private static final int SPRITE_OFFSET_FRIGHTENED = 1;
+	
+	/**
+	 * Sprite offset on the bitmap when blinking in frightened state.
+	 */
 	private static final int SPRITE_OFFSET_FRIGHTENED_BLINK = 2;
+	
+	/**
+	 * Sprite offset on the bitmap when eaten.
+	 */
 	private static final int SPRITE_OFFSET_EATEN = 3;
+	
+	/**
+	 * Length of times at which ghosts stay frightened on what levels.
+	 */
 	private static final int[] FRIGHTENED_LENGTH = new int[] {
 		/* Level 1   */ 6000,
 		/* Level 2   */ 5000,
@@ -67,6 +139,10 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		/* Level 18  */ 1000,
 		/* Level 19+ */ 0,
 	};
+	
+	/**
+	 * Times to chase and scatter ghosts.
+	 */
 	private static final int[][] CHASE_AND_SCATTER_TIMES = new int[][] {
 		/* Level 1  */ new int[] { -7000, 20000, -7000, 20000, -5000, 20000, -5000, 0 },
 		/* Level 2  */ new int[] { -7000, 20000, -7000, 20000, -5000, 1033000, -17, 0 },
@@ -75,37 +151,164 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		/* Level 5+ */ new int[] { -5000, 20000, -5000, 20000, -5000, 1037000, -17, 0 },
 	};
 	
+	
+	
+	/**
+	 * State of this ghost.
+	 */
 	protected Ghost.State mState;
+	
+	/**
+	 * Current strategy used.
+	 */
 	protected Ghost.Strategy mStrategyCurrent;
+	
+	/**
+	 * Last strategy used.
+	 */
 	protected Ghost.Strategy mStrategyLast;
+	
+	/**
+	 * Mode of movement.
+	 */
 	protected Ghost.Mode mMode;
+	
+	/**
+	 * Character currently representing this ghosts.
+	 */
 	private Ghost.Character mCharacter;
+	
+	/**
+	 * Body background color.
+	 */
 	protected final Paint mBodyBackground;
+	
+	/**
+	 * Eye background color.
+	 */
 	private final Paint mEyeBackground;
+	
+	/**
+	 * Eye foreground color.
+	 */
 	private final Paint mEyeForeground;
+	
+	/**
+	 * Scared body background color.
+	 */
 	private final Paint mScaredBackground;
+	
+	/**
+	 * Scared mouth foreground color.
+	 */
 	private final Paint mScaredMouthForeground;
+	
+	/**
+	 * Scared eye foreground color.
+	 */
 	private final Paint mScaredEyeForeground;
+	
+	/**
+	 * Blinking scared body background color.
+	 */
 	private final Paint mScaredBlinkBackground;
+	
+	/**
+	 * Blinking scared mouth foreground color.
+	 */
 	private final Paint mScaredBlinkMouthForeground;
+	
+	/**
+	 * Blinking scared eye foreground color.
+	 */
 	private final Paint mScaredBlinkEyeForeground;
+	
+	/**
+	 * Paths of the ghosts body.
+	 */
 	private final Path[] mBody;
+	
+	/**
+	 * Path of the scared mouth. 
+	 */
 	private Path mScaredMouth;
+	
+	/**
+	 * Width (in pixels) of a single cell divided by three.
+	 */
 	private float mCellWidthOverThree;
+	
+	/**
+	 * Height (in pixels) of a single cell divided by three.
+	 */
 	private float mCellHeightOverThree;
+	
+	/**
+	 * Width (in pixels) of a single cell divided by seven.
+	 */
 	private float mCellWidthOverSeven;
+	
+	/**
+	 * Width (in pixels) of a single cell divided by fourteen.
+	 */
 	private float mCellWidthOverFourteen;
+	
+	/**
+	 * Length of a current state.
+	 */
 	private int mStateTimer;
+	
+	/**
+	 * Time at which the current state was set.
+	 */
 	private long mStateLastTime;
+	
+	/**
+	 * Pointer to the current mode for chase and scatter control.
+	 */
 	private int mModePointer;
+	
+	/**
+	 * Length of the current mode.
+	 */
 	private int mModeTimer;
+	
+	/**
+	 * Time at which the current mode was set.
+	 */
 	private long mModeLastTime;
+	
+	/**
+	 * Whether or not the Logos trophy is enabled.
+	 */
 	private boolean mIsTrophyLogosEnabled;
+	
+	/**
+	 * Whether or not the CEOs trophy is enabled.
+	 */
 	private boolean mIsTrophyCeosEnabled;
+	
+	/**
+	 * Whether or not the Googol trophy is enabled.
+	 */
 	private boolean mIsTrophyGoogolEnabled;
+	
+	/**
+	 * Whether or not the Desserts trophy is enabled.
+	 */
 	private boolean mIsTrophyDessertsEnabled;
+	
+	/**
+	 * Bitmap holding the ghost sprites (if any).
+	 */
 	private Bitmap mSprites;
+	
+	/**
+	 * Index of which sprite to use for this ghost.
+	 */
 	private final int mSpriteIndex;
+	
+	
 	
     /**
      * Create a new ghost.
@@ -140,6 +343,8 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
         this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
 	}
 
+	
+	
     /**
      * Handle the changing of a preference.
      */
@@ -790,7 +995,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	 * @return Point
 	 */
 	protected abstract Point getChasingTarget(final Game game);
-
+	
 	
 	
 	/**

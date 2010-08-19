@@ -12,12 +12,29 @@ import android.util.Log;
  * @author Jake Wharton
  */
 public abstract class Entity {
+	/**
+	 * Possible directions of travel.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum Direction {
 		NORTH(270), SOUTH(90), EAST(0), WEST(180);
 		
+		
+		
+		/**
+		 * Number of degrees in a circle.
+		 */
 		private static final int DEGREES_IN_CIRCLE = 360;
 		
+		
+		
+		/**
+		 * Angle from 0 degrees of the direction.
+		 */
 		protected final int angle;
+		
+		
 		
 		/**
 		 * Create a direction with specified angle.
@@ -27,6 +44,8 @@ public abstract class Entity {
 		private Direction(final int angle) {
 			this.angle = angle;
 		}
+		
+		
 		
 		/**
 		 * Get the angle of the direction taking into account the next direction.
@@ -72,18 +91,49 @@ public abstract class Entity {
 			}
 		}
 	}
+	
+	/**
+	 * The drawing style of entities.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum Style {
 		FILL(0, Paint.Style.FILL_AND_STROKE),
 		STROKE(1, Paint.Style.STROKE);
 		
+		
+		
+		/**
+		 * Persisted value of style.
+		 */
 		public final int value;
+		
+		/**
+		 * Paint style of this style.
+		 */
 		public final Paint.Style style;
 		
+		
+		
+		/**
+		 * Construct a style.
+		 * 
+		 * @param value Persisted value.
+		 * @param style Paint style to draw.
+		 */
 		private Style(final int value, final Paint.Style style) {
 			this.value = value;
 			this.style = style;
 		}
 		
+		
+		
+		/**
+		 * Convert a persisted int to a Style.
+		 * 
+		 * @param stateValue Persisted int.
+		 * @return Style.
+		 */
 		public static Entity.Style parseInt(final int stateValue) {
 			for (final Entity.Style state : Entity.Style.values()) {
 				if (state.value == stateValue) {
@@ -94,23 +144,86 @@ public abstract class Entity {
 		}
 	}
 	
+	
+	
+	/**
+	 * Tag for logging.
+	 */
 	private static final String TAG = "WakkaWallpaper.Entity";
+	
+	/**
+	 * The Paint used to draw bitmap sprites to the screen.
+	 */
 	/*package*/static final Paint SPRITE_PAINT = new Paint(Paint.ANTI_ALIAS_FLAG);
+	
+	/**
+	 * Width of bitmap sprites.
+	 */
 	/*package*/static final int SPRITE_WIDTH = 100;
+	
+	/**
+	 * Height of bitmap sprites.
+	 */
 	/*package*/static final int SPRITE_HEIGHT = 100;
 	
+	
+	
+	/**
+	 * Position of this Entity.
+	 */
 	protected final Point mPosition;
-	protected final PointF mLocation;
+	
+	/**
+	 * Location of this Entity.
+	 */
+	protected final Point mLocation;
+	
+	/**
+	 * Last direction travelled.
+	 */
 	protected Entity.Direction mDirectionLast;
+	
+	/**
+	 * Current direction of travel.
+	 */
 	protected Entity.Direction mDirectionCurrent;
+	
+	/**
+	 * Next direction of travel.
+	 */
 	protected Entity.Direction mDirectionNext;
-	protected float mSpeed;
+	
+	/**
+	 * The width of a single cell in pixels.
+	 */
 	protected float mCellWidth;
+	
+	/**
+	 * The height of a single cell in pixels.
+	 */
 	protected float mCellHeight;
+	
+	/**
+	 * Half of the width of a single cell in pixels.
+	 */
 	protected float mCellWidthOverTwo;
+	
+	/**
+	 * Half of the height of a single cell in pixels.
+	 */
 	protected float mCellHeightOverTwo;
+	
+	/**
+	 * Tick counter.
+	 */
 	protected int mTickCount;
+	
+	/**
+	 * Whether or not this entity can wrap around the screen.
+	 */
 	protected boolean mIsWrapping;
+	
+	
 	
 	/**
 	 * Create a new entity.
@@ -118,8 +231,10 @@ public abstract class Entity {
 	protected Entity() {
 		this.mPosition = new Point();
 		this.mLocation = new PointF();
-    	this.mTickCount = 0;
+		this.mTickCount = 0;
 	}
+	
+	
 	
 	/**
 	 * Resize the entity to fit within the specified dimensions.
@@ -322,6 +437,7 @@ public abstract class Entity {
 	 * @param game Game instance
 	 */
 	public abstract void newLife(final Game game);
+	
 	
 	
 	/**

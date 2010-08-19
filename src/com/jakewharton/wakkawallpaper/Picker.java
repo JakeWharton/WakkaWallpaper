@@ -5,7 +5,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+/**
+ * Activity which launches the live wallpaper picker and prompts for the
+ * user to install our wallpaper.
+ * 
+ * @author Jake Wharton
+ */
 public class Picker extends Activity {
+	/**
+	 * Intent for live wallpaper picker activity.
+	 */
 	private static final String LIVE_WALLPAPER_CHOOSER = "android.service.wallpaper.LIVE_WALLPAPER_CHOOSER";
 	
 	@Override

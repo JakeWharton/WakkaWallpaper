@@ -101,100 +101,471 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	}
 	enum Dots { CIRCLES, APPLES }
 	
+	
+	
+	/**
+	 * Single random number generate for this wallpaper.
+	 */
 	/*package*/static final Random RANDOM = new Random();
+	
+	/**
+	 * Filters used to smooth the drawing of sprites.
+	 */
 	/*package*/static final PaintFlagsDrawFilter FILTER_SET = new PaintFlagsDrawFilter(0, Paint.FILTER_BITMAP_FLAG);
+	
+	/**
+	 * Filters used to undo the sprite smoothing.
+	 */
 	/*package*/static final PaintFlagsDrawFilter FILTER_REMOVE = new PaintFlagsDrawFilter(Paint.FILTER_BITMAP_FLAG, 0);
+	
+	/**
+	 * Tag used for logging.
+	 */
 	private static final String TAG = "WakkaWallpaper.Game";
+	
+	/**
+	 * The format to use when rendering the score in arcade mode.
+	 */
 	private static final NumberFormat SCORE_FORMAT = new DecimalFormat("000000");
+	
+	/**
+	 * The value at which to flip the score in arcade mode.
+	 */
 	private static final int SCORE_FLIPPING = 1000000;
+	
+	/**
+	 * Point values of fleeing ghosts.
+	 */
 	private static final int[] POINTS_FLEEING_GHOSTS = new int[] { 200, 400, 800, 1600 };
+	
+	/**
+	 * Points when all of the ghosts are eaten on a single juggerdot.
+	 */
 	private static final int POINTS_ALL_FLEEING_GHOSTS = 12000;
+	
+	/**
+	 * Padding (in pixels) from the screen edges for the HUD.
+	 */
 	private static final float HUD_PADDING = 3;
+	
+	/**
+	 * Angle at which to draw The Man's lives in the HUD.
+	 */
 	private static final float HUD_THEMAN_ANGLE = 202.5f;
+	
+	/**
+	 * Arc of The Man in the HUD.
+	 */
 	private static final float HUD_THEMAN_ARC = 315;
+	
+	/**
+	 * Number of juggerdots on the board.
+	 */
 	private static final int NUMBER_OF_JUGGERDOTS = 4;
+	
+	/**
+	 * Level at which to display the kill screen.
+	 */
 	private static final int KILL_SCREEN_LEVEL = 256;
+	
+	/**
+	 * Number of lives to start a game with.
+	 */
 	private static final int INITIAL_LIVES = 3;
+	
+	/**
+	 * Point threshold at which the Googol trophy is earned.
+	 */
 	private static final int TROPHY_GOOGOL_THRESHOLD = 1010100;
+	
+	/**
+	 * Point threshold at which the Legend trophy is earned.
+	 */
 	private static final int TROPHY_LEGEND_THRESHOLD = 3333360;
+	
+	/**
+	 * Number of ghosts that need to be eaten on a single level to earn the Logos trophy.
+	 */
 	private static final int TROPHY_LOGOS_THRESHOLD = 12;
+	
+	/**
+	 * Level that needs to be reaches to earn the CEOs trophy.
+	 */
 	private static final int TROPHY_CEOS_THRESHOLD = 256;
+	
+	/**
+	 * Probability of the kill screen appearing when the Legend trophy is enabled.
+	 */
 	private static final int KILL_SCREEN_TROPHY_PROBABILITY = 10;
 	
+	
+	
+	/**
+	 * The current game state.
+	 */
 	private Game.State mState;
+	
+	/**
+	 * The current gameplay mode.
+	 */
 	private Game.Mode mMode;
+	
+	/**
+	 * The type of wrapping employed if it is enabled on an entity.
+	 */
 	private Game.Wrapping mWrapping;
+	
+	/**
+	 * What to represent the dots with when rendering.
+	 */
 	private Game.Dots mDots;
+	
+	/**
+	 * Whether or not The Man can wrap around the edges.
+	 */
 	private boolean mIsWrappingTheMan;
+	
+	/**
+	 * Whether or not the ghosts can wrap around the edges.
+	 */
 	private boolean mIsWrappingGhosts;
+	
+	/**
+	 * The system milliseconds at which the game state last changed.
+	 */
 	private long mStateTimestamp;
+	
+	/**
+	 * Number of cells on the board horizontally.
+	 */
 	private int mCellsWide;
+	
+	/**
+	 * Number of cells on the board vertically.
+	 */
 	private int mCellsTall;
+	
+	/**
+	 * Number of cells horizontally between the columns.
+	 */
 	private int mCellColumnSpacing;
+	
+	/**
+	 * Number of cells vertically between the rows.
+	 */
 	private int mCellRowSpacing;
+	
+	/**
+	 * Width (in pixels) of a single cell.
+	 */
 	private float mCellWidth;
+	
+	/**
+	 * Height (in pixels) of a single cell.
+	 */
 	private float mCellHeight;
+	
+	/**
+	 * Height (in pixels) of the screen.
+	 */
     private int mScreenHeight;
+    
+    /**
+     * Width (in pixels) of the screen.
+     */
     private int mScreenWidth;
+    
+    /**
+     * Whether or not the screen is currently in landscape mode.
+     */
     private boolean mIsLandscape;
+    
+    /**
+     * Number of icon rows on the launcher.
+     */
     private int mIconRows;
+    
+    /**
+     * Number of icon columns on the launcher.
+     */
     private int mIconCols;
+    
+    /**
+     * Whether or not the current level features the kill screen.
+     */
     private boolean mIsOnKillScreen;
+    
+    /**
+     * Whether or not the kill screen is enabled for level 256 and therefore causing level looping.
+     */
     private boolean mIsKillScreenEnabled;
+    
+    /**
+     * 2-dimensional array of the board's cells.
+     */
 	private Game.Cell[][] mBoard;
+	
+	/**
+	 * The Man instance.
+	 */
 	private TheMan mTheMan;
+	
+	/**
+	 * Fruit instance.
+	 */
 	private Fruit mFruit;
+	
+	/**
+	 * Ghost instances (if any)
+	 */
 	private Ghost[] mGhosts;
-	private int mGhostCount;
+	
+	/**
+	 * Whether or not running into a ghost is deadly.
+	 */
 	private boolean mIsGhostDeadly;
+	
+	/**
+	 * Whether or not fruits are enabled.
+	 */
 	private boolean mIsFruitEnabled;
+	
+	/**
+	 * Number of fleeing ghosts eaten this juggerdot.
+	 */
 	private int mFleeingGhostsEaten;
+	
+	/**
+	 * Number of times all of the fleeing ghosts were eaten on a juggerdot this level.
+	 */
 	private int mAllFleeingGhostsEaten;
+	
+	/**
+	 * Number of ghosts eaten this level.
+	 */
 	private int mGhostEatenThisLevel;
+	
+	/**
+	 * Number of dots remaining this level.
+	 */
 	private int mDotsRemaining;
+	
+	/**
+	 * Number of dots total on this level.
+	 */
 	private int mDotsTotal;
+	
+	/**
+	 * Number of lives remaining.
+	 */
 	private int mLives;
+	
+	/**
+	 * Current score.
+	 */
 	private int mScore;
+	
+	/**
+	 * Current level.
+	 */
 	private int mLevel;
+	
+	/**
+	 * Whether or not a bonus life is allowed in the game.
+	 */
     private boolean mIsBonusLifeAllowed;
+    
+    /**
+     * Whether or not the bonus life has been given.
+     */
     private boolean mIsBonusLifeGiven;
+    
+    /**
+     * Dot foreground color
+     */
     private final Paint mDotForeground;
+    
+    /**
+     * Juggerdot foreground color.
+     */
     private final Paint mJuggerdotForeground;
+    
+    /**
+     * Color of the background.
+     */
     private int mGameBackground;
+    
+    /**
+     * Walls forground color.
+     */
     private final Paint mWallsForeground;
+    
+    /**
+     * Whether or not we are displaying icon walls
+     */
     private boolean mIsDisplayingWalls;
+    
+    /**
+     * Number of points at which the bonus life is given.
+     */
     private int mBonusLifeThreshold;
+    
+    /**
+     * Whether or not we are displaying the HUD.
+     */
     private boolean mIsDisplayingHud;
+    
+    /**
+     * Foreground HUD color.
+     */
     private final Paint mHudForeground;
+    
+    /**
+     * Foreground The Man color.
+     */
     private final Paint mTheManForeground;
+    
+    /**
+     * "Ready" text color.
+     */
     private final Paint mReadyForeground;
+    
+    /**
+     * "Game Over" text color.
+     */
     private final Paint mGameOverForeground;
+    
+    /**
+     * Top padding (in pixels) of the grid from the screen top.
+     */
     private float mDotGridPaddingTop;
+    
+    /**
+     * Left padding (in pixels) of the grid from the screen left.
+     */
     private float mDotGridPaddingLeft;
+    
+    /**
+     * Bottom padding (in pixels) of the grid from the screen bottom.
+     */
     private float mDotGridPaddingBottom;
+    
+    /**
+     * Right padding (in pixels) of the grid from the screen right.
+     */
     private float mDotGridPaddingRight;
+    
+    /**
+     * "Ready" localized string.
+     */
     private final String mTextReady;
+    
+    /**
+     * "Game Over" localized string.
+     */
     private final String mTextGameOver;
+    
+    /**
+     * Location of the "Ready" and "Game Over" text.
+     */
     private final PointF mTextLocation;
+    
+    /**
+     * Offset (in pixels) of the HUD from the bottom of the screen.
+     */
     private int mHudOffset;
+    
+    /**
+     * Number of ticks calculated so far.
+     */
     private long mTickCount;
+    
+    /**
+     * Number of frames to hold a juggerdot blink state before toggling it.
+     */
     private int mJuggerdotBlinkInterval;
+    
+    /**
+     * Length of the blink cycle of the juggerdots.
+     */
     private int mJuggerdotBlinkLength;
+    
+    /**
+     * Number of juggerdots remaining on the level.
+     */
     private int mJuggerdotsRemaining;
+    
+    /**
+     * Percentage of dots at which to create more for endless mode.
+     */
     private int mEndlessDotThresholdPercent;
+    
+    /**
+     * Number of juggerdots left at which to create more for endless mode.
+     */
     private int mEndlessJuggerdotThreshold;
+    
+    /**
+     * Path to the user background image (if any).
+     */
     private String mBackgroundPath;
+    
+    /**
+     * The user background image (if any).
+     */
     private Bitmap mBackground;
+    
+    /**
+     * The size (in pixels) of a single cell.
+     */
     private final RectF mCellSize;
+    
+    /**
+     * Bitmap of Andy.
+     */
     private Bitmap mAndy;
+    
+    /**
+     * Bitmap of the kill screen.
+     */
     private Bitmap mKillScreen;
+    
+    /**
+     * Set of fruits eaten this game.
+     */
     private final HashSet<Fruit.Type> mFruitsEaten;
+    
+    /**
+     * Bitmap sprites used for the dots.
+     */
     private Bitmap mDotSprite;
+    
+    /**
+     * Whether or not the Legend trophy is enabled.
+     */
     private boolean mIsTrophyLegendEnabled;
+    
+    /**
+     * Whether or not the Desserts trophy is enabled.
+     */
     private boolean mIsTrophyDessertsEnabled;
+    
+    /**
+     * The locations of widgets on the launcher.
+     */
     private List<Rect> mWidgetLocations;
+    
+    /**
+     * Paint to draw the background color.
+     */
     private final Paint mBackgroundPaint;
+    
+    /**
+     * Size (in pixels) of the HUD.
+     */
     private int mHudSize;
+    
+    
     
     /**
      * Create a new game.
@@ -240,6 +611,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     }
 
+    
+    
     /**
      * Handle the changing of a preference.
      */
@@ -381,23 +754,24 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         	}
         }
         
+        int ghosts = 0;
         final String ghostCount = resources.getString(R.string.settings_game_ghostcount_key);
         if (all || key.equals(ghostCount)) {
-        	this.mGhostCount = preferences.getInt(ghostCount, resources.getInteger(R.integer.game_ghostcount_default));
+        	ghosts = preferences.getInt(ghostCount, resources.getInteger(R.integer.game_ghostcount_default));
         	hasGhostCountChanged = true;
         	
         	if (Wallpaper.LOG_DEBUG) {
-        		Log.d(Game.TAG, "Ghost Count: " + this.mGhostCount);
+        		Log.d(Game.TAG, "Ghost Count: " + ghosts);
         	}
         }
 
     	if (hasGhostCountChanged) {
-	    	this.mGhosts = new Ghost[this.mGhostCount];
+	    	this.mGhosts = new Ghost[ghosts];
 	    	int i = 0;
-	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Blinky(); } //Blink MUST be first for Inky to properly calculate moves
-	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Clyde(); }
-	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Pinky(); }
-	    	if (this.mGhostCount > i) { this.mGhosts[i++] = new Ghost.Inky(); }
+	    	if (ghosts > i) { this.mGhosts[i++] = new Ghost.Blinky(); } //Blink MUST be first for Inky to properly calculate moves
+	    	if (ghosts > i) { this.mGhosts[i++] = new Ghost.Clyde(); }
+	    	if (ghosts > i) { this.mGhosts[i++] = new Ghost.Pinky(); }
+	    	if (ghosts > i) { this.mGhosts[i++] = new Ghost.Inky(); }
 	    	
 	    	for (final Ghost ghost : this.mGhosts) {
 	    		ghost.performResize(this);
@@ -1247,7 +1621,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 						ghost.setState(this, Ghost.State.EATEN);
 						
 						//See if we have eaten all the ghosts for this juggerdot
-						if (this.mFleeingGhostsEaten == this.mGhostCount) {
+						if (this.mFleeingGhostsEaten == this.mGhosts.length) {
 							this.mAllFleeingGhostsEaten += 1;
 							
 							//Check for Andy trophy

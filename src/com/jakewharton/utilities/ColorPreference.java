@@ -12,19 +12,67 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
+/**
+ * Preference for picking a color which is persisted as an integer.
+ * 
+ * @author Jake Wharton
+ */
 public class ColorPreference extends DialogPreference {
+	/**
+	 * Since we do not allow changing the alpha value, always use the maximum value of 255.
+	 */
 	private static final int ALPHA = 0xff;
 	
+	
+	
+	/**
+	 * Color preview at top of dialog.
+	 */
 	private SurfaceView mPreview;
+	
+	/**
+	 * Seek bar for the red color part.
+	 */
 	private SeekBar mR;
+	
+	/**
+	 * Seek bar for the green color part.
+	 */
 	private SeekBar mG;
+	
+	/**
+	 * Seek bar for the blue color part.
+	 */
 	private SeekBar mB;
+	
+	/**
+	 * Value of the red seek bar.
+	 */
 	private TextView mRValue;
+	
+	/**
+	 * Value of the green seek bar.
+	 */
 	private TextView mGValue;
+	
+	/**
+	 * Value of the blue seek bar.
+	 */
 	private TextView mBValue;
+	
+	/**
+	 * The color.
+	 */
 	private int mColor;
+	
+	/**
+	 * Temporary color storage used for callback.
+	 */
 	private Integer mTempColor;
 	
+	/**
+	 * Listener for any of the seek bar value changes.
+	 */
 	private final OnSeekBarChangeListener mSeekBarChangeListener = new OnSeekBarChangeListener() {
 		public void onStopTrackingTouch(SeekBar seekBar) {}
 		public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -42,12 +90,22 @@ public class ColorPreference extends DialogPreference {
 		}
 	};
 
+	
+	
+	/**
+	 * Create a new instance of the ColorPreference.
+	 * 
+	 * @param context Context.
+	 * @param attrs Attributes.
+	 */
 	public ColorPreference(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		
 		this.setPersistent(true);
 		this.setDialogLayoutResource(R.layout.color_preference);
 	}
+	
+	
 	
 	@Override
 	protected void onBindDialogView(final View view) {
@@ -97,11 +155,21 @@ public class ColorPreference extends DialogPreference {
 		}
 	}
 
+	/**
+	 * Set the value of the color and update the preview.
+	 * 
+	 * @param color Color value.
+	 */
 	public void setValue(final int color) {
 		this.mColor = color;
 		this.mPreview.setBackgroundColor(color);
 	}
 	
+	/**
+	 * Set and persist the value of the color.
+	 * 
+	 * @param color Color value.
+	 */
 	public void saveValue(final int color) {
 		this.setValue(color);
 		this.persistInt(color);

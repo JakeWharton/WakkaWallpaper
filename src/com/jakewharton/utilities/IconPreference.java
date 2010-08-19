@@ -24,13 +24,36 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
+/**
+ * A simple Preference which displays an icon next to the text.
+ * 
+ * @author Jake Wharton
+ */
 public class IconPreference extends Preference {
+	/**
+	 * The icon.
+	 */
     private Drawable mIcon;
 
+    
+    
+    /**
+     * Create a new instance of the IconPreference.
+     * 
+     * @param context Context.
+     * @param attrs Attributes.
+     */
     public IconPreference(final Context context, final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
+    /**
+     * Create a new instance of the IconPreference.
+     * 
+     * @param context Context.
+     * @param attrs Attributes.
+     * @param defStyle Style.
+     */
     public IconPreference(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         
@@ -39,6 +62,8 @@ public class IconPreference extends Preference {
         this.mIcon = context.obtainStyledAttributes(attrs, R.styleable.IconPreference, defStyle, 0).getDrawable(R.styleable.IconPreference_icon);
     }
 
+    
+    
     @Override
     public void onBindView(final View view) {
         super.onBindView(view);

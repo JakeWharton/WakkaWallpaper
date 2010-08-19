@@ -30,18 +30,31 @@ import android.util.AttributeSet;
  * @author Rodrigo Damazio
  */
 public class IntegerListPreference extends ListPreference {
+	/**
+	 * Create a new instance of the IntegerListPreference.
+	 * 
+	 * @param context Context.
+	 */
 	public IntegerListPreference(final Context context) {
 		super(context);
 		
 		this.verifyEntryValues(null);
 	}
 
+	/**
+	 * Create a new instnace of the IntegerListPreference.
+	 * 
+	 * @param context Context.
+	 * @param attrs Attributes.
+	 */
 	public IntegerListPreference(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 
 		this.verifyEntryValues(null);
 	}
 
+	
+	
 	@Override
 	public void setEntryValues(final CharSequence[] entryValues) {
 		final CharSequence[] oldValues = getEntryValues();
@@ -75,6 +88,11 @@ public class IntegerListPreference extends ListPreference {
 		return this.persistInt(Integer.parseInt(value));
 	}
 
+	/**
+	 * Verify all of the values in the list.
+	 * 
+	 * @param oldValues Old value.
+	 */
 	private void verifyEntryValues(final CharSequence[] oldValues) {
 		final CharSequence[] entryValues = this.getEntryValues();
 		if (entryValues == null) {

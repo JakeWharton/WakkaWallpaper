@@ -36,17 +36,62 @@ import android.widget.Toast;
  * @author Jake Wharton
  */
 public class Preferences extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+	/**
+	 * SharedPreference name.
+	 */
 	/*package*/static final String SHARED_NAME = "WakkaWallpaper";
+	
+	/**
+	 * The Intent extra which denotes whether or not to launch directly into the trophy screen.
+	 */
 	/*package*/static final String EXTRA_TROPHY = "Trophy";
+	
+	/**
+	 * The filename to export to.
+	 */
 	private static final String FILE_NAME = "settings.wakkawallpaper.json";
+	
+	/**
+	 * The encoding of files to look for during JSON import selection. 
+	 */
 	private static final String MIME_TYPE = "text/plain";
+	
+	/**
+	 * Import JSON activity callback ID.
+	 */
 	private static final int IMPORT_JSON = 1;
+	
+	/**
+	 * Select background activity callback ID.
+	 */
 	private static final int SELECT_BACKGROUND = 2;
+	
+	/**
+	 * Filename of the changelog.
+	 */
 	private static final String FILENAME_CHANGELOG = "changelog.html";
+	
+	/**
+	 * Filename of the credits.
+	 */
 	private static final String FILENAME_CREDITS = "credits.html";
+	
+	/**
+	 * Filename of the instructions.
+	 */
 	private static final String FILENAME_INSTRUCTIONS = "instructions.html";
+	
+	/**
+	 * Filename of the to do list.
+	 */
 	private static final String FILENAME_TODO = "todo.html";
+	
+	/**
+	 * Filename of the AI information.
+	 */
 	private static final String FILENAME_AI = "ai.html";
+	
+	
 	
     @Override
     protected void onCreate(final Bundle icicle) {
@@ -601,6 +646,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		}
 	}
 
+	/**
+	 * Launch an intent to send an email.
+	 */
 	private void infoEmail() {
         final Resources resources = this.getResources();
 		final Intent intent = new Intent(Intent.ACTION_SEND);
@@ -611,6 +659,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		this.startActivity(intent);
     }
     
+	/**
+	 * Launch an intent to view twitter page.
+	 */
     private void infoTwitter() {
         final Resources resources = this.getResources();
 		final Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -619,6 +670,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		this.startActivity(intent);
     }
     
+    /**
+     * Launch an intent to view website.
+     */
     private void infoWeb() {
         final Resources resources = this.getResources();
     	final Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -627,6 +681,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		this.startActivity(intent);
     }
     
+    /**
+     * Reset display preferences to their defaults.
+     */
     private void loadDisplayDefaults() {
         final Resources resources = this.getResources();
 	    final SharedPreferences.Editor editor = Preferences.this.getPreferenceManager().getSharedPreferences().edit();
@@ -665,6 +722,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		editor.commit();
 	}
     
+    /**
+     * Reset game preferences to their defaults.
+     */
     private void loadGameDefaults() {
         final Resources resources = this.getResources();
 		final SharedPreferences.Editor editor = Preferences.this.getPreferenceManager().getSharedPreferences().edit();
@@ -711,6 +771,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		editor.commit();
 	}
     
+    /**
+     * Reset color preferences to their defaults.
+     */
     private void loadColorDefaults() {
         final Resources resources = this.getResources();
 		final SharedPreferences.Editor editor = Preferences.this.getPreferenceManager().getSharedPreferences().edit();
@@ -765,6 +828,11 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		editor.commit();
 	}
     
+    /**
+     * Perform importing of preferences from the specified JSON file.
+     * 
+     * @param uri JSON file.
+     */
     private void jsonImport(final Uri uri) {
     	final Resources resources = this.getResources();
     	final SharedPreferences.Editor editor = this.getPreferenceManager().getSharedPreferences().edit();
@@ -1090,6 +1158,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     	}
     }
     
+    /**
+     * Export preferences to a JSON file on the SD card.
+     */
     private void jsonExport() {
         final Resources resources = this.getResources();
         final SharedPreferences preferences = this.getPreferenceManager().getSharedPreferences();

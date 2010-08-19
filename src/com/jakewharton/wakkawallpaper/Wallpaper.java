@@ -16,18 +16,55 @@ import android.view.SurfaceHolder;
  * @author Jake Wharton
  */
 public class Wallpaper extends WallpaperService {
+	/**
+	 * SharedPreferences instance.
+	 */
 	/*package*/static SharedPreferences PREFERENCES;
+	
+	/**
+	 * Wallpaper Context instance.
+	 */
 	/*package*/static Context CONTEXT;
     
-	/*package*/static final boolean LOG_DEBUG = false;
+	/**
+	 * Whether or not we are logging in debug mode.
+	 */
+	/*package*/static final boolean LOG_DEBUG = true;
+	
+	/**
+	 * Whether or not we are logging in verbose mode.
+	 */
 	/*package*/static final boolean LOG_VERBOSE = false;
+	
+	/**
+	 * Whether or not the wallpaper should automatically advance to the next tick.
+	 */
     private static final boolean AUTO_TICK = true;
+    
+    /**
+     * Height (in DIP) of the status bar. Usually.
+     */
     private static final int STATUS_BAR_HEIGHT = 24;
+    
+    /**
+     * Height (in DIP) of the app drawer on the launcher.
+     */
     private static final int APP_DRAWER_HEIGHT = 50;
+    
+    /**
+     * The default size of the HUD (in DIP).
+     */
     private static final int HUD_SIZE_HEIGHT = 13;
     
+    
+    
+    /**
+     * The timed callback handler.
+     */
     private final Handler mHandler = new Handler();
 
+    
+    
     @Override
     public Engine onCreateEngine() {
     	Wallpaper.PREFERENCES = this.getSharedPreferences(Preferences.SHARED_NAME, Context.MODE_PRIVATE);
@@ -64,25 +101,74 @@ public class Wallpaper extends WallpaperService {
         }
     }
 
+    
+    
     /**
      * Wallpaper engine to manage the Game instance.
      * 
      * @author Jake Wharton
      */
     private class WakkaEngine extends Engine implements SharedPreferences.OnSharedPreferenceChangeListener {
+    	/**
+    	 * Tag used for logging.
+    	 */
     	private static final String TAG = "WakkaWallpaper.WakkaEngine";
+    	
+    	/**
+    	 * Number of millisecond in a second.
+    	 */
     	private static final int MILLISECONDS_IN_SECOND = 1000;
+    	
+    	/**
+    	 * Maximum time between taps that will reset the game.
+    	 */
     	private static final long RESET_THRESHOLD = 100;
     	
+    	
+    	
+    	/**
+    	 * Instance of the game.
+    	 */
     	private Game mGame;
+    	
+    	/**
+    	 * Whether or not the wallpaper is currently visible on screen.
+    	 */
         private boolean mIsVisible;
+        
+        /**
+         * Whether or not the device is in landscape mode.
+         */
         private boolean mIsLandscape;
+        
+        /**
+         * The number of FPS the user wants us to render.
+         */
         private int mFPS;
+        
+        /**
+         * Whether or not user input is taken into consideration.
+         */
         private boolean mIsControllable;
+        
+        /**
+         * The absolute center of the screen horizontally.
+         */
         private float mScreenCenterX;
+        
+        /**
+         * The absolute center of the screen vertically.
+         */
         private float mScreenCenterY;
+        
+        /**
+         * The system milliseconds of the last user touch.
+         */
         private long mLastTouch;
 
+        /**
+         * A runnable which automates the frame rendering.
+         */
         private final Runnable mDrawWakka = new Runnable() {
             public void run() {
             	WakkaEngine.this.tick();
@@ -90,6 +176,8 @@ public class Wallpaper extends WallpaperService {
             }
         };
 
+        
+        
         /**
          * Create instance of the engine.
          */
@@ -110,6 +198,8 @@ public class Wallpaper extends WallpaperService {
         	}
         }
 
+        
+        
         /**
          * Handle the changing of a preference.
          */

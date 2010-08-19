@@ -10,10 +10,27 @@ import com.jakewharton.wakkawallpaper.Entity.Direction;
  * @author Jake Wharton
  */
 public class Vector {
+	/**
+	 * Position of the vector.
+	 */
 	public final Point position;
+	
+	/**
+	 * Direction of the vector.
+	 */
 	public final Direction direction;
+	
+	/**
+	 * First direction taken to get to this vector.
+	 */
 	public final Direction initialDirection;
+	
+	/**
+	 * Number of iterations taken from the first direction to get to this vector.
+	 */
 	public final int step;
+	
+	
 	
 	/**
 	 * Creates a Vector at a position setting both the direction and initial direction the same value.
@@ -24,6 +41,8 @@ public class Vector {
 	public Vector(final Point position, final Direction direction) {
 		this(position, direction, null, 0);
 	}
+	
+	
 	
 	/**
 	 * Creates a Vector at a position with a direction and an initial direction.
@@ -39,6 +58,11 @@ public class Vector {
 		this.step = step;
 	}
 	
+	/**
+	 * Get all of the possible moves from the current vector.
+	 * 
+	 * @return Vector array.
+	 */
 	public Vector[] getPossibleMoves() {
 		final Vector[] moves = new Vector[4];
 		int i = 0;
