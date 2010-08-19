@@ -33,23 +33,59 @@ import android.util.Log;
  * @author Jake Wharton
  */
 public class Game implements SharedPreferences.OnSharedPreferenceChangeListener {
+	/**
+	 * Represents a single cell on the game board.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum Cell {
 		BLANK(0), WALL(-1), DOT(10), JUGGERDOT(50);
 		
+		
+		
+		/**
+		 * Point value when eaten.
+		 */
 		public final int value;
 		
+		
+		
+		/**
+		 * Create a new Cell instance.
+		 * 
+		 * @param value Point value.
+		 */
 		private Cell(final int value) {
 			this.value = value;
 		}
 	}
+	
+	/**
+	 * Gameplay mode.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum Mode {
 		ARCADE(0), ENDLESS(1);
 		
+		
+		
+		/**
+		 * Persisted value.
+		 */
 		public final int value;
 		
+		
+		
+		/**
+		 * Create a new mode.
+		 * @param value
+		 */
 		private Mode(final int value) {
 			this.value = value;
 		}
+		
+		
 		
 		/**
 		 * Convert an integer to its corresponding Game.Mode.
@@ -66,23 +102,60 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			throw new IllegalArgumentException("Unknown Game mode value: " + modeValue);
 		}
 	}
+	
+	/**
+	 * Gameplay state.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum State {
 		READY(3000), PLAYING(0), DYING(3000), LEVEL_COMPLETE(1500), GAME_OVER(3000);
 		
+		
+		
+		/**
+		 * Length to remain in this state.
+		 */
 		public final int length;
 		
+		
+		
+		/**
+		 * Create a new State.
+		 * 
+		 * @param ticks Length of state in ticks.
+		 */
 		private State(final int length) {
 			this.length = length;
 		}
 	}
+	
+	/**
+	 * Edge wrapping mode.
+	 * 
+	 * @author Jake Wharton
+	 */
 	enum Wrapping {
 		ALL(0), CENTER_ROW(1);
 		
+		
+		
+		/**
+		 * Persisted value.
+		 */
 		public final int value;
 		
+		
+		
+		/**
+		 * Create a new Wrapping.
+		 * @param value
+		 */
 		private Wrapping(final int value) {
 			this.value = value;
 		}
+		
+		
 		
 		/**
 		 * Convert an integer to its corresponding Game.Wrapping.
