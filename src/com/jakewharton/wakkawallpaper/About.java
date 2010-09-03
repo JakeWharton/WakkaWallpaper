@@ -17,12 +17,12 @@ public class About extends Activity {
 	/**
 	 * Filename of the asset to load.
 	 */
-	/*package*/static final String EXTRA_FILENAME = "filename";
+	public static final String EXTRA_FILENAME = "filename";
 	
 	/**
 	 * Title of the activity.
 	 */
-	/*package*/static final String EXTRA_TITLE = "title";
+	public static final String EXTRA_TITLE = "title";
 	
 	/**
 	 * Newline character to use between asset lines.
