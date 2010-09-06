@@ -699,7 +699,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 		//hud offset
 		editor.remove(resources.getString(R.string.settings_display_hudoffset_key));
 		//show walls
-		editor.remove(resources.getString(R.string.settings_display_showwalls_key)));
+		editor.remove(resources.getString(R.string.settings_display_showwalls_key));
 		//icon rows
 		editor.remove(resources.getString(R.string.settings_display_iconrows_key));
 		//icon cols
