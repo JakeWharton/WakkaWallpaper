@@ -39,7 +39,12 @@ public class Wallpaper extends WallpaperService {
 	/**
 	 * Whether or not the wallpaper should automatically advance to the next tick.
 	 */
-    private static final boolean AUTO_TICK = true;
+    /*package*/static final boolean AUTO_TICK = true;
+    
+    /**
+     * Whether or not to allow playback (and debugging!) in the Picker activity.
+     */
+    /*package*/static final boolean PLAY_DEBUG = true;
     
     /**
      * Height (in DIP) of the status bar. Usually.
@@ -55,8 +60,16 @@ public class Wallpaper extends WallpaperService {
      * The default size of the HUD (in DIP).
      */
     private static final int HUD_SIZE_HEIGHT = 13;
-    
-    
+	
+	/**
+	 * Number of millisecond in a second.
+	 */
+	/*package*/static final int MILLISECONDS_IN_SECOND = 1000;
+	
+	/**
+	 * Maximum time between taps that will reset the game.
+	 */
+	/*pacakge*/static final long RESET_THRESHOLD = 100;
     
     /**
      * The timed callback handler.
@@ -113,16 +126,6 @@ public class Wallpaper extends WallpaperService {
     	 * Tag used for logging.
     	 */
     	private static final String TAG = "WakkaWallpaper.WakkaEngine";
-    	
-    	/**
-    	 * Number of millisecond in a second.
-    	 */
-    	private static final int MILLISECONDS_IN_SECOND = 1000;
-    	
-    	/**
-    	 * Maximum time between taps that will reset the game.
-    	 */
-    	private static final long RESET_THRESHOLD = 100;
     	
     	
     	
@@ -211,7 +214,7 @@ public class Wallpaper extends WallpaperService {
 			final boolean all = (key == null);
 			final Resources resources = Wallpaper.CONTEXT.getResources();
 			
-			final String fps = Wallpaper.this.getString(R.string.settings_display_fps_key);
+			final String fps = resources.getString(R.string.settings_display_fps_key);
 			if (all || key.equals(fps)) {
 				this.mFPS = preferences.getInt(fps, resources.getInteger(R.integer.display_fps_default));
 				
@@ -220,7 +223,7 @@ public class Wallpaper extends WallpaperService {
 				}
 			}
 			
-			final String userControl = Wallpaper.this.getString(R.string.settings_game_usercontrol_key);
+			final String userControl = resources.getString(R.string.settings_game_usercontrol_key);
 			if (all || key.equals(userControl)) {
 				this.mIsControllable = preferences.getBoolean(userControl, resources.getBoolean(R.bool.game_usercontrol_default));
 				
@@ -266,7 +269,7 @@ public class Wallpaper extends WallpaperService {
         public void onTouchEvent(final MotionEvent event) {
         	if ((event.getAction() == MotionEvent.ACTION_DOWN) && this.mIsControllable) {
         		final long touch = System.currentTimeMillis();
-        		if (touch - this.mLastTouch < WakkaEngine.RESET_THRESHOLD) {
+        		if (touch - this.mLastTouch < Wallpaper.RESET_THRESHOLD) {
         			this.mGame.newGame();
         			this.mLastTouch = 0;
         		} else {
@@ -341,7 +344,7 @@ public class Wallpaper extends WallpaperService {
 
         	if (Wallpaper.AUTO_TICK) {
         		if (this.mIsVisible) {
-            		Wallpaper.this.mHandler.postDelayed(this.mDrawWakka, WakkaEngine.MILLISECONDS_IN_SECOND / this.mFPS);
+            		Wallpaper.this.mHandler.postDelayed(this.mDrawWakka, Wallpaper.MILLISECONDS_IN_SECOND / this.mFPS);
             	}
             }
         }
