@@ -629,6 +629,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     private List<Rect> mWidgetLocations;
     
     /**
+     * Precalculated wall postions;
+     */
+    private final List<RectF> mWalls;
+    
+    /**
      * Paint to draw the background color.
      */
     private final Paint mBackgroundPaint;
@@ -653,7 +658,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         //Create Paints
     	this.mWallsForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
     	this.mWallsForeground.setStyle(Paint.Style.STROKE);
-    	this.mWallsForeground.setStrokeWidth(2);
         this.mDotForeground = new Paint(Paint.ANTI_ALIAS_FLAG); 
         this.mJuggerdotForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mHudForeground = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -670,6 +674,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         
         this.mFruitsEaten = new HashSet<Fruit.Type>();
         this.mWidgetLocations = new LinkedList<Rect>();
+        this.mWalls = new LinkedList<RectF>();
         
         //Create "The Man" and fruit
     	this.mTheMan = new TheMan();
@@ -2036,6 +2041,57 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		this.mTextLocation.x = (this.mScreenWidth - this.mDotGridPaddingLeft - this.mDotGridPaddingRight) / 2.0f;
     		this.mTextLocation.y = (this.mTheMan.getInitialPosition(this).y * this.mCellHeight);
     	}
+    	
+    	//Calculate walls
+    	this.mWalls.clear();
+    	final float cellOverEight = 1 / 8.0f;
+		
+    	//Widget walls
+    	for (final Rect widget : this.mWidgetLocations) {
+			float left = (widget.left * (this.mCellColumnSpacing + 1)) + 1;
+			float top = (widget.top * (this.mCellRowSpacing + 1)) + 1;
+    		float right = ((widget.right * (this.mCellColumnSpacing + 1)) + this.mCellColumnSpacing + 1);
+    		float bottom = ((widget.bottom * (this.mCellRowSpacing + 1)) + this.mCellRowSpacing + 1);
+			
+			this.mWalls.add(new RectF(left, top, right, bottom));
+			
+			left += cellOverEight;
+			top += cellOverEight;
+			right -= cellOverEight;
+			bottom -= cellOverEight;
+
+			this.mWalls.add(new RectF(left, top, right, bottom));
+    	}
+		
+    	//Icon walls
+    	for (int y = 0; y < this.mIconRows; y++) {
+    		for (int x = 0; x < this.mIconCols; x++) {
+    			boolean contained = false;
+    			for (final Rect widget : this.mWidgetLocations) {
+    				if (x >= widget.left && x <= widget.right && y >= widget.top && y <= widget.bottom) {
+    					contained = true;
+    					break;
+    				}
+    			}
+    			if (contained) {
+    				continue;
+    			}
+    			
+    			float left = (x * (this.mCellColumnSpacing + 1)) + 1;
+    			float top = (y * (this.mCellRowSpacing + 1)) + 1;
+    			float right = left + this.mCellColumnSpacing;
+    			float bottom = top + this.mCellRowSpacing;
+
+    			this.mWalls.add(new RectF(left, top, right, bottom));
+    			
+    			left += cellOverEight;
+    			top += cellOverEight;
+    			right -= cellOverEight;
+    			bottom -= cellOverEight;
+
+    			this.mWalls.add(new RectF(left, top, right, bottom));
+    		}
+    	}
 
     	if (Wallpaper.LOG_VERBOSE) {
     		Log.v(Game.TAG, "< performResize()");
@@ -2166,32 +2222,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         	//Remove filter
         	c.setDrawFilter(Game.FILTER_REMOVE);
         }
-        
+    	
         //draw walls if enabled
         if (this.mIsDisplayingWalls) {
-			final float mCellWidthOverEight = this.mCellWidth / 8.0f;
-			final float mCellHeightOverEight = this.mCellHeight / 8.0f;
-			final float rxOuter = this.mCellWidth / 2.0f;
-			final float ryOuter = this.mCellHeight / 2.0f;
-			final float rxInner = rxOuter - mCellWidthOverEight;
-			final float ryInner = ryOuter - mCellHeightOverEight;
-			
-        	for (int y = 0; y < this.mIconRows; y++) {
-        		for (int x = 0; x < this.mIconCols; x++) {
-        			float left = (((x * (this.mCellColumnSpacing + 1)) + 1) * this.mCellWidth) + 1;
-        			float top = (((y * (this.mCellRowSpacing + 1)) + 1) * this.mCellHeight) + 1;
-        			float right = (left + (this.mCellColumnSpacing * this.mCellWidth)) - 3;
-        			float bottom = (top + (this.mCellRowSpacing * this.mCellHeight)) - 3;
-        			
-        			c.drawRoundRect(new RectF(left, top, right, bottom), rxOuter, ryOuter, this.mWallsForeground);
-        			
-        			left += mCellWidthOverEight;
-        			top += mCellHeightOverEight;
-        			right -= mCellWidthOverEight;
-        			bottom -= mCellHeightOverEight;
-        			
-        			c.drawRoundRect(new RectF(left, top, right, bottom), rxInner, ryInner, this.mWallsForeground);
-        		}
+        	for (final RectF wall : this.mWalls) {
+        		c.drawRect(wall, this.mWallsForeground);
         	}
         }
     }

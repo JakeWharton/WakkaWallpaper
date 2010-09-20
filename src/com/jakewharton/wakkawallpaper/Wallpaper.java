@@ -44,7 +44,7 @@ public class Wallpaper extends WallpaperService {
     /**
      * Whether or not to allow playback (and debugging!) in the Picker activity.
      */
-    /*package*/static final boolean PLAY_DEBUG = true;
+    /*package*/static final boolean PLAY_DEBUG = false;
     
     /**
      * Height (in DIP) of the status bar. Usually.
