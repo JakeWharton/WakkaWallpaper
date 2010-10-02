@@ -1994,15 +1994,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 			}
     	}
     	
-    	if (screenWidth > screenHeight) {
-    		this.mIsLandscape = true;
-    		final int temp = screenHeight;
-    		screenHeight = screenWidth;
-    		screenWidth = temp;
-    	} else {
-    		this.mIsLandscape = false;
-    	}
-    	
+    	this.mIsLandscape = (screenWidth > screenHeight);
     	this.mScreenWidth = screenWidth;
     	this.mScreenHeight = screenHeight;
     	
@@ -2114,18 +2106,17 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
         
         if (this.mIsLandscape) {
-        	//Perform counter-clockwise rotation
+        	//Perform counter-clockwise rotation and draw HUD
+        	c.save();
         	c.rotate(-90, this.mScreenWidth / 2.0f, this.mScreenWidth / 2.0f);
-        	c.translate(0, this.mDotGridPaddingLeft);
-
-        	//Draw HUD after rotation and translation
         	this.drawHud(c);
+        	c.restore();
         } else {
         	//Draw HUD before translation
         	this.drawHud(c);
-        	
-        	c.translate(this.mDotGridPaddingLeft, this.mDotGridPaddingTop);
         }
+    	c.translate(this.mDotGridPaddingLeft, this.mDotGridPaddingTop);
+        c.scale(this.mScaleX, this.mScaleY);
         
         //Draw dots and walls
         this.drawGameBoard(c);
@@ -2149,11 +2140,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	    		ghost.draw(this, c);
 	    	}
     	}
-
-        if (this.mIsLandscape) {
-        	//Perform clockwise rotation back to normal
-        	c.rotate(90, this.mScreenWidth / 2.0f, this.mScreenWidth / 2.0f);
-        }
         
     	switch (this.mState) {
     		case READY:
