@@ -241,6 +241,14 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 			}
 		});
         
+        //github
+        this.findPreference(resources.getString(R.string.github_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Preferences.this.viewGitHub();
+				return true;
+			}
+		});
+        
         //background image
         this.findPreference(resources.getString(R.string.settings_color_game_bgimage_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(final Preference preference) {
@@ -515,6 +523,16 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     private void viewXda() {
     	final Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setData(Uri.parse(this.getResources().getString(R.string.xda_href)));
+		
+		this.startActivity(intent);
+    }
+    
+    /**
+     * Open GitHub
+     */
+    private void viewGitHub() {
+    	final Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setData(Uri.parse(this.getResources().getString(R.string.github_href)));
 		
 		this.startActivity(intent);
     }

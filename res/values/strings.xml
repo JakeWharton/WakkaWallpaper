@@ -353,6 +353,10 @@
     <string name="facebook_key">facebook</string>
     <string name="facebook_href">http://fb.me/WakkaWallpaper</string>
     <string name="facebook_summary">\"Like\" the official Facebook page and post your screenshots</string>
+    <string name="github">GitHub Project</string>
+    <string name="github_key">github</string>
+    <string name="github_href">http://github.com/JakeWharton/WakkaWallpaper/</string>
+    <string name="github_summary">Official open-source project repository</string>
     
     <string name="information_header">Information</string>
     <string name="information_version">Version</string>
