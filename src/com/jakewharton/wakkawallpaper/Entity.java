@@ -176,7 +176,7 @@ public abstract class Entity {
 	/**
 	 * Location of this Entity.
 	 */
-	protected final Point mLocation;
+	protected final PointF mLocation;
 	
 	/**
 	 * Last direction travelled.
@@ -322,7 +322,6 @@ public abstract class Entity {
 			Log.w(Entity.TAG, "Location: (" + this.mLocation.x + ", " + this.mLocation.y + ")");
 			Log.w(Entity.TAG, "Direction Current: " + this.mDirectionCurrent);
 			Log.w(Entity.TAG, "Direction Last: " + this.mDirectionLast);
-			Log.w(Entity.TAG, "Speed: " + (this.mSpeed * 100) + "%");
 			
 			StringBuilder params = new StringBuilder('{');
 			params.append("Position = (");
@@ -337,9 +336,7 @@ public abstract class Entity {
 			params.append(this.mDirectionLast);
 			params.append("; DirectionCurrent = ");
 			params.append(this.mDirectionCurrent);
-			params.append("; DirectionNext = null; Speed = ");
-			params.append(this.mSpeed);
-			params.append('}');
+			params.append("; DirectionNext = null}");
 			
 			//get this over with before the switch below throws it anyways
 			throw new NullPointerException(this.getClass().getSimpleName() + "'s next direction is null. " + params.toString());

@@ -2116,7 +2116,6 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
         	this.drawHud(c);
         }
     	c.translate(this.mDotGridPaddingLeft, this.mDotGridPaddingTop);
-        c.scale(this.mScaleX, this.mScaleY);
         
         //Draw dots and walls
         this.drawGameBoard(c);

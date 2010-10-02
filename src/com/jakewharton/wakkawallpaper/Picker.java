@@ -174,9 +174,9 @@ public class Picker extends Activity {
          * Advance the game by one frame.
          */
         private void newFrame() {
-        	this.mGame.newFrame();
+        	this.mGame.tick();
 
-        	if (Wallpaper.AUTO_FPS) {
+        	if (Wallpaper.AUTO_TICK) {
         		if (this.mIsVisible) {
             		Picker.this.mHandler.postDelayed(this.mDrawWakka, Wallpaper.MILLISECONDS_IN_SECOND / this.mFPS);
             	}

@@ -622,7 +622,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 		int degrees = 360;
 		if (this.mState == TheMan.State.ALIVE) {
 			if (this.mDirectionCurrent != null) {
-				final int angle = TheMan.CHOMP_ANGLES[this.mTickCount % TheMan.CHOMP_ANGLE_COUNT];
+				final int angle = TheMan.CHOMP_ANGLES[this.mTickCount % TheMan.CHOMP_ANGLES.length];
 				startingAngle = this.mDirectionCurrent.getAngle(this.mDirectionNext) + (angle / 2.0f);
 				degrees -= angle;
 			}
