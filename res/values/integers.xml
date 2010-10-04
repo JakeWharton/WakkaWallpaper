@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <integer name="version_code">13</integer>
+    <integer name="version_code">14</integer>
     <integer name="version_code_default">0</integer>
     
 	<integer name="display_fps_default">10</integer>
