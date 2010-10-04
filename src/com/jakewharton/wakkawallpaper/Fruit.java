@@ -348,10 +348,6 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
 		if (this.mIsVisible) {
 			c.save();
 			c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
-
-			if (game.getIsLandscape()) {
-				c.rotate(90, this.mCellWidthOverTwo, this.mCellHeightOverTwo);
-			}
 			
 			switch (this.mCharacter) {
 				case FRUIT:
