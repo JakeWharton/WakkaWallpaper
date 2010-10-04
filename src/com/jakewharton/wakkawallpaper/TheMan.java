@@ -693,6 +693,15 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 	 * @return Point
 	 */
 	public Point getInitialPosition(final Game game) {
-		return new Point(game.getCellsWide() / 2, ((game.getIconRows() / 2) * (game.getCellRowSpacing() + 1)));
+		final Point center = new Point(game.getCellsWide() / 2, game.getCellsTall() / 2);
+		Point position = new Point(center);
+		
+		int i = Entity.Direction.values().length; //This allows the moving distance to start a 1 and not 0
+		while (!game.isValidBoardPosition(position)) {
+			position = Entity.move(center, Entity.Direction.values()[i % Entity.Direction.values().length], i / Entity.Direction.values().length);
+			i += 1;
+		}
+		
+		return position;
 	}
 }
