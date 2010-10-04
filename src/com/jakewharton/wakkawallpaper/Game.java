@@ -2101,16 +2101,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     		c.drawBitmap(this.mBackground, 0, 0, this.mBackgroundPaint);
     	}
         
-        if (this.mIsLandscape) {
-        	//Perform counter-clockwise rotation and draw HUD
-        	c.save();
-        	c.rotate(-90, this.mScreenWidth / 2.0f, this.mScreenWidth / 2.0f);
-        	this.drawHud(c);
-        	c.restore();
-        } else {
-        	//Draw HUD before translation
-        	this.drawHud(c);
-        }
+    	//Draw HUD before translation
+    	this.drawHud(c);
+    	
     	c.translate(this.mDotGridPaddingLeft, this.mDotGridPaddingTop);
         
         //Draw dots and walls
@@ -2213,12 +2206,12 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     }
     
     /**
-     * Draw the lives, score, and level
+     * Draw the lives, score, and level.
      * 
      * @param c Canvas to draw on.
      */
     private void drawHud(final Canvas c) {
-    	if (this.mIsDisplayingHud) {
+    	if (this.mIsDisplayingHud && !this.mIsLandscape) {
 	        //Lives and score
 	        final float top = this.mScreenHeight - this.mHudOffset;
 	        String score;
@@ -2246,8 +2239,7 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 	        	score = String.valueOf(this.mScore);
 	        }
 	        
-	        final float landscapeOffset = this.mIsLandscape ? this.mDotGridPaddingTop : 0;
-	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - Game.HUD_PADDING - landscapeOffset, top, this.mHudForeground);
+	        c.drawText(score, this.mScreenWidth - this.mHudForeground.measureText(score) - Game.HUD_PADDING, top, this.mHudForeground);
     	}
     }
 }
