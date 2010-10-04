@@ -627,9 +627,6 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
 				degrees -= angle;
 			}
 		} else {
-			if (game.getIsLandscape()) {
-				c.rotate(90, this.mCellWidthOverTwo, this.mCellHeightOverTwo);
-			}
 			final int delta = this.mStateTicker * TheMan.DEATH_ANGLE_GROWTH;
 			startingAngle += delta / 2.0f;
 			degrees -= delta;
