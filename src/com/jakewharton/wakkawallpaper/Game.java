@@ -1999,8 +1999,8 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	this.mScreenHeight = screenHeight;
     	
     	if (this.mIsLandscape) {
-    		this.mCellWidth = (screenWidth - this.mDotGridPaddingTop) / (this.mCellsWide * 1.0f);
-    		this.mCellHeight = (screenHeight - (this.mDotGridPaddingBottom + this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / (this.mCellsTall * 1.0f);
+    		this.mCellWidth = (screenWidth - this.mDotGridPaddingBottom) / (this.mCellsWide * 1.0f);
+    		this.mCellHeight = (screenHeight - (this.mDotGridPaddingTop + this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / (this.mCellsTall * 1.0f);
     	} else {
     		this.mCellWidth = (screenWidth - (this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / (this.mCellsWide * 1.0f);
     		this.mCellHeight = (screenHeight - (this.mDotGridPaddingTop + this.mDotGridPaddingBottom)) / (this.mCellsTall * 1.0f);
