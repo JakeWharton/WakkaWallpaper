@@ -643,10 +643,6 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 		c.save();
 		c.translate(this.mLocation.x - this.mCellWidthOverTwo, this.mLocation.y - this.mCellHeightOverTwo);
 		
-		if (game.getIsLandscape()) {
-			c.rotate(90, this.mCellWidthOverTwo, this.mCellHeightOverTwo);
-		}
-		
 		switch (this.mCharacter) {
 			case GHOST:
 				this.drawGhost(game, c);
