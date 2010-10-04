@@ -2026,13 +2026,9 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	}
     	
     	//For on-board HUD text
-    	if (this.mIsLandscape) {
-    		this.mTextLocation.x = (this.mScreenHeight - (this.mDotGridPaddingBottom + this.mDotGridPaddingLeft + this.mDotGridPaddingRight)) / 2.0f;
-    		this.mTextLocation.y = ((this.mTheMan.getInitialPosition(this).y - 1) * this.mCellWidth) - (this.mDotGridPaddingTop + this.mDotGridPaddingLeft);
-    	} else {
-    		this.mTextLocation.x = (this.mScreenWidth - this.mDotGridPaddingLeft - this.mDotGridPaddingRight) / 2.0f;
-    		this.mTextLocation.y = (this.mTheMan.getInitialPosition(this).y * this.mCellHeight);
-    	}
+    	final Point theManInitial = this.mTheMan.getInitialPosition(this);
+    	this.mTextLocation.x = (theManInitial.x + 0.5f) * this.mCellWidth;
+    	this.mTextLocation.y = (theManInitial.y - 0.1f) * this.mCellHeight;
     	
     	//Calculate walls
     	this.mWalls.clear();
