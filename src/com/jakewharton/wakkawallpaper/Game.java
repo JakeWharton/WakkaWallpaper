@@ -1,6 +1,5 @@
 package com.jakewharton.wakkawallpaper;
 
-import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashSet;
@@ -26,6 +25,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * The Game class manages the playing board and all of the entities contained within.
@@ -1987,9 +1987,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 				
 	    		final Bitmap scaled = Bitmap.createScaledBitmap(temp, newWidth, newHeight, false);
 	    		this.mBackground = Bitmap.createBitmap(scaled, x, y, screenWidth, screenHeight);
-			} catch (FileNotFoundException e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 				Log.w(Game.TAG, "Unable to load background bitmap.");
+				Toast.makeText(Wallpaper.CONTEXT, "Unable to load background bitmap.", Toast.LENGTH_SHORT).show();
 				this.mBackground = null;
 			}
     	}
