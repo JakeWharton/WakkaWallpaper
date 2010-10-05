@@ -325,7 +325,12 @@ public class Wallpaper extends WallpaperService {
          * Advance the game by one step.
          */
         private void tick() {
-        	this.mGame.tick();
+        	try {
+        		this.mGame.tick();
+        	} catch (final Exception e) {
+        		//Catch-all reboot
+        		this.mGame = new Game();
+        	}
 
         	if (Wallpaper.AUTO_TICK) {
         		if (this.mIsVisible) {
