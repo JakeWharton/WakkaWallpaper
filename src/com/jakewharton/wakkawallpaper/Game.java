@@ -1832,14 +1832,22 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     	
     	//Remove dots under widgets
     	for (final Rect widget : this.mWidgetLocations) {
-    		Log.d(Game.TAG, "L: " + widget.left + ", T: " + widget.top + ", R: " + widget.right + ", B: " + widget.bottom);
-    		final int left = (widget.left * cellWidth) + 1;
+    		if (Wallpaper.LOG_DEBUG) {
+    			Log.d(Game.TAG, "T: " + widget.top + ", L: " + widget.left + ", B: " + widget.bottom + ", R: " + widget.right);
+    		}
+
     		final int top = (widget.top * cellHeight) + 1;
+    		final int left = (widget.left * cellWidth) + 1;
     		final int bottom = (widget.bottom * cellHeight) + this.mCellRowSpacing;
     		final int right = (widget.right * cellWidth) + this.mCellColumnSpacing;
     		for (int y = top; y <= bottom; y++) {
     			for (int x = left; x <= right; x++) {
-    				this.mBoard[y][x] = Game.Cell.WALL;
+    				try {
+    					this.mBoard[y][x] = Game.Cell.WALL;
+    				} catch (final ArrayIndexOutOfBoundsException e) {
+    	    			Log.i(Game.TAG, "T: " + widget.top + ", L: " + widget.left + ", B: " + widget.bottom + ", R: " + widget.right);
+    					Log.e(Game.TAG, "Error removing dot under aforementioned widget at location (" + x + "," + y + ")");
+    				}
     			}
     		}
     	}
