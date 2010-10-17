@@ -30,7 +30,7 @@ public class Wallpaper extends WallpaperService {
 	/**
 	 * Whether or not we are logging in debug mode.
 	 */
-	/*package*/static final boolean LOG_DEBUG = true;
+	/*package*/static final boolean LOG_DEBUG = false;
 	
 	/**
 	 * Whether or not we are logging in verbose mode.
