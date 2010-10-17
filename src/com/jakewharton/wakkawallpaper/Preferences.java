@@ -99,6 +99,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         
         final PreferenceManager manager = this.getPreferenceManager();
         manager.setSharedPreferencesName(Preferences.SHARED_NAME);
+        
         this.addPreferencesFromResource(R.xml.preferences);
         
         final SharedPreferences preferences = manager.getSharedPreferences();
@@ -278,16 +279,16 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         final IconCheckBoxPreference trophyEden = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_eden_key));
         final IconCheckBoxPreference trophyGoogol = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_googol_key));
         final IconCheckBoxPreference trophyLegend = (IconCheckBoxPreference)this.findPreference(resources.getString(R.string.trophy_legend_key));
-        final boolean earnedTrophyEgo = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_ego_persist), resources.getBoolean(R.bool.trophy_ego_default));
-        final boolean earnedTrophyAndy = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_andy_persist), resources.getBoolean(R.bool.trophy_andy_default));
-        final boolean earnedTrophyTheMandroid = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_themandroid_persist), resources.getBoolean(R.bool.trophy_themandroid_default));
-        final boolean earnedTrophyLogos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_logos_persist), resources.getBoolean(R.bool.trophy_logos_default));
-        final boolean earnedTrophyCeos = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_ceos_persist), resources.getBoolean(R.bool.trophy_ceos_default));
-        final boolean earnedTrophyDesserts = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_desserts_persist), resources.getBoolean(R.bool.trophy_desserts_default));
-        final boolean earnedTrophyAppleDots = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_appledots_persist), resources.getBoolean(R.bool.trophy_appledots_default));
-        final boolean earnedTrophyEden = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_eden_persist), resources.getBoolean(R.bool.trophy_eden_default));
-        final boolean earnedTrophyGoogol = Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_googol_persist), resources.getBoolean(R.bool.trophy_googol_default));
-        final boolean earnedTrophyLegend= Wallpaper.PREFERENCES.getBoolean(resources.getString(R.string.trophy_legend_persist), resources.getBoolean(R.bool.trophy_legend_default));
+        final boolean earnedTrophyEgo = preferences.getBoolean(resources.getString(R.string.trophy_ego_persist), resources.getBoolean(R.bool.trophy_ego_default));
+        final boolean earnedTrophyAndy = preferences.getBoolean(resources.getString(R.string.trophy_andy_persist), resources.getBoolean(R.bool.trophy_andy_default));
+        final boolean earnedTrophyTheMandroid = preferences.getBoolean(resources.getString(R.string.trophy_themandroid_persist), resources.getBoolean(R.bool.trophy_themandroid_default));
+        final boolean earnedTrophyLogos = preferences.getBoolean(resources.getString(R.string.trophy_logos_persist), resources.getBoolean(R.bool.trophy_logos_default));
+        final boolean earnedTrophyCeos = preferences.getBoolean(resources.getString(R.string.trophy_ceos_persist), resources.getBoolean(R.bool.trophy_ceos_default));
+        final boolean earnedTrophyDesserts = preferences.getBoolean(resources.getString(R.string.trophy_desserts_persist), resources.getBoolean(R.bool.trophy_desserts_default));
+        final boolean earnedTrophyAppleDots = preferences.getBoolean(resources.getString(R.string.trophy_appledots_persist), resources.getBoolean(R.bool.trophy_appledots_default));
+        final boolean earnedTrophyEden = preferences.getBoolean(resources.getString(R.string.trophy_eden_persist), resources.getBoolean(R.bool.trophy_eden_default));
+        final boolean earnedTrophyGoogol = preferences.getBoolean(resources.getString(R.string.trophy_googol_persist), resources.getBoolean(R.bool.trophy_googol_default));
+        final boolean earnedTrophyLegend= preferences.getBoolean(resources.getString(R.string.trophy_legend_persist), resources.getBoolean(R.bool.trophy_legend_default));
         
         trophyEgo.setEnabled(earnedTrophyEgo);
         if (!earnedTrophyEgo) {
@@ -408,8 +409,8 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         }
 
         //Register as a preference change listener
-        Wallpaper.PREFERENCES.registerOnSharedPreferenceChangeListener(this);
-        this.onSharedPreferenceChanged(Wallpaper.PREFERENCES, null);
+        preferences.registerOnSharedPreferenceChangeListener(this);
+        this.onSharedPreferenceChanged(preferences, null);
         
         //Check previously installed version
         final int thisVersion = resources.getInteger(R.integer.version_code);
@@ -419,7 +420,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         	//First install
         	
         	//Store this version
-        	this.getPreferenceManager().getSharedPreferences().edit().putInt(resources.getString(R.string.version_code_key), thisVersion).commit();
+        	preferences.edit().putInt(resources.getString(R.string.version_code_key), thisVersion).commit();
         	//Show hello
         	(new AlertDialog.Builder(this))
         		.setTitle(resources.getString(R.string.title))
@@ -436,7 +437,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         	//First run after upgrade
         	
         	//Store this version
-        	this.getPreferenceManager().getSharedPreferences().edit().putInt(resources.getString(R.string.version_code_key), thisVersion).commit();
+        	preferences.edit().putInt(resources.getString(R.string.version_code_key), thisVersion).commit();
         	//Show hello
         	(new AlertDialog.Builder(this))
         		.setTitle(resources.getString(R.string.title))
