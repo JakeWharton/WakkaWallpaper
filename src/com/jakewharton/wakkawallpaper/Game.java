@@ -1992,6 +1992,11 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
 				Log.w(Game.TAG, "Unable to load background bitmap.");
 				Toast.makeText(Wallpaper.CONTEXT, "Unable to load background bitmap.", Toast.LENGTH_SHORT).show();
 				this.mBackground = null;
+			} catch (final OutOfMemoryError e) {
+				e.printStackTrace();
+				Log.w(Game.TAG, "Incurred OutOfMemoryError when attempting to load background bitmap.");
+				Toast.makeText(Wallpaper.CONTEXT, "Out of memory loading background. Skipping.", Toast.LENGTH_SHORT).show();
+				this.mBackground = null;
 			}
     	}
     	
