@@ -307,8 +307,9 @@ public class Fruit extends Entity implements SharedPreferences.OnSharedPreferenc
     	this.mPositions.clear();
     	for (int i = 0; i < dotCols; i++) {
     		for (int j = 0; j < dotRows; j++) {
-    			if (game.isValidBoardPosition(new Point(i, j))) {
-    				this.mPositions.add(new Point(i * dotsCol, j * dotsRow));
+    			final Point position = new Point(i * dotsCol, j * dotsRow);
+    			if (game.isValidBoardPosition(position)) {
+    				this.mPositions.add(position);
     			}
     		}
     	}
