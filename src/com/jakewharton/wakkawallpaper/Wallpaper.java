@@ -1,5 +1,6 @@
 package com.jakewharton.wakkawallpaper;
 
+import com.jakewharton.wakkawallpaper.Entity.SomethingIsCausingEntitiesToNullPointerException;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -325,7 +326,11 @@ public class Wallpaper extends WallpaperService {
          * Advance the game by one step.
          */
         private void tick() {
-        	this.mGame.tick();
+        	try {
+				this.mGame.tick();
+			} catch (SomethingIsCausingEntitiesToNullPointerException e) {
+				this.mGame = new Game();
+			}
 
         	if (Wallpaper.AUTO_TICK) {
         		if (this.mIsVisible) {

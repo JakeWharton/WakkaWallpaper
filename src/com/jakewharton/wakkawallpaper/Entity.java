@@ -312,8 +312,9 @@ public abstract class Entity {
      * Iterate the entity one step.
      * 
      * @param game Game instance
+     * @throws SomethingIsCausingEntitiesToNullPointerException 
      */
-	public void tick(final Game game) {
+	public void tick(final Game game) throws SomethingIsCausingEntitiesToNullPointerException {
 		this.mTickCount += 1;
 
 		if (this.mDirectionNext == null) {
@@ -339,7 +340,7 @@ public abstract class Entity {
 			params.append("; DirectionNext = null}");
 			
 			//get this over with before the switch below throws it anyways
-			throw new NullPointerException(this.getClass().getSimpleName() + "'s next direction is null. " + params.toString());
+			throw new SomethingIsCausingEntitiesToNullPointerException();
 		}
 		
 		//Promote current direction to last
@@ -479,4 +480,23 @@ public abstract class Entity {
     	}
     	return newPoint;
     }
+	
+	
+	
+	/**
+	 * For some reason Entities are moving to invalid position and thus causing the next
+	 * direction calculation to fail. This causes a NullPointerException in the
+	 * Entity.tick() method. 
+	 * 
+	 * This exception lets us catch it at the service level and just restart the game.
+	 * 
+	 * @author Jake Wharton
+	 */
+	public static class SomethingIsCausingEntitiesToNullPointerException extends Exception {
+		/**
+		 * Generated serial ID.
+		 */
+		private static final long serialVersionUID = -5517880022544513332L;
+		
+	}
 }

@@ -581,7 +581,7 @@ public abstract class Ghost extends Entity implements SharedPreferences.OnShared
 	}
 
     @Override
-	public void tick(Game game) {
+	public void tick(Game game) throws SomethingIsCausingEntitiesToNullPointerException {
     	if (this.mState == Ghost.State.FRIGHTENED) {
     		if (this.mStateTimer <= 0) {
     			this.setState(game, Ghost.State.HUNTING);

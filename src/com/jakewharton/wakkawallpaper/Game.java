@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import com.jakewharton.utilities.WidgetLocationsPreference;
+import com.jakewharton.wakkawallpaper.Entity.SomethingIsCausingEntitiesToNullPointerException;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -1888,8 +1889,10 @@ public class Game implements SharedPreferences.OnSharedPreferenceChangeListener 
     
     /**
      * Iterate all entities one step.
+     * 
+     * @throws SomethingIsCausingEntitiesToNullPointerException 
      */
-    public void tick() {
+    public void tick() throws SomethingIsCausingEntitiesToNullPointerException {
     	this.mTickCount += 1;
     	
     	//Check for level complete

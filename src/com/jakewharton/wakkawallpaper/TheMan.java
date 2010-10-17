@@ -319,7 +319,7 @@ public class TheMan extends Entity implements SharedPreferences.OnSharedPreferen
     }
 
 	@Override
-	public void tick(final Game game) {
+	public void tick(final Game game) throws SomethingIsCausingEntitiesToNullPointerException {
 		//Only tick if we are alive
 		if (this.mState == TheMan.State.ALIVE) {
 			super.tick(game);

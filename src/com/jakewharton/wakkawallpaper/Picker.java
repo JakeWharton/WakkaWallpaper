@@ -1,5 +1,6 @@
 package com.jakewharton.wakkawallpaper;
 
+import com.jakewharton.wakkawallpaper.Entity.SomethingIsCausingEntitiesToNullPointerException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -174,7 +175,11 @@ public class Picker extends Activity {
          * Advance the game by one frame.
          */
         private void newFrame() {
-        	this.mGame.tick();
+        	try {
+				this.mGame.tick();
+			} catch (SomethingIsCausingEntitiesToNullPointerException e) {
+				this.mGame = new Game();
+			}
 
         	if (Wallpaper.AUTO_TICK) {
         		if (this.mIsVisible) {
